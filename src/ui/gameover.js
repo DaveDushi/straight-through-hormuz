@@ -25,14 +25,22 @@ export class GameOverScreen {
             this.earnedEl.textContent = '+¥' + (data.earned || 0).toLocaleString();
         }
 
-        const quotes = [
-            '"We almost had it\u2026 Tremendous effort though." \u2014 Trump',
-            '"The ceasefire collapsed. We will rebuild." \u2014 Bibi',
-            '"All stations \u2014 vessel lost. Mark the coordinates." \u2014 Command',
-            '"Nobody said it would be easy. But we\'ll be back. Bigger and better." \u2014 Trump',
-            '"This is a setback, not a defeat. Israel endures." \u2014 Bibi',
-        ];
-        this.quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        if (data.reason === 'blockade') {
+            this.el.querySelector('.screen-title').textContent = 'Oil Confiscated!';
+            this.el.querySelector('.screen-subtitle').textContent = 'USA Naval Blockade';
+            this.quoteEl.textContent = '"Your oil now belongs to America. The art of the deal." \u2014 Donald Trump';
+        } else {
+            this.el.querySelector('.screen-title').textContent = 'Lost at Sea';
+            this.el.querySelector('.screen-subtitle').textContent = 'MV Eternal Horizon \u2014 Final Report';
+            const quotes = [
+                '"We almost had it\u2026 Tremendous effort though." \u2014 Trump',
+                '"The ceasefire collapsed. We will rebuild." \u2014 Bibi',
+                '"All stations \u2014 vessel lost. Mark the coordinates." \u2014 Command',
+                '"Nobody said it would be easy. But we\'ll be back. Bigger and better." \u2014 Trump',
+                '"This is a setback, not a defeat. Israel endures." \u2014 Bibi',
+            ];
+            this.quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        }
 
         this.el.classList.add('visible');
 

@@ -34,6 +34,7 @@ export class HUD {
             boostPct: -1,
             inv: ['', '', ''],
             ceasefire: false,
+            pakFlag: false,
         };
 
         this._phaseTimer = 0;
@@ -197,13 +198,22 @@ export class HUD {
                 this.ceasefireOverlay.style.display = data.ceasefireActive ? 'block' : 'none';
             }
         }
+
+        // Pak Flag
+        if (data.pakFlagActive !== this._prev.pakFlag) {
+            this._prev.pakFlag = data.pakFlagActive;
+            const pakOverlay = document.getElementById('pakflag-overlay');
+            if (pakOverlay) {
+                pakOverlay.style.display = data.pakFlagActive ? 'block' : 'none';
+            }
+        }
     }
 
     showPickupNotification(type) {
         const descriptions = {
-            flare: 'FLARE \u2014 Scatters drones for 8s',
-            oilSlick: 'OIL SLICK \u2014 Slows & drifts enemies for 10s',
-            ceasefire: 'CEASEFIRE \u2014 Freezes all enemies for 13s',
+            oil: 'OIL \u2014 Speed boost for 8s',
+            ceasefire: 'CEASEFIRE \u2014 Stops all shooting for 10s',
+            pakFlag: 'PAK FLAG \u2014 Full invincibility for 10s',
         };
         const el = document.getElementById('pickup-notification');
         if (!el) return;
@@ -217,9 +227,9 @@ export class HUD {
 
     _powerupLabel(type) {
         switch (type) {
-            case 'flare': return 'FLARE';
-            case 'oilSlick': return 'SLICK';
+            case 'oil': return 'OIL';
             case 'ceasefire': return 'PEACE';
+            case 'pakFlag': return 'PAK';
             default: return '?';
         }
     }

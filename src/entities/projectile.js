@@ -11,7 +11,7 @@ export class Projectile extends Entity {
         this.halfH = CONFIG.PROJECTILE_RADIUS;
         this.vx = 0;
         this.vz = 0;
-        this.damage = CONFIG.DRONE_BOMB_DAMAGE;
+        this.damage = CONFIG.BOAT_ROCKET_DAMAGE;
         this._buildMesh();
     }
 
@@ -30,7 +30,7 @@ export class Projectile extends Entity {
         super.init(x, z);
         this.vx = vx || 0;
         this.vz = vz || 0;
-        this.damage = damage || CONFIG.DRONE_BOMB_DAMAGE;
+        this.damage = damage || CONFIG.BOAT_ROCKET_DAMAGE;
         this.mesh.position.set(x, 2, z);
     }
 

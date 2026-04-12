@@ -4,15 +4,15 @@ export class InventorySystem {
     constructor() {
         this.slots = [null, null, null];
         this.ceasefireTimer = 0;
-        this.flareTimer = 0;
-        this.oilSlickTimer = 0;
+        this.oilBoostTimer = 0;
+        this.pakFlagTimer = 0;
     }
 
     reset() {
         this.slots = [null, null, null];
         this.ceasefireTimer = 0;
-        this.flareTimer = 0;
-        this.oilSlickTimer = 0;
+        this.oilBoostTimer = 0;
+        this.pakFlagTimer = 0;
     }
 
     add(type) {
@@ -32,17 +32,17 @@ export class InventorySystem {
         this.slots[slotIndex] = null;
 
         switch (type) {
-            case 'flare':
-                this.flareTimer = CONFIG.FLARE_DURATION;
-                if (context.freezeDrones) context.freezeDrones(true);
-                break;
-            case 'oilSlick':
-                this.oilSlickTimer = CONFIG.OIL_SLICK_DURATION;
-                if (context.deployOilSlick) context.deployOilSlick();
+            case 'oil':
+                this.oilBoostTimer = CONFIG.OIL_BOOST_DURATION;
+                if (context.activateOilBoost) context.activateOilBoost(true);
                 break;
             case 'ceasefire':
                 this.ceasefireTimer = CONFIG.CEASEFIRE_DURATION;
                 if (context.activateCeasefire) context.activateCeasefire(true);
+                break;
+            case 'pakFlag':
+                this.pakFlagTimer = CONFIG.PAK_FLAG_DURATION;
+                if (context.activatePakFlag) context.activatePakFlag(true);
                 break;
         }
         return true;
@@ -57,20 +57,32 @@ export class InventorySystem {
             }
         }
 
-        if (this.flareTimer > 0) {
-            this.flareTimer -= delta;
-            if (this.flareTimer <= 0) {
-                this.flareTimer = 0;
-                if (context.freezeDrones) context.freezeDrones(false);
+        if (this.oilBoostTimer > 0) {
+            this.oilBoostTimer -= delta;
+            if (this.oilBoostTimer <= 0) {
+                this.oilBoostTimer = 0;
+                if (context.activateOilBoost) context.activateOilBoost(false);
             }
         }
 
-        if (this.oilSlickTimer > 0) {
-            this.oilSlickTimer -= delta;
+        if (this.pakFlagTimer > 0) {
+            this.pakFlagTimer -= delta;
+            if (this.pakFlagTimer <= 0) {
+                this.pakFlagTimer = 0;
+                if (context.activatePakFlag) context.activatePakFlag(false);
+            }
         }
     }
 
     isCeasefireActive() {
         return this.ceasefireTimer > 0;
+    }
+
+    isOilBoostActive() {
+        return this.oilBoostTimer > 0;
+    }
+
+    isPakFlagActive() {
+        return this.pakFlagTimer > 0;
     }
 }

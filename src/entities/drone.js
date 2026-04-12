@@ -10,8 +10,7 @@ export class Drone extends Entity {
         this.type = 'drone';
         this.halfW = CONFIG.DRONE_SIZE / 2;
         this.halfH = CONFIG.DRONE_SIZE / 2;
-        this.bombTimer = 0;
-        this.frozen = false;
+        this.laserEvaluated = false;
         this._buildMesh();
     }
 
@@ -51,33 +50,30 @@ export class Drone extends Entity {
 
     init(x, z) {
         super.init(x, z);
-        this.bombTimer = CONFIG.DRONE_BOMB_INTERVAL * (0.5 + Math.random() * 0.5);
-        this.frozen = false;
+        this.laserEvaluated = false;
         this.mesh.position.set(x, CONFIG.DRONE_ALTITUDE, z);
     }
 
     update(delta, context) {
-        if (this.frozen) {
-            // Frozen drones stop — tanker sails past them
-            this.syncMesh();
-            this.mesh.position.y = CONFIG.DRONE_ALTITUDE;
-            return;
-        }
-
         const dx = context.tankerX - this.x;
-        this.x += clamp(dx * CONFIG.DRONE_HOMING_STRENGTH, -CONFIG.DRONE_SPEED, CONFIG.DRONE_SPEED) * delta;
-        // Drones fly forward at half the tanker's speed — tanker overtakes them
-        this.z += context.scrollSpeed * 0.5 * delta;
+        const dz = context.tankerZ - this.z;
+        const dist = Math.sqrt(dx * dx + dz * dz) || 1;
 
-        this.bombTimer -= delta;
-        if (this.bombTimer <= 0) {
-            this.bombTimer = CONFIG.DRONE_BOMB_INTERVAL;
-            if (context.spawnProjectile) {
-                context.spawnProjectile(this.x, this.z, 0, -CONFIG.BOAT_ROCKET_SPEED * 0.5, CONFIG.DRONE_BOMB_DAMAGE);
-            }
+        const speed = CONFIG.DRONE_SPEED;
+        this.x += (dx / dist) * speed * delta;
+        this.z += (dz / dist) * speed * delta;
+
+        // Dive toward deck level when close
+        let targetY = CONFIG.DRONE_ALTITUDE;
+        if (dist < CONFIG.DRONE_DIVE_RANGE) {
+            const t = 1 - dist / CONFIG.DRONE_DIVE_RANGE;
+            targetY = CONFIG.DRONE_ALTITUDE - (CONFIG.DRONE_ALTITUDE - 2) * t;
         }
+        this.mesh.position.y = targetY + Math.sin(Date.now() * 0.003) * 0.3;
 
-        this.mesh.position.y = CONFIG.DRONE_ALTITUDE + Math.sin(Date.now() * 0.003) * 0.3;
+        // Tilt toward target
+        this.mesh.rotation.z = clamp(dx * 0.05, -0.4, 0.4);
+
         this.syncMesh();
     }
 }

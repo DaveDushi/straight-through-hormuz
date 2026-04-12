@@ -50,7 +50,7 @@ export class Spawner {
         const z = tankerZ + CONFIG.SPAWN_Z + randomRange(0, 30);
 
         if (type === 'powerup') {
-            const types = ['flare', 'oilSlick', 'ceasefire'];
+            const types = ['oil', 'ceasefire', 'pakFlag'];
             entity.powerupType = types[Math.floor(Math.random() * types.length)];
         }
 

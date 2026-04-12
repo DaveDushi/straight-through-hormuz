@@ -4,15 +4,15 @@ import { Entity } from './entity.js';
 import { getGeometry, getMaterial, getLabelSprite } from '../utils/shared-assets.js';
 
 const POWERUP_COLORS = {
-    flare: CONFIG.FLARE_COLOR,
-    oilSlick: CONFIG.OIL_SLICK_COLOR,
+    oil: CONFIG.OIL_BOOST_COLOR,
     ceasefire: CONFIG.CEASEFIRE_COLOR,
+    pakFlag: CONFIG.PAK_FLAG_COLOR,
 };
 
 const POWERUP_LABELS = {
-    flare: 'FLARE',
-    oilSlick: 'OIL SLICK',
+    oil: 'OIL',
     ceasefire: 'CEASEFIRE',
+    pakFlag: 'PAK FLAG',
 };
 
 export class Powerup extends Entity {
@@ -21,7 +21,7 @@ export class Powerup extends Entity {
         this.type = 'powerup';
         this.halfW = CONFIG.POWERUP_SIZE / 2;
         this.halfH = CONFIG.POWERUP_SIZE / 2;
-        this.powerupType = 'flare';
+        this.powerupType = 'oil';
         this.time = 0;
         this._buildMesh();
     }

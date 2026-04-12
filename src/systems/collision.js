@@ -43,6 +43,14 @@ export class CollisionSystem {
                 context.releaseEntity(entity);
                 break;
 
+            case 'drone':
+                tanker.takeDamage(CONFIG.DRONE_KAMIKAZE_DAMAGE);
+                if (context.particles) context.particles.spawnExplosion(entity.x, 2, entity.z);
+                if (context.audio) context.audio.playSFX('explosion');
+                context.releaseEntity(entity);
+                context.addScore(75);
+                break;
+
             case 'boat':
                 tanker.takeDamage(CONFIG.BOAT_RAM_DAMAGE);
                 if (context.particles) context.particles.spawnExplosion(entity.x, 1, entity.z);
@@ -52,7 +60,7 @@ export class CollisionSystem {
                 break;
 
             case 'projectile':
-                tanker.takeDamage(entity.damage || CONFIG.DRONE_BOMB_DAMAGE);
+                tanker.takeDamage(entity.damage || CONFIG.BOAT_ROCKET_DAMAGE);
                 if (context.particles) context.particles.spawnExplosion(entity.x, 1, entity.z);
                 context.releaseEntity(entity);
                 break;

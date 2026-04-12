@@ -49,14 +49,20 @@ export const CONFIG = {
     MINE_BOB_SPEED: 2,
     MINE_BOB_AMPLITUDE: 0.4,
 
-    // Drones
+    // Drones (kamikaze)
     DRONE_SIZE: 1.5,
-    DRONE_SPEED: 8,
-    DRONE_BOMB_INTERVAL: 3,
-    DRONE_BOMB_DAMAGE: 12,
+    DRONE_SPEED: 12,
     DRONE_COLOR: 0xaaaaaa,
     DRONE_ALTITUDE: 8,
-    DRONE_HOMING_STRENGTH: 0.3,
+    DRONE_HOMING_STRENGTH: 0.6,
+    DRONE_KAMIKAZE_DAMAGE: 25,
+    DRONE_DIVE_RANGE: 15,
+
+    // Iron Laser defense
+    IRON_LASER_BASE_HIT_RATE: 0.40,
+    IRON_LASER_UPGRADE_BONUS: 0.15,
+    IRON_LASER_RANGE: 40,
+    IRON_LASER_BEAM_DURATION: 0.3,
 
     // Fast boats
     BOAT_WIDTH: 1.5,
@@ -77,12 +83,20 @@ export const CONFIG = {
     POWERUP_BOB_SPEED: 3,
     POWERUP_BOB_AMPLITUDE: 0.5,
     POWERUP_ROTATE_SPEED: 2,
-    FLARE_DURATION: 8,
-    FLARE_COLOR: 0xda0000,
-    OIL_SLICK_DURATION: 10,
-    OIL_SLICK_COLOR: 0x222222,
-    CEASEFIRE_DURATION: 13,
+    OIL_BOOST_DURATION: 8,
+    OIL_BOOST_COLOR: 0xFFAA00,
+    OIL_BOOST_SPEED_MULT: 1.5,
+    CEASEFIRE_DURATION: 10,
     CEASEFIRE_COLOR: 0x3a8fd4,
+    PAK_FLAG_DURATION: 10,
+    PAK_FLAG_COLOR: 0x01411C,
+
+    // USA Blockade
+    BLOCKADE_DISTANCE_AFTER_TOLL: 500,
+    BLOCKADE_PASSAGE_WIDTH: 7,
+    BLOCKADE_WALL_HEIGHT: 8,
+    BLOCKADE_COLOR: 0x334466,
+    POOL_BLOCKADES: 4,
 
     // Resources
     RESOURCE_SIZE: 1.8,
@@ -230,6 +244,6 @@ export const CONFIG = {
         hull: { name: 'Hull Plating', description: '+15 max hull points per level', maxLevel: 5, baseCost: 600, costMult: 1.8, effect: 15 },
         radar: { name: 'Radar Range', description: '+2s threat detection range per level', maxLevel: 3, baseCost: 400, costMult: 2.0, effect: 2 },
         tollDiscount: { name: 'Toll Negotiator', description: '-15% toll cost per level', maxLevel: 3, baseCost: 300, costMult: 1.5, effect: 0.15 },
-        ceasefire: { name: 'Extended Ceasefire', description: '+3s ceasefire duration per level', maxLevel: 3, baseCost: 800, costMult: 2.0, effect: 3 },
+        ironLaser: { name: 'Iron Laser', description: '+15% drone intercept rate per level', maxLevel: 3, baseCost: 700, costMult: 2.0, effect: 0.15 },
     },
 };

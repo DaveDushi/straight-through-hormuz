@@ -50,12 +50,12 @@
     --speaker-command: var(--tactical-400);
 
     /* -- Powerup -- */
-    --powerup-flare: var(--signal-300);
-    --powerup-flare-bg: rgba(218, 0, 0, 0.10);
-    --powerup-oil: #5a4a2a;
-    --powerup-oil-bg: rgba(90, 74, 42, 0.10);
+    --powerup-oil: #ffaa00;
+    --powerup-oil-bg: rgba(255, 170, 0, 0.10);
     --powerup-ceasefire: var(--naval-300);
     --powerup-ceasefire-bg: rgba(58, 143, 212, 0.10);
+    --powerup-pakflag: #01411C;
+    --powerup-pakflag-bg: rgba(1, 65, 28, 0.12);
 
     /* -- Typography -- */
     --font-display: 'Share Tech Mono', 'Courier New', monospace;

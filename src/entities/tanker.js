@@ -15,6 +15,8 @@ export class Tanker extends Entity {
         this.hull = CONFIG.HULL_MAX;
         this.invulnTimer = 0;
         this.maxHull = CONFIG.HULL_MAX;
+        this.oilBoostActive = false;
+        this.pakFlagActive = false;
         this._buildMesh();
     }
 
@@ -135,6 +137,8 @@ export class Tanker extends Entity {
         this.boostTimer = 0;
         this.boostCooldown = 0;
         this.invulnTimer = 0;
+        this.oilBoostActive = false;
+        this.pakFlagActive = false;
         this.active = true;
         this.syncMesh();
     }
@@ -144,9 +148,15 @@ export class Tanker extends Entity {
 
         if (this.invulnTimer > 0) {
             this.invulnTimer -= delta;
-            this.mesh.visible = Math.floor(this.invulnTimer * 10) % 2 === 0;
+            if (this.pakFlagActive) {
+                this.mesh.visible = true;
+                this.bodyMat.emissive.setHex(0x01411C);
+            } else {
+                this.mesh.visible = Math.floor(this.invulnTimer * 10) % 2 === 0;
+            }
         } else {
             this.mesh.visible = true;
+            if (!this.pakFlagActive) this.bodyMat.emissive.setHex(0x000000);
         }
 
         if (this.boostCooldown > 0) this.boostCooldown -= delta;
@@ -171,7 +181,6 @@ export class Tanker extends Entity {
         this.x += this.lateralVelocity * delta;
         this.x = clamp(this.x, -straitHalfWidth + this.halfW, straitHalfWidth - this.halfW);
 
-        // Move forward through the strait
         this.z += scrollSpeed * delta;
 
         this.mesh.rotation.y = -this.lateralVelocity * 0.015;

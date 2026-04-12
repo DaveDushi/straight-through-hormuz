@@ -20,6 +20,9 @@ import { FastBoat } from './entities/fast-boat.js';
 import { Projectile } from './entities/projectile.js';
 import { Powerup } from './entities/powerup.js';
 import { Resource } from './entities/resource.js';
+import { Blockade } from './entities/blockade.js';
+import { IronLaserSystem } from './systems/iron-laser.js';
+import { BlockadeSystem } from './systems/blockade-system.js';
 import { HUD } from './ui/hud.js';
 import { MenuScreen } from './ui/menu.js';
 import { GameOverScreen } from './ui/gameover.js';
@@ -55,6 +58,10 @@ export class Game {
         this.scene.add(this.tanker.mesh);
 
         this.spawner = new Spawner(this.pools, this.scene);
+        this.ironLaser = new IronLaserSystem(this.scene);
+        this.blockadeSystem = new BlockadeSystem();
+        this.ceasefireShootingDisabled = false;
+        this.gameOverReason = null;
 
         this.hud = new HUD((slot) => { this.input.activatePowerup = slot; });
         this.radio = new RadioUI();
@@ -77,7 +84,6 @@ export class Game {
         );
 
         this._wakeTimer = 0;
-        this.oilSlicks = [];
 
         // Tilt controls setup
         const tiltBtn = document.getElementById('btn-tilt');
@@ -135,6 +141,7 @@ export class Game {
                         tollsRefused: this.scoring.tollsRefused,
                         nearMissCount: this.scoring.nearMissCount,
                         earned: earned,
+                        reason: this.gameOverReason,
                     });
                 },
                 onExit: () => this.gameover.hide(),
@@ -231,6 +238,7 @@ export class Game {
             projectile: new Pool(() => new Projectile(), CONFIG.POOL_PROJECTILES),
             powerup: new Pool(() => new Powerup(), CONFIG.POOL_POWERUPS),
             resource: new Pool(() => new Resource(), CONFIG.POOL_RESOURCES),
+            blockade: new Pool(() => new Blockade(), CONFIG.POOL_BLOCKADES),
         };
     }
 
@@ -250,16 +258,11 @@ export class Game {
         this.inventory.reset();
         this.radio.reset();
         this.difficulty.update(0);
-        this.spawner.ceasefireActive = false;
         this.terrain.reset();
-
-        // Clean up oil slicks
-        for (const slick of this.oilSlicks) {
-            this.scene.remove(slick.mesh);
-            slick.mesh.geometry.dispose();
-            slick.mesh.material.dispose();
-        }
-        this.oilSlicks = [];
+        this.ironLaser.reset(this.save.getUpgradeLevel('ironLaser'));
+        this.blockadeSystem.reset();
+        this.ceasefireShootingDisabled = false;
+        this.gameOverReason = null;
 
         this.fsm.transition('playing');
     }
@@ -288,7 +291,8 @@ export class Game {
         this.input.update();
         this.difficulty.update(this.scoring.distance);
 
-        const scrollSpeed = this.difficulty.getScrollSpeed();
+        const baseScrollSpeed = this.difficulty.getScrollSpeed();
+        const scrollSpeed = this.tanker.oilBoostActive ? baseScrollSpeed * CONFIG.OIL_BOOST_SPEED_MULT : baseScrollSpeed;
         const straitHalfWidth = this.difficulty.getStraitHalfWidth();
 
         this.tanker.update(delta, {
@@ -302,6 +306,7 @@ export class Game {
             tankerX: this.tanker.x,
             tankerZ: this.tanker.z,
             spawnProjectile: (x, z, vx, vz, dmg) => this._spawnProjectile(x, z, vx, vz, dmg),
+            ceasefireShootingDisabled: this.ceasefireShootingDisabled,
         };
 
         for (const key in this.pools) {
@@ -310,19 +315,23 @@ export class Game {
             });
         }
 
+        // Iron laser evaluates drones before collision
+        const releaseEntity = (e) => {
+            for (const key in this.pools) {
+                this.pools[key].forEach((item) => {
+                    if (item === e) this.pools[key].release(item);
+                });
+            }
+        };
+        this.ironLaser.update(delta, this.pools.drone, this.tanker, this.particles, this.audio, releaseEntity);
+
         const poolArray = Object.values(this.pools);
         const prevHull = this.tanker.hull;
         this.collision.check(this.tanker, poolArray, {
             particles: this.particles,
             audio: this.audio,
             inventory: this.inventory,
-            releaseEntity: (e) => {
-                for (const key in this.pools) {
-                    this.pools[key].forEach((item) => {
-                        if (item === e) this.pools[key].release(item);
-                    });
-                }
-            },
+            releaseEntity,
             addScore: (pts) => this.scoring.addScore(pts),
             notifyPickup: (type) => this.hud.showPickupNotification(type),
         });
@@ -340,18 +349,16 @@ export class Game {
         this.spawner.update(delta, this.difficulty, straitHalfWidth, this.scoring.distance, this.tanker.z);
         this.spawner.despawnOffscreen(this.pools, this.tanker.z);
 
+        const powerupCtx = {
+            activateOilBoost: (active) => this._activateOilBoost(active),
+            activateCeasefire: (active) => this._activateCeasefire(active),
+            activatePakFlag: (active) => this._activatePakFlag(active),
+        };
         const powerupSlot = this.input.consumePowerupActivation();
         if (powerupSlot >= 0) {
-            this.inventory.activate(powerupSlot, {
-                freezeDrones: (freeze) => this._freezeDrones(freeze),
-                activateCeasefire: (active) => this._activateCeasefire(active),
-                deployOilSlick: () => this._deployOilSlick(),
-            });
+            this.inventory.activate(powerupSlot, powerupCtx);
         }
-        this.inventory.update(delta, {
-            freezeDrones: (freeze) => this._freezeDrones(freeze),
-            activateCeasefire: (active) => this._activateCeasefire(active),
-        });
+        this.inventory.update(delta, powerupCtx);
 
         const tollOffer = this.toll.update(this.scoring.distance, this.save);
         if (tollOffer) {
@@ -362,32 +369,8 @@ export class Game {
         this.terrain.update(delta, this.tanker.z, straitHalfWidth);
         this.particles.update(delta, scrollSpeed);
 
-        // Oil slick update
-        for (let i = this.oilSlicks.length - 1; i >= 0; i--) {
-            const slick = this.oilSlicks[i];
-            slick.timer -= delta;
-
-            if (slick.timer < 2) {
-                slick.mesh.material.opacity = 0.55 * (slick.timer / 2);
-            }
-
-            if (slick.timer <= 0) {
-                this.scene.remove(slick.mesh);
-                slick.mesh.geometry.dispose();
-                slick.mesh.material.dispose();
-                this.oilSlicks.splice(i, 1);
-                continue;
-            }
-
-            this.pools.boat.forEach((boat) => {
-                if (!boat.active || boat.frozen) return;
-                const dx = boat.x - slick.x;
-                const dz = boat.z - slick.z;
-                if (dx * dx + dz * dz < slick.radius * slick.radius) {
-                    boat.oilSlicked = true;
-                }
-            });
-        }
+        // Blockade system
+        this.blockadeSystem.update(this.tanker.z, this.pools.blockade, this.scene, this.radio, this.audio);
 
         this.radio.update(delta, this.scoring.distance, this.audio);
 
@@ -409,6 +392,8 @@ export class Game {
             boostCooldown: this.tanker.boostCooldown,
             inventory: this.inventory.slots,
             ceasefireActive: this.inventory.isCeasefireActive(),
+            pakFlagActive: this.inventory.isPakFlagActive(),
+            oilBoostActive: this.inventory.isOilBoostActive(),
         });
 
         // Camera follows tanker + sway/shake
@@ -416,6 +401,11 @@ export class Game {
 
         if (this.scoring.distance >= CONFIG.WIN_DISTANCE) {
             this.fsm.transition('victory');
+        } else if (this.blockadeSystem.checkCollision(this.tanker)) {
+            this.gameOverReason = 'blockade';
+            this.audio.playSFX('explosion');
+            this.cameraController.triggerShake(3.0);
+            this.fsm.transition('gameover');
         } else if (this.tanker.isDead()) {
             this.particles.spawnExplosion(this.tanker.x, 2, this.tanker.z);
             this.audio.playSFX('explosion');
@@ -431,55 +421,42 @@ export class Game {
         if (!p.mesh.parent) this.scene.add(p.mesh);
     }
 
-    _freezeDrones(freeze) {
-        if (freeze) {
-            this.audio.playSFX('ceasefire');
-            this.radio.showCustom('COMMAND', 'Flare deployed — drones scattered!', this.audio);
+    _activateOilBoost(active) {
+        this.tanker.oilBoostActive = active;
+        if (active) {
+            this.audio.playSFX('boost');
+            this.radio.showCustom('COMMAND', 'Oil reserves tapped — full speed ahead!', this.audio);
         }
-        this.pools.drone.forEach((d) => { d.frozen = freeze; });
     }
 
     _activateCeasefire(active) {
-        this.spawner.ceasefireActive = active;
+        this.ceasefireShootingDisabled = active;
         if (active) {
             this.audio.playSFX('ceasefire');
-            this.radio.showCustom('COMMAND', 'Ceasefire holding… for now.', this.audio);
-            this.pools.drone.forEach((d) => { d.frozen = true; });
-            this.pools.boat.forEach((b) => { b.frozen = true; });
+            this.radio.showCustom('COMMAND', 'Ceasefire holding… all shooting stopped.', this.audio);
+            // Clear all projectiles in the air
+            this.pools.projectile.releaseAll();
         } else {
             this.radio.showCustom('COMMAND', 'Ceasefire collapsed! Brace!', this.audio);
-            this.pools.drone.forEach((d) => { d.frozen = false; });
-            this.pools.boat.forEach((b) => { b.frozen = false; });
         }
     }
 
-    _deployOilSlick() {
-        const geo = new THREE.CircleGeometry(8, 24);
-        geo.rotateX(-Math.PI / 2);
-        const mat = new THREE.MeshBasicMaterial({
-            color: 0x1a1008,
-            transparent: true,
-            opacity: 0.55,
-            depthWrite: false,
-        });
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set(this.tanker.x, 0.15, this.tanker.z);
-        this.scene.add(mesh);
-        this.oilSlicks.push({
-            x: this.tanker.x,
-            z: this.tanker.z,
-            timer: CONFIG.OIL_SLICK_DURATION,
-            radius: 8,
-            mesh,
-        });
-        this.audio.playSFX('pickup');
-        this.radio.showCustom('COMMAND', 'Oil slick deployed! Watch them slip!', this.audio);
+    _activatePakFlag(active) {
+        this.tanker.pakFlagActive = active;
+        if (active) {
+            this.tanker.invulnTimer = CONFIG.PAK_FLAG_DURATION;
+            this.audio.playSFX('ceasefire');
+            this.radio.showCustom('COMMAND', 'Pakistan stands with you! Full protection!', this.audio);
+        } else {
+            this.tanker.bodyMat.emissive.setHex(0x000000);
+        }
     }
 
     _onTollChoice(accepted) {
         this.toll.resolve(accepted, this.scoring, this.save);
         if (accepted) {
             this.radio.showCustom('TRUMP', 'Smart move. Sometimes you gotta pay to play.', this.audio);
+            this.blockadeSystem.scheduleTollBlockade(this.tanker.z, this.difficulty.getStraitHalfWidth());
         } else {
             this.radio.showCustom('BIBI', 'Brave. Israel respects courage.', this.audio);
         }
