@@ -22,6 +22,19 @@
 <div id="ceasefire-overlay"></div>
 <div id="pakflag-overlay"></div>
 
+<!-- Tutorial Overlay -->
+<div id="tutorial-overlay">
+    <div id="tutorial-letterbox-top"></div>
+    <div id="tutorial-letterbox-bottom"></div>
+    <div id="tutorial-spotlight"></div>
+    <div id="tutorial-textbox">
+        <span id="tutorial-speaker"></span>
+        <span id="tutorial-text"></span>
+    </div>
+    <div id="tutorial-prompt">Tap to continue</div>
+    <button id="tutorial-skip">Skip</button>
+</div>
+
 <!-- Steer indicators -->
 <div class="steer-indicator steer-indicator--left"></div>
 <div class="steer-indicator steer-indicator--right"></div>
@@ -41,8 +54,6 @@
         </div>
         <div id="multiplier">x2.0</div>
         <div class="hud-right">
-            <div class="hud-label">Score</div>
-            <div id="score-value">0</div>
             <div class="hud-label">Distance</div>
             <div id="distance-value">0.0 km</div>
             <div class="hud-label">Yuan</div>
@@ -60,8 +71,9 @@
     <button class="slot empty" id="slot-2" aria-label="Power-up slot 3: empty"><span class="slot-key">3</span>-</button>
 </div>
 
-<!-- Mobile boost button -->
+<!-- Mobile boost buttons -->
 <button id="btn-boost" aria-label="Emergency Boost">BOOST</button>
+<button id="btn-boost-left" aria-label="Emergency Boost">BOOST</button>
 
 <!-- Powerup pickup notification -->
 <div id="pickup-notification" aria-live="polite"></div>
@@ -115,10 +127,6 @@
             <div class="go-stat-value" id="go-distance">0 km</div>
         </div>
         <div class="go-stat">
-            <div class="go-stat-label">Score</div>
-            <div class="go-stat-value" id="go-score">0</div>
-        </div>
-        <div class="go-stat">
             <div class="go-stat-label">Tolls Paid</div>
             <div class="go-stat-value" id="go-tolls-paid">0</div>
         </div>
@@ -151,10 +159,6 @@
         <div class="go-stat">
             <div class="go-stat-label">Distance</div>
             <div class="go-stat-value" id="vic-distance">167 km</div>
-        </div>
-        <div class="go-stat">
-            <div class="go-stat-label">Score</div>
-            <div class="go-stat-value" id="vic-score">0</div>
         </div>
         <div class="go-stat">
             <div class="go-stat-label">Tolls Paid</div>
@@ -192,8 +196,8 @@
                 <div class="port-stat-value" id="credits-value">0</div>
             </div>
             <div class="port-stat">
-                <div class="port-stat-label">High Score</div>
-                <div class="port-stat-value" id="highscore-value">0</div>
+                <div class="port-stat-label">Farthest</div>
+                <div class="port-stat-value" id="farthest-value">0 km</div>
             </div>
         </div>
         <div id="upgrades-list"></div>

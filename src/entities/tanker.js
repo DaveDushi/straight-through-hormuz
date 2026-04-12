@@ -11,7 +11,7 @@ export class Tanker extends Entity {
         this.halfH = CONFIG.TANKER_LENGTH / 2;
         this.lateralVelocity = 0;
         this.boostTimer = 0;
-        this.boostCooldown = 0;
+        this.fuel = CONFIG.TANKER_FUEL_MAX;
         this.hull = CONFIG.HULL_MAX;
         this.invulnTimer = 0;
         this.maxHull = CONFIG.HULL_MAX;
@@ -210,7 +210,7 @@ export class Tanker extends Entity {
         this.lateralVelocity = 0;
         this.hull = this.maxHull;
         this.boostTimer = 0;
-        this.boostCooldown = 0;
+        this.fuel = CONFIG.TANKER_FUEL_MAX;
         this.invulnTimer = 0;
         this.oilBoostActive = false;
         this.pakFlagActive = false;
@@ -239,12 +239,15 @@ export class Tanker extends Entity {
             if (!this.pakFlagActive) this.bodyMat.emissive.setHex(0x000000);
         }
 
-        if (this.boostCooldown > 0) this.boostCooldown -= delta;
         if (this.boostTimer > 0) this.boostTimer -= delta;
 
-        if (input.consumeBoostTrigger() && this.boostCooldown <= 0) {
+        if (this.fuel < CONFIG.TANKER_FUEL_REGEN_CAP) {
+            this.fuel = Math.min(this.fuel + CONFIG.TANKER_FUEL_REGEN_RATE * delta, CONFIG.TANKER_FUEL_REGEN_CAP);
+        }
+
+        if (input.consumeBoostTrigger() && this.fuel >= CONFIG.TANKER_FUEL_PER_BOOST) {
             this.boostTimer = CONFIG.TANKER_BOOST_DURATION;
-            this.boostCooldown = CONFIG.TANKER_BOOST_COOLDOWN;
+            this.fuel -= CONFIG.TANKER_FUEL_PER_BOOST;
         }
 
         let steerMult = this.boostTimer > 0 ? CONFIG.TANKER_BOOST_MULTIPLIER : 1;

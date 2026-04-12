@@ -109,13 +109,25 @@
 }
 
 .go-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-2) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
     margin: var(--space-5) 0;
-    text-align: left;
     width: 100%;
     max-width: 360px;
+}
+
+.go-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid rgba(138, 154, 142, 0.15);
+    animation: fade-in-up var(--dur-normal) var(--ease-out) backwards;
+}
+
+.go-stat:last-child {
+    border-bottom: none;
 }
 
 .go-stat-label {
@@ -128,13 +140,10 @@
 
 .go-stat-value {
     font-family: var(--font-ui);
-    font-size: var(--text-lg);
+    font-size: var(--text-base);
     font-weight: 700;
     color: var(--text-primary);
-}
-
-.go-stat {
-    animation: fade-in-up var(--dur-normal) var(--ease-out) backwards;
+    text-align: right;
 }
 
 .go-stat:nth-child(1) { animation-delay: 400ms; }
@@ -142,6 +151,7 @@
 .go-stat:nth-child(3) { animation-delay: 600ms; }
 .go-stat:nth-child(4) { animation-delay: 700ms; }
 .go-stat:nth-child(5) { animation-delay: 800ms; }
+.go-stat:nth-child(6) { animation-delay: 900ms; }
 
 .go-stat-earned {
     color: var(--amber-400);
@@ -348,7 +358,7 @@
     text-shadow: none;
 }
 
-#highscore-value {
+#farthest-value {
     color: var(--tactical-400);
     text-shadow: none;
 }
@@ -545,10 +555,6 @@
 
 /* ====== MOBILE RESPONSIVE ====== */
 @media (max-width: 479px) {
-    .go-stats {
-        grid-template-columns: 1fr;
-        gap: var(--space-3);
-    }
     .toll-content {
         padding: var(--space-5) var(--space-4);
     }

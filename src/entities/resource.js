@@ -1,12 +1,18 @@
 import * as THREE from 'three';
 import { CONFIG } from '../config.js';
 import { Entity } from './entity.js';
-import { getGeometry, getMaterial } from '../utils/shared-assets.js';
+import { getGeometry, getMaterial, getLabelSprite } from '../utils/shared-assets.js';
 
 const RESOURCE_COLORS = {
     repair: CONFIG.REPAIR_COLOR,
     fuel: CONFIG.FUEL_COLOR,
     laser: CONFIG.LASER_BUFF_COLOR,
+};
+
+const RESOURCE_LABELS = {
+    repair: 'REPAIR',
+    fuel: 'FUEL',
+    laser: 'LASER',
 };
 
 export class Resource extends Entity {
@@ -35,6 +41,11 @@ export class Resource extends Entity {
         this._laserMesh.visible = false;
         group.add(this._laserMesh);
 
+        this._light = new THREE.PointLight(0xffffff, 0.8, 15);
+        this._light.position.y = 1;
+        group.add(this._light);
+
+        this.labelSprite = null;
         this.mesh = group;
         this.mesh.visible = false;
     }
@@ -164,6 +175,18 @@ export class Resource extends Entity {
         this._fuelMesh.visible = (this.resourceType === 'fuel');
         this._laserMesh.visible = (this.resourceType === 'laser');
 
+        const color = RESOURCE_COLORS[this.resourceType] || 0xffffff;
+        const hexStr = '#' + color.toString(16).padStart(6, '0');
+        this._light.color.setHex(color);
+
+        const label = RESOURCE_LABELS[this.resourceType] || 'ITEM';
+        if (this.labelSprite) {
+            this.mesh.remove(this.labelSprite);
+        }
+        this.labelSprite = getLabelSprite(label, hexStr);
+        this.labelSprite.position.y = 4;
+        this.mesh.add(this.labelSprite);
+
         this.mesh.position.set(x, 1, z);
         this.mesh.scale.setScalar(CONFIG.isMobile ? CONFIG.MOBILE_ENTITY_SCALE : 1);
     }
@@ -172,6 +195,7 @@ export class Resource extends Entity {
         this.time += delta;
         this.mesh.position.y = 1 + Math.sin(this.time * 3) * 0.3;
         this.mesh.rotation.y += delta * 1.5;
+        this._light.intensity = 0.5 + Math.sin(this.time * 3) * 0.3;
         this.syncMesh();
     }
 }

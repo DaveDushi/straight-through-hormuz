@@ -18,7 +18,7 @@ export class PortHub {
 
         this.upgradeContainer = document.getElementById('upgrades-list');
         this.creditsEl = document.getElementById('credits-value');
-        this.highScoreEl = document.getElementById('highscore-value');
+        this.farthestEl = document.getElementById('farthest-value');
     }
 
     show() {
@@ -33,7 +33,7 @@ export class PortHub {
     _renderUpgrades() {
         const save = this.saveManager.data;
         this.creditsEl.textContent = '¥' + save.currency.toLocaleString();
-        this.highScoreEl.textContent = save.highScore.toLocaleString();
+        this.farthestEl.textContent = (save.farthestDistance / 1000).toFixed(1) + ' km';
 
         this.upgradeContainer.innerHTML = '';
         for (const [key, cfg] of Object.entries(CONFIG.UPGRADES)) {

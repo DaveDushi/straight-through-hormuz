@@ -33,6 +33,8 @@ import { VictoryScreen } from './ui/victory.js';
 import { SaveManager } from './save.js';
 import { quality } from './utils/quality-manager.js';
 import { CameraController } from './utils/camera-controller.js';
+import { Tutorial } from './systems/tutorial.js';
+import { TutorialUI } from './ui/tutorial-ui.js';
 
 export class Game {
     constructor() {
@@ -84,18 +86,22 @@ export class Game {
             () => this.fsm.transition('port-hub')
         );
 
+        this.tutorialUI = new TutorialUI(() => this._endTutorial());
+        this.tutorial = new Tutorial(this.tutorialUI);
+
         this._wakeTimer = 0;
 
         // Mobile boost button
         this._boostBtn = document.getElementById('btn-boost');
-        if (this._boostBtn) {
-            this._boostBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                this.input.boostTriggered = true;
-                if (navigator.vibrate) navigator.vibrate(15);
-            });
-        }
+        this._boostBtnLeft = document.getElementById('btn-boost-left');
+        const boostHandler = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            this.input.boostTriggered = true;
+            if (navigator.vibrate) navigator.vibrate(15);
+        };
+        if (this._boostBtn) this._boostBtn.addEventListener('pointerdown', boostHandler);
+        if (this._boostBtnLeft) this._boostBtnLeft.addEventListener('pointerdown', boostHandler);
         if (this.input.isTouchDevice) {
             document.body.classList.add('touch-device');
             CONFIG.isMobile = true;
@@ -262,10 +268,20 @@ export class Game {
         this.terrain.reset();
         this.ironBeam.reset(this.save.getUpgradeLevel('ironBeam'));
         this.blockadeSystem.reset();
+        this.spawner.spawnRateMultiplier = 1;
+        this.spawner.spawnRateBoostTimer = 0;
         this.ceasefireShootingDisabled = false;
         this.gameOverReason = null;
 
         this.fsm.transition('playing');
+
+        if (this.save.data.totalRuns === 0 && !this.save.data.tutorialComplete) {
+            this.tutorial.start(this);
+        }
+    }
+
+    _endTutorial() {
+        this.tutorial.end(this);
     }
 
     _loop(timestamp) {
@@ -290,6 +306,11 @@ export class Game {
     }
 
     _update(delta) {
+        if (this.tutorial.active) {
+            this.tutorial.update(delta, this);
+            return;
+        }
+
         this.input.update();
         this.difficulty.update(this.scoring.distance);
 
@@ -393,7 +414,7 @@ export class Game {
             yuan: this.save.data.currency,
             multiplier: this.scoring.multiplier,
             phaseName: this.difficulty.phaseName,
-            boostCooldown: this.tanker.boostCooldown,
+            fuel: this.tanker.fuel,
             inventory: this.inventory.slots,
             ceasefireActive: this.inventory.isCeasefireActive(),
             pakFlagActive: this.inventory.isPakFlagActive(),
@@ -465,6 +486,8 @@ export class Game {
             this.blockadeSystem.scheduleTollBlockade(this.tanker.z, this.difficulty.getStraitHalfWidth());
         } else {
             this.radio.showCustom('BIBI', 'Brave. Israel respects courage.', this.audio);
+            this.spawner.spawnRateMultiplier = CONFIG.TOLL_REFUSE_SPAWN_MULTIPLIER;
+            this.spawner.spawnRateBoostTimer = 10;
         }
         this.fsm.transition('playing');
     }

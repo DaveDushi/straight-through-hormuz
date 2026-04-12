@@ -41,7 +41,7 @@ export class Powerup extends Entity {
         this._pakFlagMesh.visible = false;
         group.add(this._pakFlagMesh);
 
-        this._light = new THREE.PointLight(0xffffff, 1, 18);
+        this._light = new THREE.PointLight(0xffffff, 1.2, 28);
         this._light.position.y = 1;
         group.add(this._light);
 
@@ -208,7 +208,7 @@ export class Powerup extends Entity {
             this.mesh.remove(this.labelSprite);
         }
         this.labelSprite = getLabelSprite(label, hexStr);
-        this.labelSprite.position.y = 6;
+        this.labelSprite.position.y = 7;
         this.mesh.add(this.labelSprite);
 
         this.mesh.position.set(x, 2, z);
@@ -219,7 +219,7 @@ export class Powerup extends Entity {
         this.time += delta;
         this.mesh.position.y = 2 + Math.sin(this.time * CONFIG.POWERUP_BOB_SPEED) * CONFIG.POWERUP_BOB_AMPLITUDE;
         this.mesh.rotation.y += delta * CONFIG.POWERUP_ROTATE_SPEED;
-        this._light.intensity = 0.6 + Math.sin(this.time * 3) * 0.4;
+        this._light.intensity = 1.0 + Math.sin(this.time * 3) * 0.5;
         this.syncMesh();
     }
 }

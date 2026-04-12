@@ -31,7 +31,7 @@ export function getLabelSprite(text, colorHex) {
         canvas.width = 512;
         canvas.height = 128;
         const ctx = canvas.getContext('2d');
-        ctx.font = 'bold 40px Courier New';
+        ctx.font = 'bold 52px Courier New';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.strokeStyle = '#000';
@@ -45,6 +45,6 @@ export function getLabelSprite(text, colorHex) {
     }
     // Each sprite needs its own Sprite instance (they share material)
     const sprite = new THREE.Sprite(labelTextureCache.get(key));
-    sprite.scale.set(10, 2.5, 1);
+    sprite.scale.set(12, 3, 1);
     return sprite;
 }

@@ -4,7 +4,6 @@ export class GameOverScreen {
   constructor(onRestart, onPort) {
     this.el = document.getElementById("gameover-screen");
     this.distEl = document.getElementById("go-distance");
-    this.scoreEl = document.getElementById("go-score");
     this.tollsPaidEl = document.getElementById("go-tolls-paid");
     this.tollsRefusedEl = document.getElementById("go-tolls-refused");
     this.nearMissEl = document.getElementById("go-nearmiss");
@@ -26,7 +25,7 @@ export class GameOverScreen {
   }
 
   _getShareText() {
-    return `\u{1F6A8} Breaking News \n Pathetic oil tanker only made it ${this._distanceKm} km through the Strait of Hormuz before Iran destroyed it. Sad! \n How far can YOU make it, tough guy? \n 👉 straitouttahormuz.us`;
+    return `\u{1F6A8} Breaking News \nPathetic oil tanker only made it ${this._distanceKm} km through the Strait of Hormuz before Iran destroyed it. Sad! \nHow far can YOU make it, tough guy? \n👉 straitouttahormuz.us`;
   }
 
   _share() {
@@ -47,7 +46,6 @@ export class GameOverScreen {
   show(data) {
     this._distanceKm = (data.distance / 1000).toFixed(2);
     this.distEl.textContent = this._distanceKm + " km";
-    this.scoreEl.textContent = data.score.toLocaleString();
     this.tollsPaidEl.textContent = data.tollsPaid;
     this.tollsRefusedEl.textContent = data.tollsRefused;
     this.nearMissEl.textContent = data.nearMissCount;
@@ -83,7 +81,7 @@ export class GameOverScreen {
 
     // Screen reader announcement
     if (this.announcer) {
-      this.announcer.textContent = `Game over. Score: ${data.score}. Distance: ${(data.distance / 1000).toFixed(1)} kilometers.`;
+      this.announcer.textContent = `Game over. Distance: ${(data.distance / 1000).toFixed(1)} kilometers.`;
     }
   }
 

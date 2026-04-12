@@ -6,7 +6,6 @@ export class HUD {
         this.hullBar = document.getElementById('hull-fill');
         this.hullText = document.getElementById('hull-text');
         this.hullContainer = document.querySelector('.hull-bar-container');
-        this.scoreEl = document.getElementById('score-value');
         this.distanceEl = document.getElementById('distance-value');
         this.yuanEl = document.getElementById('yuan-value');
         this.multiplierEl = document.getElementById('multiplier');
@@ -14,6 +13,7 @@ export class HUD {
         this.boostBar = document.getElementById('boost-fill');
         this.damageOverlay = document.getElementById('damage-overlay');
         this.boostBtn = document.getElementById('btn-boost');
+        this.boostBtnLeft = document.getElementById('btn-boost-left');
         this.steerLeft = document.querySelector('.steer-indicator--left');
         this.steerRight = document.querySelector('.steer-indicator--right');
         this.slots = [
@@ -27,7 +27,6 @@ export class HUD {
         this._prev = {
             hullPct: -1,
             hullClass: '',
-            score: -1,
             distance: '',
             yuan: -1,
             multiplier: -1,
@@ -103,13 +102,6 @@ export class HUD {
             }
         }
 
-        // Score
-        const score = data.score;
-        if (score !== this._prev.score) {
-            this._prev.score = score;
-            this.scoreEl.textContent = score.toLocaleString();
-        }
-
         // Distance
         const distText = (data.distance / 1000).toFixed(1) + ' / ' + (CONFIG.WIN_DISTANCE / 1000) + ' km';
         if (distText !== this._prev.distance) {
@@ -156,21 +148,23 @@ export class HUD {
             }, 3000);
         }
 
-        // Boost
+        // Fuel / Boost
         if (this.boostBar) {
-            const boostPct = data.boostCooldown > 0
-                ? Math.round((1 - data.boostCooldown / CONFIG.TANKER_BOOST_COOLDOWN) * 100)
-                : 100;
-            if (boostPct !== this._prev.boostPct) {
-                this._prev.boostPct = boostPct;
-                this.boostBar.style.width = boostPct + '%';
-                if (boostPct >= 100) {
+            const fuelPct = Math.round((data.fuel / CONFIG.TANKER_FUEL_MAX) * 100);
+            const canBoost = data.fuel >= CONFIG.TANKER_FUEL_PER_BOOST;
+            if (fuelPct !== this._prev.boostPct) {
+                this._prev.boostPct = fuelPct;
+                this.boostBar.style.width = fuelPct + '%';
+                if (canBoost) {
                     this.boostBar.classList.add('boost-ready');
                 } else {
                     this.boostBar.classList.remove('boost-ready');
                 }
                 if (this.boostBtn) {
-                    this.boostBtn.classList.toggle('on-cooldown', boostPct < 100);
+                    this.boostBtn.classList.toggle('on-cooldown', !canBoost);
+                }
+                if (this.boostBtnLeft) {
+                    this.boostBtnLeft.classList.toggle('on-cooldown', !canBoost);
                 }
             }
         }
@@ -215,9 +209,12 @@ export class HUD {
 
     showPickupNotification(type) {
         const descriptions = {
-            oil: 'OIL \u2014 Speed boost for 8s',
+            oil: 'OIL \u2014 Speed & steering boost for 8s',
             ceasefire: 'CEASEFIRE \u2014 Stops all shooting for 10s',
             pakFlag: 'PAK FLAG \u2014 Full invincibility for 10s',
+            repair: 'REPAIR \u2014 Hull +20',
+            fuel: 'FUEL \u2014 Boost +50',
+            laser: 'LASER \u2014 Iron Beam buffed for 10s',
         };
         const el = document.getElementById('pickup-notification');
         if (!el) return;

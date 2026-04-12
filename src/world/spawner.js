@@ -13,16 +13,28 @@ export class Spawner {
             resource: 0,
         };
         this.ceasefireActive = false;
+        this.suppressed = false;
+        this.spawnRateMultiplier = 1;
+        this.spawnRateBoostTimer = 0;
     }
 
     update(delta, difficulty, straitHalfWidth, distance, tankerZ) {
+        if (this.suppressed) return;
         if (this.ceasefireActive) return;
+
+        if (this.spawnRateBoostTimer > 0) {
+            this.spawnRateBoostTimer -= delta;
+            if (this.spawnRateBoostTimer <= 0) {
+                this.spawnRateMultiplier = 1;
+                this.spawnRateBoostTimer = 0;
+            }
+        }
 
         const phase = difficulty.currentPhase;
 
-        this._tickSpawn(delta, 'mine', phase.mineRate, straitHalfWidth, tankerZ);
-        this._tickSpawn(delta, 'drone', phase.droneRate, straitHalfWidth, tankerZ);
-        this._tickSpawn(delta, 'boat', phase.boatRate, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'mine', phase.mineRate * this.spawnRateMultiplier, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'drone', phase.droneRate * this.spawnRateMultiplier, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'boat', phase.boatRate * this.spawnRateMultiplier, straitHalfWidth, tankerZ);
         this._tickSpawn(delta, 'powerup', phase.powerupRate, straitHalfWidth, tankerZ);
         this._tickSpawn(delta, 'resource', phase.resourceRate, straitHalfWidth, tankerZ);
     }

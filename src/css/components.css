@@ -268,14 +268,13 @@
     .slot-key { display: none; }
 }
 
-/* ====== MOBILE BOOST BUTTON ====== */
-#btn-boost {
+/* ====== MOBILE BOOST BUTTONS ====== */
+#btn-boost,
+#btn-boost-left {
     display: none;
     position: fixed;
     bottom: var(--space-4);
     bottom: max(var(--space-4), env(safe-area-inset-bottom));
-    right: var(--space-4);
-    right: max(var(--space-4), env(safe-area-inset-right));
     width: var(--touch-large);
     height: var(--touch-large);
     border-radius: var(--radius-full);
@@ -298,17 +297,30 @@
                 opacity var(--dur-fast);
 }
 
-#btn-boost:active {
+#btn-boost {
+    right: var(--space-4);
+    right: max(var(--space-4), env(safe-area-inset-right));
+}
+
+#btn-boost-left {
+    left: var(--space-4);
+    left: max(var(--space-4), env(safe-area-inset-left));
+}
+
+#btn-boost:active,
+#btn-boost-left:active {
     transform: scale(0.9);
     background: rgba(58, 143, 212, 0.3);
 }
 
-#btn-boost.on-cooldown {
+#btn-boost.on-cooldown,
+#btn-boost-left.on-cooldown {
     opacity: 0.4;
     border-color: rgba(58, 143, 212, 0.3);
 }
 
-body.touch-device #btn-boost {
+body.touch-device #btn-boost,
+body.touch-device #btn-boost-left {
     display: flex;
 }
 
