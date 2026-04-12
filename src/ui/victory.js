@@ -56,7 +56,7 @@ export class VictoryScreen {
     const quotes = [
       '"We made it through. The greatest passage in history, believe me." — Trump',
       '"The Strait is open. Israel\'s resolve made this possible." — Bibi',
-      '"All stations — MV Eternal Horizon has cleared the strait. Well done." — Command',
+      '"All stations — MT Make Hormuz Great Again has cleared the strait. Well done." — Command',
       '"Nobody said it could be done. We did it anyway. Tremendous." — Trump',
       '"Through fire and water, we endure. Congratulations, Captain." — Bibi',
     ];

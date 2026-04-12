@@ -62,7 +62,7 @@ export class GameOverScreen {
     } else {
       this.el.querySelector(".screen-title").textContent = "Lost at Sea";
       this.el.querySelector(".screen-subtitle").textContent =
-        "MV Eternal Horizon \u2014 Final Report";
+        "MT Make Hormuz Great Again \u2014 Final Report";
       const quotes = [
         '"We almost had it\u2026 Tremendous effort though." \u2014 Trump',
         '"The ceasefire collapsed. We will rebuild." \u2014 Bibi',
