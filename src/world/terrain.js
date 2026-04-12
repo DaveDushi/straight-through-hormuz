@@ -3,52 +3,83 @@ import { CONFIG } from '../config.js';
 import { noise2D } from '../utils/math-utils.js';
 import { quality } from '../utils/quality-manager.js';
 
-// Height color palette (natural colors; material.color darkens to compensate for scene lighting)
-const COLOR_COAST  = { r: 0.82, g: 0.70, b: 0.42 }; // sandy shore
-const COLOR_LOW    = { r: 0.48, g: 0.30, b: 0.12 }; // dark arid earth
-const COLOR_MID    = { r: 0.58, g: 0.52, b: 0.38 }; // rocky gray-brown
-const COLOR_HIGH   = { r: 0.72, g: 0.68, b: 0.56 }; // lighter stone
-const COLOR_PEAK   = { r: 0.92, g: 0.88, b: 0.78 }; // bright stone caps
-
-function heightColor(normalizedH) {
-    // normalizedH: 0 = coast, 1 = peak
-    const t = Math.max(0, Math.min(1, normalizedH));
-    let c;
-    if (t < 0.08) {
-        c = COLOR_COAST;
-    } else if (t < 0.25) {
-        const s = (t - 0.08) / 0.17;
-        c = lerpColor(COLOR_COAST, COLOR_LOW, s);
-    } else if (t < 0.50) {
-        const s = (t - 0.25) / 0.25;
-        c = lerpColor(COLOR_LOW, COLOR_MID, s);
-    } else if (t < 0.75) {
-        const s = (t - 0.50) / 0.25;
-        c = lerpColor(COLOR_MID, COLOR_HIGH, s);
-    } else {
-        const s = (t - 0.75) / 0.25;
-        c = lerpColor(COLOR_HIGH, COLOR_PEAK, s);
-    }
-    return c;
-}
+// Arid Iranian/Omani mountain palette (pre-darkened for bright scene lighting)
+const COLOR_SHORE = { r: 0.50, g: 0.42, b: 0.22 }; // wet sand at waterline
+const COLOR_CLIFF = { r: 0.30, g: 0.18, b: 0.08 }; // dark cliff face
+const COLOR_EARTH = { r: 0.42, g: 0.28, b: 0.14 }; // dry arid earth
+const COLOR_ROCK  = { r: 0.38, g: 0.34, b: 0.26 }; // gray-brown mountain rock
+const COLOR_PEAK  = { r: 0.58, g: 0.54, b: 0.46 }; // light stone caps
 
 function lerpColor(a, b, t) {
-    return { r: a.r + t * (b.r - a.r), g: a.g + t * (b.g - a.g), b: a.b + t * (b.b - a.b) };
+    t = Math.max(0, Math.min(1, t));
+    return {
+        r: a.r + t * (b.r - a.r),
+        g: a.g + t * (b.g - a.g),
+        b: a.b + t * (b.b - a.b),
+    };
 }
 
-function sampleHeight(wx, wz, octaves) {
-    // Centered noise: returns roughly -scale to +scale
+// Color based on terrain height and position
+function heightColor(h, baseH, distFromEdge) {
+    if (distFromEdge < 0) return COLOR_SHORE; // underwater overlap
+
+    // Normalize height relative to the full terrain range
+    const aboveBase = Math.max(0, h - baseH * 0.4);
+    const maxH = CONFIG.TERRAIN_HEIGHT_SCALE + 30; // rough max noise amplitude
+    const t = Math.min(1, aboveBase / maxH);
+
+    if (h < baseH * 0.4) {
+        // Shore zone — blend shore to cliff
+        const s = Math.max(0, h) / (baseH * 0.4);
+        return lerpColor(COLOR_SHORE, COLOR_CLIFF, s);
+    }
+    if (t < 0.15) {
+        return lerpColor(COLOR_CLIFF, COLOR_EARTH, t / 0.15);
+    }
+    if (t < 0.45) {
+        return lerpColor(COLOR_EARTH, COLOR_ROCK, (t - 0.15) / 0.30);
+    }
+    return lerpColor(COLOR_ROCK, COLOR_PEAK, (t - 0.45) / 0.55);
+}
+
+// Ridged noise: sharp mountain ridge lines (returns 0..1, peaks at 1)
+function ridgedNoise(x, z) {
+    const n = noise2D(x, z);
+    return 1 - Math.abs(n * 2 - 1);
+}
+
+// Terrain intensity ramps up as the player progresses through the strait
+function terrainIntensity(worldZ) {
+    if (worldZ < 0) return 0.45;
+    if (worldZ < 3000) return 0.45 + 0.15 * (worldZ / 3000);
+    if (worldZ < 15000) return 0.60 + 0.20 * ((worldZ - 3000) / 12000);
+    if (worldZ < 40000) return 0.80 + 0.12 * ((worldZ - 15000) / 25000);
+    return Math.min(1.0, 0.92 + 0.08 * ((worldZ - 40000) / 60000));
+}
+
+function sampleHeight(wx, wz, octaves, intensity) {
     let h = 0;
-    // Octave 1: broad ridges
-    h += (noise2D(wx * 0.012, wz * 0.010) * 2 - 1) * CONFIG.TERRAIN_HEIGHT_SCALE;
+
+    // Major mountain ridges — ridged noise creates sharp spine-like peaks
+    h += ridgedNoise(wx * 0.008, wz * 0.006) * CONFIG.TERRAIN_HEIGHT_SCALE * intensity;
+
+    // Broad elevation undulation — regular centered noise
+    h += (noise2D(wx * 0.003 + 50, wz * 0.004 + 50) * 2 - 1) * 12 * intensity;
+
     if (octaves >= 2) {
-        // Octave 2: distinct peaks/valleys
-        h += (noise2D(wx * 0.035 + 100, wz * 0.030 + 100) * 2 - 1) * 15;
+        // Secondary ridges
+        h += ridgedNoise(wx * 0.025 + 100, wz * 0.02 + 100) * 18 * intensity;
+        // Hill variation
+        h += (noise2D(wx * 0.04 + 200, wz * 0.035 + 200) * 2 - 1) * 8;
     }
+
     if (octaves >= 3) {
-        // Octave 3: rocky detail
-        h += (noise2D(wx * 0.08 + 200, wz * 0.08 + 200) * 2 - 1) * 6;
+        // Fine rocky texture
+        h += (noise2D(wx * 0.10 + 300, wz * 0.10 + 300) * 2 - 1) * 4;
+        // Small ridges
+        h += ridgedNoise(wx * 0.07 + 400, wz * 0.06 + 400) * 5;
     }
+
     return h;
 }
 
@@ -58,6 +89,7 @@ export class Terrain {
         this.chunks = [];
         this.chunkLength = CONFIG.TERRAIN_CHUNK_LENGTH;
         this.chunkWidth = CONFIG.TERRAIN_CHUNK_WIDTH;
+        this.overlap = CONFIG.TERRAIN_OVERLAP;
         this.scrollOffset = 0;
         this.octaves = quality.settings.terrainOctaves;
 
@@ -67,9 +99,9 @@ export class Terrain {
         const mat = new THREE.MeshPhongMaterial({
             vertexColors: true,
             flatShading: true,
-            color: new THREE.Color(0.40, 0.40, 0.40),
-            emissive: 0x060300,
-            shininess: 0,
+            color: new THREE.Color(0.45, 0.42, 0.38),
+            emissive: 0x080400,
+            shininess: 2,
         });
         this.material = mat;
         this.segX = segX;
@@ -81,34 +113,37 @@ export class Terrain {
     }
 
     _createGeometry() {
-        const geo = new THREE.PlaneGeometry(this.chunkWidth, this.chunkLength, this.segX, this.segZ);
-        // Rotate from XY to XZ (lying flat, Y is up)
+        const geo = new THREE.PlaneGeometry(
+            this.chunkWidth, this.chunkLength, this.segX, this.segZ
+        );
         geo.rotateX(-Math.PI / 2);
-        // Add vertex color attribute
         const count = geo.attributes.position.count;
-        geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
+        geo.setAttribute(
+            'color',
+            new THREE.BufferAttribute(new Float32Array(count * 3), 3)
+        );
         return geo;
     }
 
     _createChunkPair(zOffset) {
-        const pair = { left: null, right: null, z: zOffset, worldZ: this.scrollOffset + zOffset };
+        const pair = {
+            left: null, right: null,
+            z: zOffset,
+            worldZ: this.scrollOffset + zOffset,
+        };
 
         const geoL = this._createGeometry();
-        const left = new THREE.Mesh(geoL, this.material);
-        this.scene.add(left);
-        pair.left = left;
+        pair.left = new THREE.Mesh(geoL, this.material);
+        this.scene.add(pair.left);
 
         const geoR = this._createGeometry();
-        const right = new THREE.Mesh(geoR, this.material);
-        this.scene.add(right);
-        pair.right = right;
+        pair.right = new THREE.Mesh(geoR, this.material);
+        this.scene.add(pair.right);
 
         this.chunks.push(pair);
 
-        // Initial heightmap generation
         this._updateChunkHeights(pair, CONFIG.STRAIT_WIDTH_START / 2);
         this._positionChunk(pair, CONFIG.STRAIT_WIDTH_START / 2);
-
         return pair;
     }
 
@@ -120,39 +155,56 @@ export class Terrain {
     _applyHeightmap(mesh, worldZ, side, straitHalfWidth) {
         const pos = mesh.geometry.attributes.position;
         const col = mesh.geometry.attributes.color;
-        const coastFade = CONFIG.TERRAIN_COAST_FADE;
         const baseH = CONFIG.TERRAIN_BASE_HEIGHT;
-        // Max possible height for color normalization
-        const maxNoiseH = CONFIG.TERRAIN_HEIGHT_SCALE + (this.octaves >= 2 ? 15 : 0) + (this.octaves >= 3 ? 6 : 0);
+        const coastW = CONFIG.TERRAIN_COAST_FADE;
+        const overlap = this.overlap;
+        const halfW = this.chunkWidth / 2;
+        const intensity = terrainIntensity(worldZ);
 
         for (let i = 0; i < pos.count; i++) {
             const localX = pos.getX(i);
             const localZ = pos.getZ(i);
 
-            // World coords for noise
-            const wx = (side > 0 ? straitHalfWidth + this.chunkWidth / 2 : -straitHalfWidth - this.chunkWidth / 2) + localX;
+            // World coordinates for deterministic noise
+            const chunkCenterX = side > 0
+                ? straitHalfWidth - overlap + halfW
+                : -straitHalfWidth + overlap - halfW;
+            const wx = chunkCenterX + localX;
             const wz = worldZ + localZ;
 
-            let noiseH = sampleHeight(wx, wz, this.octaves);
+            // Irregular coastline: noise shifts the effective edge ±4 units
+            const coastNoise = (noise2D(wz * 0.02, side * 137) * 2 - 1) * 4;
+            const rawDist = side * localX + halfW - overlap;
+            const distFromEdge = rawDist + coastNoise;
 
-            // Coast fade: ramp down near water edge
-            const halfW = this.chunkWidth / 2;
-            const distFromWaterEdge = side > 0 ? (localX + halfW) : (halfW - localX);
-            const fade = Math.min(1, distFromWaterEdge / coastFade);
+            // Sample terrain noise
+            const noiseH = sampleHeight(wx, wz, this.octaves, intensity);
 
-            // Base height creates the coastal cliff, noise adds mountains on top
-            // fade applies to both base and noise so terrain slopes down to water
-            let h = (baseH + Math.max(0, noiseH)) * fade;
-
-            if (h < 0.3) h = 0.3;
+            let h;
+            if (distFromEdge < 0) {
+                // Overlap / water zone: slope below water
+                h = distFromEdge * 2.0;
+            } else if (distFromEdge < coastW) {
+                // Coastal cliff: steep quadratic rise
+                const t = distFromEdge / coastW;
+                const cliff = t * t;
+                h = baseH * cliff + Math.max(0, noiseH) * t * 0.3;
+            } else {
+                // Full terrain inland
+                const inlandT = Math.min(1, (distFromEdge - coastW) / 15);
+                h = baseH + Math.max(0, noiseH) * (0.3 + 0.7 * inlandT);
+            }
 
             pos.setY(i, h);
 
-            // Vertex color — normalize noise portion against max possible
-            // Use noiseH (before clamping) to determine color
-            const colorT = Math.max(0, noiseH) / maxNoiseH;
-            const c = heightColor(colorT);
-            col.setXYZ(i, c.r, c.g, c.b);
+            // Color with per-vertex noise for rocky texture variety
+            const c = heightColor(Math.max(0, h), baseH, distFromEdge);
+            const colorVar = (noise2D(wx * 0.05 + 500, wz * 0.05 + 500) - 0.5) * 0.08;
+            col.setXYZ(i,
+                Math.max(0, c.r + colorVar),
+                Math.max(0, c.g + colorVar * 0.8),
+                Math.max(0, c.b + colorVar * 0.5)
+            );
         }
 
         pos.needsUpdate = true;
@@ -161,8 +213,10 @@ export class Terrain {
     }
 
     _positionChunk(chunk, straitHalfWidth) {
-        chunk.left.position.set(-straitHalfWidth - this.chunkWidth / 2, 0, chunk.z);
-        chunk.right.position.set(straitHalfWidth + this.chunkWidth / 2, 0, chunk.z);
+        const ov = this.overlap;
+        const hw = this.chunkWidth / 2;
+        chunk.left.position.set(-straitHalfWidth + ov - hw, 0, chunk.z);
+        chunk.right.position.set(straitHalfWidth - ov + hw, 0, chunk.z);
     }
 
     update(delta, scrollSpeed, straitHalfWidth) {
