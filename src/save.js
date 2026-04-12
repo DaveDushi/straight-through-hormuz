@@ -1,5 +1,5 @@
-const SAVE_KEY = 'strait_through_hormuz_save';
-const OLD_SAVE_KEY = 'hormuz_rush_save';
+const SAVE_KEY = 'strait_outta_hormuz_save';
+const OLD_SAVE_KEYS = ['strait_through_hormuz_save', 'hormuz_rush_save'];
 
 const DEFAULT_SAVE = {
     highScore: 0,
@@ -18,8 +18,10 @@ export class SaveManager {
         try {
             let raw = localStorage.getItem(SAVE_KEY);
             if (!raw) {
-                raw = localStorage.getItem(OLD_SAVE_KEY);
-                if (raw) localStorage.setItem(SAVE_KEY, raw);
+                for (const key of OLD_SAVE_KEYS) {
+                    raw = localStorage.getItem(key);
+                    if (raw) { localStorage.setItem(SAVE_KEY, raw); break; }
+                }
             }
             if (raw) {
                 return { ...DEFAULT_SAVE, ...JSON.parse(raw) };

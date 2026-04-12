@@ -16,8 +16,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Strait Through Hormuz',
-        short_name: 'Strait Through',
+        name: 'Strait Outta Hormuz',
+        short_name: 'Strait Outta',
         description: 'Steer a tanker 167 km through the Strait of Hormuz in this arcade naval action game',
         theme_color: '#0a1628',
         background_color: '#0a1628',
