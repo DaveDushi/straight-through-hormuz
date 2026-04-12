@@ -25,7 +25,8 @@
     font-weight: 700;
     letter-spacing: var(--tracking-widest);
     text-transform: uppercase;
-    margin-bottom: var(--space-1);
+    text-align: center;
+    margin-bottom: var(--space-2);
     line-height: var(--leading-tight);
     animation: fade-in-down var(--dur-slow) var(--ease-out);
 }
@@ -35,7 +36,7 @@
     font-size: var(--text-sm);
     color: var(--text-secondary);
     letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-3);
     animation: fade-in var(--dur-slow) var(--ease-out) 100ms backwards;
 }
 
@@ -44,7 +45,7 @@
     font-size: var(--text-sm);
     color: var(--text-muted);
     font-style: italic;
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-4);
     animation: fade-in var(--dur-slow) var(--ease-out) 150ms backwards;
 }
 
@@ -62,6 +63,21 @@
 
 #menu-screen .btn-secondary {
     animation-delay: 250ms;
+}
+
+#menu-screen {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(35, 159, 64, 0.06) 0%, transparent 60%),
+        var(--surface-overlay);
+}
+
+.menu-divider {
+    width: 80px;
+    border: none;
+    border-top: 1px solid var(--tactical-400);
+    opacity: 0.4;
+    margin: var(--space-4) 0 var(--space-6) 0;
+    animation: fade-in var(--dur-slow) var(--ease-out) 180ms backwards;
 }
 
 .controls-hint {
@@ -454,7 +470,17 @@
 
 @media (max-width: 767px) {
     .screen-overlay {
-        justify-content: flex-start;
-        padding-top: max(var(--space-10), env(safe-area-inset-top));
+        justify-content: center;
+        padding-top: max(var(--space-5), env(safe-area-inset-top));
+        padding-bottom: max(var(--space-5), env(safe-area-inset-bottom));
+    }
+    #menu-screen .btn {
+        min-height: var(--touch-comfortable);
+        font-size: var(--text-lg);
+    }
+    .controls-hint {
+        font-size: clamp(0.5625rem, 0.5rem + 0.2vw, 0.625rem);
+        opacity: 0.6;
+        margin-top: var(--space-6);
     }
 }

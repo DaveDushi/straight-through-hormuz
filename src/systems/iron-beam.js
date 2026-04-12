@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { CONFIG } from '../config.js';
 
-export class IronLaserSystem {
+export class IronBeamSystem {
     constructor(scene) {
         this.scene = scene;
-        this.hitRate = CONFIG.IRON_LASER_BASE_HIT_RATE;
+        this.hitRate = CONFIG.IRON_BEAM_BASE_HIT_RATE;
         this._baseHitRate = this.hitRate;
         this.buffTimer = 0;
         this.beams = [];
@@ -22,7 +22,7 @@ export class IronLaserSystem {
     }
 
     reset(upgradeLevel) {
-        this._baseHitRate = CONFIG.IRON_LASER_BASE_HIT_RATE + upgradeLevel * CONFIG.IRON_LASER_UPGRADE_BONUS;
+        this._baseHitRate = CONFIG.IRON_BEAM_BASE_HIT_RATE + upgradeLevel * CONFIG.IRON_BEAM_UPGRADE_BONUS;
         this.hitRate = this._baseHitRate;
         this.buffTimer = 0;
         for (const beam of this.beams) {
@@ -58,7 +58,7 @@ export class IronLaserSystem {
             const dz = drone.z - tanker.z;
             const dist = Math.sqrt(dx * dx + dz * dz);
 
-            if (dist < CONFIG.IRON_LASER_RANGE) {
+            if (dist < CONFIG.IRON_BEAM_RANGE) {
                 drone.laserEvaluated = true;
                 const hit = Math.random() < this.hitRate;
 
@@ -83,7 +83,7 @@ export class IronLaserSystem {
         for (const beam of this.beams) {
             if (!beam.active) continue;
             beam.timer -= delta;
-            beam.line.material.opacity = Math.max(0, beam.timer / CONFIG.IRON_LASER_BEAM_DURATION);
+            beam.line.material.opacity = Math.max(0, beam.timer / CONFIG.IRON_BEAM_BEAM_DURATION);
             if (beam.timer <= 0) {
                 beam.active = false;
                 beam.line.visible = false;
@@ -103,7 +103,7 @@ export class IronLaserSystem {
         beam.line.material.color.setHex(isHit ? 0xff2222 : 0xff8888);
         beam.line.material.opacity = 1;
         beam.line.visible = true;
-        beam.timer = CONFIG.IRON_LASER_BEAM_DURATION;
+        beam.timer = CONFIG.IRON_BEAM_BEAM_DURATION;
         beam.active = true;
     }
 }

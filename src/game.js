@@ -21,7 +21,7 @@ import { Projectile } from './entities/projectile.js';
 import { Powerup } from './entities/powerup.js';
 import { Resource } from './entities/resource.js';
 import { Blockade } from './entities/blockade.js';
-import { IronLaserSystem } from './systems/iron-laser.js';
+import { IronBeamSystem } from './systems/iron-beam.js';
 import { BlockadeSystem } from './systems/blockade-system.js';
 import { HUD } from './ui/hud.js';
 import { MenuScreen } from './ui/menu.js';
@@ -58,7 +58,7 @@ export class Game {
         this.scene.add(this.tanker.mesh);
 
         this.spawner = new Spawner(this.pools, this.scene);
-        this.ironLaser = new IronLaserSystem(this.scene);
+        this.ironBeam = new IronBeamSystem(this.scene);
         this.blockadeSystem = new BlockadeSystem();
         this.ceasefireShootingDisabled = false;
         this.gameOverReason = null;
@@ -259,7 +259,7 @@ export class Game {
         this.radio.reset();
         this.difficulty.update(0);
         this.terrain.reset();
-        this.ironLaser.reset(this.save.getUpgradeLevel('ironLaser'));
+        this.ironBeam.reset(this.save.getUpgradeLevel('ironBeam'));
         this.blockadeSystem.reset();
         this.ceasefireShootingDisabled = false;
         this.gameOverReason = null;
@@ -315,7 +315,7 @@ export class Game {
             });
         }
 
-        // Iron laser evaluates drones before collision
+        // Iron beam evaluates drones before collision
         const releaseEntity = (e) => {
             for (const key in this.pools) {
                 this.pools[key].forEach((item) => {
@@ -323,7 +323,7 @@ export class Game {
                 });
             }
         };
-        this.ironLaser.update(delta, this.pools.drone, this.tanker, this.particles, this.audio, releaseEntity);
+        this.ironBeam.update(delta, this.pools.drone, this.tanker, this.particles, this.audio, releaseEntity);
 
         const poolArray = Object.values(this.pools);
         const prevHull = this.tanker.hull;
@@ -331,7 +331,7 @@ export class Game {
             particles: this.particles,
             audio: this.audio,
             inventory: this.inventory,
-            ironLaser: this.ironLaser,
+            ironBeam: this.ironBeam,
             ceasefireActive: this.ceasefireShootingDisabled,
             releaseEntity,
             addScore: (pts) => this.scoring.addScore(pts),

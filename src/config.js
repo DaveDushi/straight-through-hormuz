@@ -58,11 +58,11 @@ export const CONFIG = {
     DRONE_KAMIKAZE_DAMAGE: 25,
     DRONE_DIVE_RANGE: 15,
 
-    // Iron Laser defense
-    IRON_LASER_BASE_HIT_RATE: 0.40,
-    IRON_LASER_UPGRADE_BONUS: 0.15,
-    IRON_LASER_RANGE: 40,
-    IRON_LASER_BEAM_DURATION: 0.3,
+    // Iron Beam defense
+    IRON_BEAM_BASE_HIT_RATE: 0.40,
+    IRON_BEAM_UPGRADE_BONUS: 0.15,
+    IRON_BEAM_RANGE: 40,
+    IRON_BEAM_BEAM_DURATION: 0.3,
 
     // Fast boats
     BOAT_WIDTH: 1.5,
@@ -246,6 +246,6 @@ export const CONFIG = {
         hull: { name: 'Hull Plating', description: '+15 max hull points per level', maxLevel: 5, baseCost: 600, costMult: 1.8, effect: 15 },
         radar: { name: 'Radar Range', description: '+2s threat detection range per level', maxLevel: 3, baseCost: 400, costMult: 2.0, effect: 2 },
         tollDiscount: { name: 'Toll Negotiator', description: '-15% toll cost per level', maxLevel: 3, baseCost: 300, costMult: 1.5, effect: 0.15 },
-        ironLaser: { name: 'Iron Laser', description: '+15% drone intercept rate per level', maxLevel: 3, baseCost: 700, costMult: 2.0, effect: 0.15 },
+        ironBeam: { name: 'Iron Beam', description: '+15% drone intercept rate per level', maxLevel: 3, baseCost: 700, costMult: 2.0, effect: 0.15 },
     },
 };

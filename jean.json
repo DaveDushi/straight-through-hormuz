@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "setup": null,
+    "teardown": null,
+    "run": [
+      "npm run dev",
+      "npm run build; npx wrangler pages deploy dist/ --project-name strait-outta-hormuz"
+    ]
+  }
+}
