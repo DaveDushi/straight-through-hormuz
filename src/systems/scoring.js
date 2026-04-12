@@ -22,7 +22,7 @@ export class ScoringSystem {
     }
 
     update(delta, scrollSpeed, nearMisses) {
-        const dist = scrollSpeed * delta;
+        const dist = scrollSpeed * delta * CONFIG.DISTANCE_MULTIPLIER;
         this.distance += dist;
         this.score += dist * CONFIG.SCORE_PER_METER * this.multiplier;
 

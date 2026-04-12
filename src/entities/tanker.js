@@ -168,6 +168,7 @@ export class Tanker extends Entity {
         }
 
         let steerMult = this.boostTimer > 0 ? CONFIG.TANKER_BOOST_MULTIPLIER : 1;
+        if (this.oilBoostActive) steerMult *= CONFIG.OIL_BOOST_SPEED_MULT;
         let speedPenalty = this.hull < CONFIG.HULL_FIRE_THRESHOLD ? CONFIG.HULL_SPEED_PENALTY_FACTOR : 1;
 
         this.lateralVelocity += -input.steer * CONFIG.TANKER_STEER_SPEED * steerMult * delta;

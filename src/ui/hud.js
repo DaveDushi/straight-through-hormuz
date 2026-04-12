@@ -110,7 +110,7 @@ export class HUD {
         }
 
         // Distance
-        const distText = (data.distance / 1000).toFixed(1) + ' / 167 km';
+        const distText = (data.distance / 1000).toFixed(1) + ' / ' + (CONFIG.WIN_DISTANCE / 1000) + ' km';
         if (distText !== this._prev.distance) {
             this._prev.distance = distText;
             this.distanceEl.textContent = distText;
