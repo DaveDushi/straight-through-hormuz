@@ -34,30 +34,28 @@ export class InputSystem {
 
         // Unified Pointer Events (replaces separate mouse + touch)
         this.canvas.addEventListener('pointerdown', (e) => {
-            if (this._pointerId !== null) return; // already tracking a pointer
+            if (this._pointerId !== null) return;
             this._pointerId = e.pointerId;
             this._pointerDown = true;
             this._pointerStartX = e.clientX;
             this._pointerCurrentX = e.clientX;
-
-            // Capture to receive events even if pointer leaves canvas
-            this.canvas.setPointerCapture(e.pointerId);
+            e.preventDefault();
         });
 
-        this.canvas.addEventListener('pointermove', (e) => {
+        window.addEventListener('pointermove', (e) => {
             if (e.pointerId === this._pointerId && this._pointerDown) {
                 this._pointerCurrentX = e.clientX;
             }
         });
 
-        this.canvas.addEventListener('pointerup', (e) => {
+        window.addEventListener('pointerup', (e) => {
             if (e.pointerId === this._pointerId) {
                 this._pointerDown = false;
                 this._pointerId = null;
             }
         });
 
-        this.canvas.addEventListener('pointercancel', (e) => {
+        window.addEventListener('pointercancel', (e) => {
             if (e.pointerId === this._pointerId) {
                 this._pointerDown = false;
                 this._pointerId = null;

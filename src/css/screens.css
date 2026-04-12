@@ -582,3 +582,128 @@
         margin-top: var(--space-6);
     }
 }
+
+/* ====== LANDSCAPE PHONE (compact vertical) ====== */
+@media (orientation: landscape) and (max-height: 500px) {
+    .screen-overlay {
+        padding: var(--space-2) var(--space-8);
+        padding-left: max(var(--space-8), env(safe-area-inset-left));
+        padding-right: max(var(--space-8), env(safe-area-inset-right));
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        gap: 0;
+    }
+
+    .screen-title {
+        font-size: var(--text-xl);
+        margin-bottom: 0;
+    }
+
+    .screen-subtitle {
+        margin-bottom: 2px;
+    }
+
+    .screen-tagline {
+        margin-bottom: 2px;
+    }
+
+    .menu-divider {
+        margin: var(--space-1) 0;
+    }
+
+    /* Full-width children stay stacked as rows */
+    .screen-title,
+    .screen-subtitle,
+    .screen-tagline,
+    .go-stats,
+    #go-quote, #vic-quote,
+    .controls-hint {
+        flex: 0 0 100%;
+        text-align: center;
+        max-width: 100%;
+    }
+
+    .menu-divider {
+        flex: 0 0 100%;
+    }
+
+    .go-stats {
+        margin: var(--space-1) 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0 var(--space-6);
+    }
+
+    .go-stat {
+        padding: 2px 0;
+        width: auto;
+        min-width: 120px;
+        border-bottom: none;
+    }
+
+    .go-stat-label,
+    .go-stat-value {
+        font-size: var(--text-xs);
+    }
+
+    .go-stat-value {
+        margin-left: var(--space-2);
+    }
+
+    #go-quote,
+    #vic-quote {
+        margin: 2px 0;
+        font-size: var(--text-xs);
+    }
+
+    .share-preview {
+        display: none;
+    }
+
+    /* Buttons flow side-by-side */
+    .screen-overlay .btn {
+        min-height: 32px;
+        padding: var(--space-1) var(--space-5);
+        font-size: var(--text-xs);
+        margin: 2px var(--space-1);
+        width: auto;
+        max-width: none;
+        flex: 0 0 auto;
+    }
+
+    .promo-slot {
+        display: none;
+    }
+
+    .controls-hint {
+        margin-top: var(--space-1);
+    }
+
+    /* Port hub compact */
+    .port-content {
+        max-height: calc(100vh - var(--space-8));
+        max-width: 90vw;
+        width: 100%;
+    }
+
+    #upgrades-list {
+        max-height: 40vh;
+    }
+
+    .upgrade-item {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    /* Toll dialog compact */
+    .toll-content {
+        padding: var(--space-3) var(--space-5);
+    }
+
+    .toll-message {
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-2);
+    }
+}

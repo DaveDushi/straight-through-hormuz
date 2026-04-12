@@ -3,8 +3,8 @@ export const CONFIG = {
     CANVAS_ID: 'game-canvas',
 
     // Camera
-    CAMERA_FOV: 55,
-    CAMERA_POSITION: { x: 0, y: 80, z: -30 },
+    CAMERA_FOV: 62,
+    CAMERA_POSITION: { x: 0, y: 86, z: -30 },
     CAMERA_LOOKAT: { x: 0, y: 0, z: 20 },
 
     // World
@@ -44,6 +44,12 @@ export const CONFIG = {
     HULL_FIRE_THRESHOLD: 30,
     HULL_SPEED_PENALTY_FACTOR: 0.5,
     HULL_INVULNERABILITY_TIME: 1.0,
+
+    // Wall collision
+    WALL_DAMAGE_MAX: 10,
+    WALL_DAMAGE_VELOCITY_MIN: 5,
+    WALL_BOUNCE_FACTOR: -0.4,
+    WALL_HIT_COOLDOWN: 0.5,
 
     // Mines
     MINE_RADIUS: 1.5,

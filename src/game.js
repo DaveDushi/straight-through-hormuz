@@ -105,6 +105,11 @@ export class Game {
         if (this.input.isTouchDevice) {
             document.body.classList.add('touch-device');
             CONFIG.isMobile = true;
+            try {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
+            } catch (e) {}
         }
 
         this.fsm = new StateMachine({
@@ -360,6 +365,11 @@ export class Game {
             addScore: (pts) => this.scoring.addScore(pts),
             notifyPickup: (type) => this.hud.showPickupNotification(type),
         });
+
+        if (this.tanker.wallHitThisFrame) {
+            this.audio.playSFX('scrape');
+            this.cameraController.triggerShake(0.5);
+        }
 
         // Damage flash + camera shake when hull drops
         if (this.tanker.hull < prevHull) {

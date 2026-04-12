@@ -14,6 +14,8 @@ export class Tanker extends Entity {
         this.fuel = CONFIG.TANKER_FUEL_MAX;
         this.hull = CONFIG.HULL_MAX;
         this.invulnTimer = 0;
+        this.wallHitCooldown = 0;
+        this.wallHitThisFrame = false;
         this.maxHull = CONFIG.HULL_MAX;
         this.oilBoostActive = false;
         this.pakFlagActive = false;
@@ -212,6 +214,8 @@ export class Tanker extends Entity {
         this.boostTimer = 0;
         this.fuel = CONFIG.TANKER_FUEL_MAX;
         this.invulnTimer = 0;
+        this.wallHitCooldown = 0;
+        this.wallHitThisFrame = false;
         this.oilBoostActive = false;
         this.pakFlagActive = false;
         this.ceasefireActive = false;
@@ -263,7 +267,24 @@ export class Tanker extends Entity {
         );
 
         this.x += this.lateralVelocity * delta;
-        this.x = clamp(this.x, -straitHalfWidth + this.halfW, straitHalfWidth - this.halfW);
+        this.wallHitThisFrame = false;
+        if (this.wallHitCooldown > 0) this.wallHitCooldown -= delta;
+
+        const minX = -straitHalfWidth + this.halfW;
+        const maxX = straitHalfWidth - this.halfW;
+
+        if (this.x < minX || this.x > maxX) {
+            const absVel = Math.abs(this.lateralVelocity);
+            if (absVel > CONFIG.WALL_DAMAGE_VELOCITY_MIN && this.wallHitCooldown <= 0) {
+                const t = (absVel - CONFIG.WALL_DAMAGE_VELOCITY_MIN)
+                    / (CONFIG.TANKER_MAX_LATERAL_SPEED - CONFIG.WALL_DAMAGE_VELOCITY_MIN);
+                this.takeDamage(Math.ceil(CONFIG.WALL_DAMAGE_MAX * Math.min(t, 1)));
+                this.wallHitCooldown = CONFIG.WALL_HIT_COOLDOWN;
+                this.wallHitThisFrame = true;
+            }
+            this.lateralVelocity *= CONFIG.WALL_BOUNCE_FACTOR;
+            this.x = clamp(this.x, minX, maxX);
+        }
 
         this.z += scrollSpeed * delta;
 

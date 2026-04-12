@@ -223,7 +223,7 @@
     cursor: pointer;
     transition: border-color var(--dur-fast), background var(--dur-fast), transform var(--dur-fast) var(--ease-bounce);
     position: relative;
-    touch-action: manipulation;
+    touch-action: none;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -288,7 +288,7 @@
     cursor: pointer;
     z-index: var(--z-hud);
     pointer-events: auto;
-    touch-action: manipulation;
+    touch-action: none;
     -webkit-tap-highlight-color: transparent;
     align-items: center;
     justify-content: center;
@@ -570,5 +570,42 @@ body.touch-device #btn-boost-left {
 #pickup-notification.active {
     opacity: 1;
     animation: scale-in var(--dur-normal) var(--ease-spring);
+}
+
+/* ====== ROTATE DEVICE OVERLAY ====== */
+#rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--surface-base);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.rotate-content {
+    text-align: center;
+    padding: var(--space-8);
+}
+
+.rotate-icon {
+    font-size: 64px;
+    color: var(--text-primary);
+    animation: rotate-hint 2s ease-in-out infinite;
+    margin-bottom: var(--space-4);
+}
+
+.rotate-text {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--text-primary);
+    letter-spacing: var(--tracking-wider);
+}
+
+@media (orientation: portrait) and (max-width: 767px) {
+    body.touch-device #rotate-overlay {
+        display: flex;
+    }
 }
 

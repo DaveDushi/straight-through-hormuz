@@ -95,6 +95,16 @@ export class AudioManager {
                 osc.stop(this.ctx.currentTime + 0.2);
                 break;
 
+            case 'scrape':
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(80, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.2);
+                break;
+
             case 'boost':
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(200, this.ctx.currentTime);

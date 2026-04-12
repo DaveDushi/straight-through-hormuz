@@ -41,7 +41,12 @@ export class HUD {
 
         this.slots.forEach((slot, i) => {
             if (slot) {
-                slot.addEventListener('click', () => onSlotClick(i));
+                slot.addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onSlotClick(i);
+                    if (navigator.vibrate) navigator.vibrate(15);
+                });
             }
         });
     }
