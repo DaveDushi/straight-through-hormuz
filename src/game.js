@@ -193,6 +193,7 @@ export class Game {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality.settings.pixelRatioCap));
         this.renderer.setClearColor(0x2a7888);
+        quality.bindRenderer(this.renderer);
     }
 
     _initScene() {
@@ -285,6 +286,7 @@ export class Game {
         }
 
         this.renderer.render(this.scene, this.camera);
+        quality.sampleFrame(delta);
     }
 
     _update(delta) {

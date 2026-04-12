@@ -42,16 +42,16 @@ const TIER_SETTINGS = {
         terrainOctaves: 3,
     },
     medium: {
-        pixelRatioCap: 1.5,
-        waterSegments: 40,
-        maxParticles: 60,
-        maxPointLights: 4,
-        postProcessing: true,
+        pixelRatioCap: 1,
+        waterSegments: 30,
+        maxParticles: 40,
+        maxPointLights: 2,
+        postProcessing: false,
         bloomEnabled: false,
-        fogNear: 110,
-        fogFar: 220,
-        terrainSegX: 20,
-        terrainSegZ: 28,
+        fogNear: 100,
+        fogFar: 200,
+        terrainSegX: 16,
+        terrainSegZ: 24,
         terrainOctaves: 2,
     },
     low: {
@@ -69,10 +69,50 @@ const TIER_SETTINGS = {
     },
 };
 
+const FPS_TARGET = 48;
+const FPS_RECOVER = 55;
+const SAMPLE_INTERVAL = 2;
+const PIXEL_RATIO_STEPS = [0.5, 0.75, 1, 1.5, 2];
+
 class QualityManager {
     constructor() {
         this.tier = detectTier();
         this.settings = { ...TIER_SETTINGS[this.tier] };
+        this._renderer = null;
+        this._frameCount = 0;
+        this._elapsed = 0;
+        this._prIdx = PIXEL_RATIO_STEPS.indexOf(this.settings.pixelRatioCap);
+        if (this._prIdx === -1) this._prIdx = PIXEL_RATIO_STEPS.length - 1;
+        this._maxIdx = this._prIdx;
+    }
+
+    bindRenderer(renderer) {
+        this._renderer = renderer;
+    }
+
+    sampleFrame(delta) {
+        if (!this._renderer) return;
+        this._frameCount++;
+        this._elapsed += delta;
+        if (this._elapsed < SAMPLE_INTERVAL) return;
+
+        const fps = this._frameCount / this._elapsed;
+        this._frameCount = 0;
+        this._elapsed = 0;
+
+        if (fps < FPS_TARGET && this._prIdx > 0) {
+            this._prIdx--;
+            this._applyPixelRatio();
+        } else if (fps > FPS_RECOVER && this._prIdx < this._maxIdx) {
+            this._prIdx++;
+            this._applyPixelRatio();
+        }
+    }
+
+    _applyPixelRatio() {
+        const ratio = PIXEL_RATIO_STEPS[this._prIdx];
+        this.settings.pixelRatioCap = ratio;
+        this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, ratio));
     }
 }
 

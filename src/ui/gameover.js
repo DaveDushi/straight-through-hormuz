@@ -1,3 +1,5 @@
+import { refreshPromo } from './promo.js';
+
 export class GameOverScreen {
   constructor(onRestart, onPort) {
     this.el = document.getElementById("gameover-screen");
@@ -10,6 +12,8 @@ export class GameOverScreen {
     this.quoteEl = document.getElementById("go-quote");
     this.announcer = document.getElementById("sr-announce");
     this.shareBtn = document.getElementById("btn-go-share");
+    this.sharePreview = document.getElementById("go-share-preview");
+    this.promoSlot = document.getElementById("go-promo-slot");
     this._distanceKm = 0;
 
     document
@@ -20,10 +24,12 @@ export class GameOverScreen {
     if (this.shareBtn) this.shareBtn.addEventListener("click", () => this._share());
   }
 
+  _getShareText() {
+    return `Breaking News \u{1F6A8}: Oil Tanker only made it ${this._distanceKm} km through the Strait of Hormuz before getting destroyed by the Iranians. See how far you can make it straitouttahormuz.us`;
+  }
+
   _share() {
-    const km = this._distanceKm;
-    const text = `Breaking News \u{1F6A8}: Oil Tanker only made it ${km} km through the Strait of Hormuz before getting destroyed by the Iranians. See how far you can make it straitouttahormuz.us`;
-    this._copyText(text);
+    this._copyText(this._getShareText());
   }
 
   _copyText(text) {
@@ -66,7 +72,10 @@ export class GameOverScreen {
         quotes[Math.floor(Math.random() * quotes.length)];
     }
 
+    if (this.sharePreview) this.sharePreview.textContent = this._getShareText();
+
     this.el.classList.add("visible");
+    refreshPromo(this.promoSlot);
 
     // Screen reader announcement
     if (this.announcer) {

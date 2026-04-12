@@ -1,3 +1,5 @@
+import { refreshPromo } from './promo.js';
+
 export class VictoryScreen {
     constructor(onRestart, onPort) {
         this.el = document.getElementById('victory-screen');
@@ -10,6 +12,8 @@ export class VictoryScreen {
         this.quoteEl = document.getElementById('vic-quote');
         this.announcer = document.getElementById('sr-announce');
         this.shareBtn = document.getElementById('btn-vic-share');
+        this.sharePreview = document.getElementById('vic-share-preview');
+        this.promoSlot = document.getElementById('vic-promo-slot');
         this._distanceKm = 0;
 
         document.getElementById('btn-vic-restart').addEventListener('click', () => onRestart());
@@ -18,10 +22,12 @@ export class VictoryScreen {
         if (this.shareBtn) this.shareBtn.addEventListener('click', () => this._share());
     }
 
+    _getShareText() {
+        return `Breaking News \u{1F6A8}: Oil Tanker made it all ${this._distanceKm} km through the Strait of Hormuz! The Iranians couldn't stop it. See how far you can make it straitouttahormuz.us`;
+    }
+
     _share() {
-        const km = this._distanceKm;
-        const text = `Breaking News \u{1F6A8}: Oil Tanker made it all ${km} km through the Strait of Hormuz! The Iranians couldn't stop it. See how far you can make it straitouttahormuz.us`;
-        this._copyText(text);
+        this._copyText(this._getShareText());
     }
 
     _copyText(text) {
@@ -52,7 +58,10 @@ export class VictoryScreen {
         ];
         this.quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
 
+        if (this.sharePreview) this.sharePreview.textContent = this._getShareText();
+
         this.el.classList.add('visible');
+        refreshPromo(this.promoSlot);
 
         if (this.announcer) {
             this.announcer.textContent = `Victory! You made it through the strait. Score: ${data.score}. Distance: ${(data.distance / 1000).toFixed(1)} kilometers.`;
