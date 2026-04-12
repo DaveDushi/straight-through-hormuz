@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hormuz Rush</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="game-canvas"></canvas>
+
+<!-- Ceasefire overlay -->
+<div id="ceasefire-overlay"></div>
+
+<!-- HUD -->
+<div id="hud">
+    <div class="hud-top">
+        <div class="hud-left">
+            <div class="hud-label">Hull Integrity</div>
+            <div class="hull-bar-container">
+                <div id="hull-fill"></div>
+                <div id="hull-text">100%</div>
+            </div>
+            <div class="boost-bar-container">
+                <div id="boost-fill"></div>
+            </div>
+        </div>
+        <div id="multiplier">x2.0</div>
+        <div class="hud-right">
+            <div class="hud-label">Score</div>
+            <div id="score-value">0</div>
+            <div class="hud-label">Distance</div>
+            <div id="distance-value">0.0 km</div>
+        </div>
+    </div>
+</div>
+
+<div id="phase-name"></div>
+
+<!-- Inventory bar -->
+<div class="inventory-bar">
+    <div class="slot empty" id="slot-0"><span class="slot-key">1</span>-</div>
+    <div class="slot empty" id="slot-1"><span class="slot-key">2</span>-</div>
+    <div class="slot empty" id="slot-2"><span class="slot-key">3</span>-</div>
+</div>
+
+<!-- Radio bar -->
+<div id="radio-bar">
+    <span class="radio-speaker" id="radio-speaker">COMMAND</span>
+    <span id="radio-text"></span>
+</div>
+
+<!-- Menu Screen -->
+<div id="menu-screen" class="screen-overlay" style="display: flex;">
+    <div class="screen-title">Hormuz Rush</div>
+    <div class="screen-subtitle">Strait of Hormuz, April 2026</div>
+    <div class="screen-tagline">Steer. Survive. Pay the price.</div>
+    <button class="btn" id="btn-play">Set Sail</button>
+    <button class="btn btn-secondary" id="btn-port">Port Briefing</button>
+    <div class="controls-hint">
+        Arrow keys / A,D or swipe to steer<br>
+        Space / Shift for emergency boost<br>
+        1, 2, 3 or tap slots to use power-ups
+    </div>
+</div>
+
+<!-- Toll Dialog -->
+<div id="toll-dialog">
+    <div class="toll-content">
+        <div class="toll-title">Radio Transmission</div>
+        <div class="toll-message">
+            "Pay <span id="toll-percent">12</span>% cargo value for temporary safe passage?"
+        </div>
+        <div class="toll-buttons">
+            <button class="btn" id="btn-toll-pay">Pay Toll</button>
+            <button class="btn btn-secondary" id="btn-toll-refuse">Refuse</button>
+        </div>
+    </div>
+</div>
+
+<!-- Game Over Screen -->
+<div id="gameover-screen" class="screen-overlay">
+    <div class="screen-title" style="color: #ff4444;">Lost at Sea</div>
+    <div class="screen-subtitle">MV Eternal Horizon — Final Report</div>
+    <div class="go-stats">
+        <div>
+            <div class="go-stat-label">Distance</div>
+            <div class="go-stat-value" id="go-distance">0 km</div>
+        </div>
+        <div>
+            <div class="go-stat-label">Score</div>
+            <div class="go-stat-value" id="go-score">0</div>
+        </div>
+        <div>
+            <div class="go-stat-label">Tolls Paid</div>
+            <div class="go-stat-value" id="go-tolls-paid">0</div>
+        </div>
+        <div>
+            <div class="go-stat-label">Tolls Refused</div>
+            <div class="go-stat-value" id="go-tolls-refused">0</div>
+        </div>
+        <div>
+            <div class="go-stat-label">Near Misses</div>
+            <div class="go-stat-value" id="go-nearmiss">0</div>
+        </div>
+    </div>
+    <div id="go-quote"></div>
+    <button class="btn" id="btn-restart">Try Again</button>
+    <button class="btn btn-secondary" id="btn-go-port">Port Briefing</button>
+</div>
+
+<!-- Port Hub Screen -->
+<div id="port-hub-screen" class="screen-overlay">
+    <div class="screen-title" style="font-size: 28px;">Port Briefing Hub</div>
+    <div class="screen-subtitle">Upgrade your vessel</div>
+    <div class="port-content">
+        <div class="port-header">
+            <div class="port-stat">
+                <div class="port-stat-label">Insurance Credits</div>
+                <div class="port-stat-value" id="credits-value">0</div>
+            </div>
+            <div class="port-stat">
+                <div class="port-stat-label">High Score</div>
+                <div class="port-stat-value" id="highscore-value">0</div>
+            </div>
+        </div>
+        <div id="upgrades-list"></div>
+        <button class="btn" id="btn-deploy">Deploy</button>
+    </div>
+</div>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+    }
+}
+</script>
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>
