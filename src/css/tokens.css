@@ -131,4 +131,12 @@
     --shadow-glow-amber: 0 0 12px var(--amber-glow), 0 0 4px var(--amber-glow);
     --shadow-glow-red: 0 0 12px var(--signal-glow), 0 0 4px var(--signal-glow);
     --shadow-glow-blue: 0 0 12px var(--naval-glow), 0 0 4px var(--naval-glow);
+
+    /* -- Result screen variants -- */
+    --result-defeat-accent: rgba(218, 0, 0, 0.15);
+    --result-defeat-bg: rgba(218, 0, 0, 0.04);
+    --result-blockade-accent: rgba(58, 143, 212, 0.15);
+    --result-blockade-bg: rgba(58, 143, 212, 0.04);
+    --result-victory-accent: rgba(240, 192, 64, 0.15);
+    --result-victory-bg: rgba(240, 192, 64, 0.06);
 }

@@ -4,6 +4,11 @@ import { CONFIG } from '../config.js';
 export class CollisionSystem {
     constructor() {
         this.nearMisses = [];
+        this._countedNearMisses = new Set();
+    }
+
+    reset() {
+        this._countedNearMisses.clear();
     }
 
     check(tanker, entityPools, context) {
@@ -17,16 +22,18 @@ export class CollisionSystem {
                     tanker.x, tanker.z, tanker.halfW, tanker.halfH,
                     entity.x, entity.z, entity.halfW, entity.halfH
                 )) {
+                    this._countedNearMisses.delete(entity);
                     this._resolveCollision(tanker, entity, context);
                     return;
                 }
 
                 const nearDist = CONFIG.NEAR_MISS_DISTANCE;
                 if (entity.type === 'mine' || entity.type === 'drone' || entity.type === 'boat' || entity.type === 'projectile') {
-                    if (aabbOverlap(
+                    if (!this._countedNearMisses.has(entity) && aabbOverlap(
                         tanker.x, tanker.z, tanker.halfW + nearDist, tanker.halfH + nearDist,
                         entity.x, entity.z, entity.halfW, entity.halfH
                     )) {
+                        this._countedNearMisses.add(entity);
                         this.nearMisses.push(entity);
                     }
                 }

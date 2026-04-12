@@ -9,6 +9,7 @@ export class GameOverScreen {
     this.nearMissEl = document.getElementById("go-nearmiss");
     this.earnedEl = document.getElementById("go-earned");
     this.quoteEl = document.getElementById("go-quote");
+    this.heroEl = document.getElementById("go-hero");
     this.announcer = document.getElementById("sr-announce");
     this.shareBtn = document.getElementById("btn-go-share");
     this.sharePreview = document.getElementById("go-share-preview");
@@ -25,16 +26,31 @@ export class GameOverScreen {
   }
 
   _getShareText() {
-    return `\u{1F6A8} Breaking News \nPathetic oil tanker only made it ${this._distanceKm} km through the Strait of Hormuz before Iran destroyed it. Sad! \nHow far can YOU make it, tough guy? \n👉 straitouttahormuz.us`;
+    return `\u{1F6A8} Breaking News \nPathetic oil tanker only made it ${this._distanceKm} km through the Strait of Hormuz before Iran destroyed it. Sad! \nHow far can YOU make it, tough guy? \n\u{1F449} straitouttahormuz.us`;
   }
 
   _share() {
-    this._copyText(this._getShareText());
-  }
-
-  _copyText(text) {
+    const text = this._getShareText();
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
+      return;
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (this.shareBtn) {
+          this.shareBtn.classList.add('share-copied');
+          this.shareBtn.textContent = 'Copied!';
+          setTimeout(() => {
+            this.shareBtn.classList.remove('share-copied');
+            this.shareBtn.textContent = 'Copy & Share';
+          }, 2000);
+        }
+      }).catch(() => {
+        window.open(
+          "https://x.com/intent/tweet?text=" + encodeURIComponent(text),
+          "_blank",
+        );
+      });
       return;
     }
     window.open(
@@ -50,19 +66,31 @@ export class GameOverScreen {
     this.tollsRefusedEl.textContent = data.tollsRefused;
     this.nearMissEl.textContent = data.nearMissCount;
     if (this.earnedEl) {
-      this.earnedEl.textContent = "+¥" + (data.earned || 0).toLocaleString();
+      this.earnedEl.textContent = "+\u00A5" + (data.earned || 0).toLocaleString();
     }
 
+    const titleEl = this.el.querySelector(".screen-title");
+    const subtitleEl = this.el.querySelector(".screen-subtitle");
+
     if (data.reason === "blockade") {
-      this.el.querySelector(".screen-title").textContent = "Oil Confiscated!";
-      this.el.querySelector(".screen-subtitle").textContent =
-        "USA Naval Blockade";
+      titleEl.textContent = "Oil Confiscated!";
+      subtitleEl.textContent = "USA Naval Blockade";
+      titleEl.style.color = "var(--naval-300)";
+      titleEl.style.textShadow = "0 2px 8px rgba(58, 143, 212, 0.3)";
+      if (this.heroEl) {
+        this.heroEl.classList.remove('result-hero--victory');
+        this.heroEl.classList.add('result-hero--blockade');
+      }
       this.quoteEl.textContent =
-        '"Your oil now belongs to America. Effective immediately — BLOCKADED!" \u2014 Donald Trump';
+        '"Your oil now belongs to America. Effective immediately \u2014 BLOCKADED!" \u2014 Donald Trump';
     } else {
-      this.el.querySelector(".screen-title").textContent = "Lost at Sea";
-      this.el.querySelector(".screen-subtitle").textContent =
-        "MT Make Hormuz Great Again \u2014 Final Report";
+      titleEl.textContent = "Lost at Sea";
+      subtitleEl.textContent = "MT Make Hormuz Great Again \u2014 Final Report";
+      titleEl.style.color = "";
+      titleEl.style.textShadow = "";
+      if (this.heroEl) {
+        this.heroEl.classList.remove('result-hero--victory', 'result-hero--blockade');
+      }
       const quotes = [
         '"We almost had it\u2026 Tremendous effort though." \u2014 Trump',
         '"The ceasefire collapsed. We will rebuild." \u2014 Bibi',
@@ -79,7 +107,6 @@ export class GameOverScreen {
     this.el.classList.add("visible");
     refreshPromo(this.promoSlot);
 
-    // Screen reader announcement
     if (this.announcer) {
       this.announcer.textContent = `Game over. Distance: ${(data.distance / 1000).toFixed(1)} kilometers.`;
     }

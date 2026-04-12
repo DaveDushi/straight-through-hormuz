@@ -7,7 +7,7 @@ function buildPWACard() {
     div.className = 'promo-card promo-pwa';
     if (canPromptInstall()) {
         div.innerHTML = `
-            <p class="promo-text">Play anytime, even offline</p>
+            <p class="promo-text">Secure channel — install for offline access</p>
             <button class="btn btn-pwa">Install App</button>
         `;
         div.querySelector('.btn-pwa').addEventListener('click', async () => {
@@ -31,7 +31,7 @@ function buildBMCCard() {
     const div = document.createElement('div');
     div.className = 'promo-card promo-support';
     div.innerHTML = `
-        <p class="promo-text">Love this game? Help us get it on the App Store</p>
+        <p class="promo-text">Supply line — fund the next convoy</p>
         <a class="btn btn-coffee" href="https://buymeacoffee.com/davedushi" target="_blank" rel="noopener">Buy Me a Coffee</a>
     `;
     return div;
@@ -53,7 +53,9 @@ export function refreshPromo(slotEl) {
     if (!slotEl) return;
 
     const adNode = slotEl.querySelector('[data-ad]');
+    const divider = slotEl.querySelector('.promo-divider');
     slotEl.innerHTML = '';
+    if (divider) slotEl.appendChild(divider);
 
     const builders = getCardBuilders(adNode);
     if (builders.length === 0) return;

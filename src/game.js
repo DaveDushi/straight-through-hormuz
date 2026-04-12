@@ -266,6 +266,7 @@ export class Game {
         this.tanker.reset();
 
         this.scoring.reset();
+        this.collision.reset();
         this.toll.reset();
         this.inventory.reset();
         this.radio.reset();

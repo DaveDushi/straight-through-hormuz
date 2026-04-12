@@ -29,12 +29,27 @@ export class VictoryScreen {
   }
 
   _share() {
-    this._copyText(this._getShareText());
-  }
-
-  _copyText(text) {
+    const text = this._getShareText();
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
+      return;
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (this.shareBtn) {
+          this.shareBtn.classList.add('share-copied');
+          this.shareBtn.textContent = 'Copied!';
+          setTimeout(() => {
+            this.shareBtn.classList.remove('share-copied');
+            this.shareBtn.textContent = 'Copy & Share';
+          }, 2000);
+        }
+      }).catch(() => {
+        window.open(
+          "https://x.com/intent/tweet?text=" + encodeURIComponent(text),
+          "_blank",
+        );
+      });
       return;
     }
     window.open(
@@ -50,15 +65,15 @@ export class VictoryScreen {
     this.tollsRefusedEl.textContent = data.tollsRefused;
     this.nearMissEl.textContent = data.nearMissCount;
     if (this.earnedEl) {
-      this.earnedEl.textContent = "+¥" + (data.earned || 0).toLocaleString();
+      this.earnedEl.textContent = "+\u00A5" + (data.earned || 0).toLocaleString();
     }
 
     const quotes = [
-      '"We made it through. The greatest passage in history, believe me." — Trump',
-      '"The Strait is open. Israel\'s resolve made this possible." — Bibi',
-      '"All stations — MT Make Hormuz Great Again has cleared the strait. Well done." — Command',
-      '"Nobody said it could be done. We did it anyway. Tremendous." — Trump',
-      '"Through fire and water, we endure. Congratulations, Captain." — Bibi',
+      '"We made it through. The greatest passage in history, believe me." \u2014 Trump',
+      '"The Strait is open. Israel\'s resolve made this possible." \u2014 Bibi',
+      '"All stations \u2014 MT Make Hormuz Great Again has cleared the strait. Well done." \u2014 Command',
+      '"Nobody said it could be done. We did it anyway. Tremendous." \u2014 Trump',
+      '"Through fire and water, we endure. Congratulations, Captain." \u2014 Bibi',
     ];
     this.quoteEl.textContent =
       quotes[Math.floor(Math.random() * quotes.length)];

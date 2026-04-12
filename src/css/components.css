@@ -486,6 +486,21 @@ body.touch-device #btn-boost-left {
     box-shadow: 0 0 12px rgba(240, 192, 64, 0.3);
 }
 
+/* -- Hero CTA (breathing glow) -- */
+.btn-hero {
+    animation: btn-glow-pulse 3s ease-in-out infinite;
+}
+
+.btn-hero:hover {
+    animation: none;
+    box-shadow: var(--shadow-glow-green), 0 4px 16px var(--tactical-glow);
+}
+
+.btn-hero:active {
+    animation: none;
+    transform: translateY(1px) scale(0.98);
+}
+
 .btn-danger {
     border-color: var(--signal-300);
     color: var(--signal-300);
