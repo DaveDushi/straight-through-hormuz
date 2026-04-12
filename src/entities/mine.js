@@ -66,6 +66,7 @@ export class Mine extends Entity {
         this.time = Math.random() * Math.PI * 2;
         this.baseY = 0.5;
         this.mesh.position.set(x, this.baseY, z);
+        this.mesh.scale.setScalar(CONFIG.isMobile ? CONFIG.MOBILE_ENTITY_SCALE : 1);
     }
 
     update(delta, context) {

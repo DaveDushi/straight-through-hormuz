@@ -35,6 +35,10 @@ export class CollisionSystem {
     }
 
     _resolveCollision(tanker, entity, context) {
+        if (context.ceasefireActive && (entity.type === 'drone' || entity.type === 'boat' || entity.type === 'projectile')) {
+            return;
+        }
+
         switch (entity.type) {
             case 'mine':
                 tanker.takeDamage(CONFIG.MINE_DAMAGE);

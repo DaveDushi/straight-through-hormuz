@@ -153,8 +153,12 @@
     animation: fade-in-up var(--dur-normal) var(--ease-out) 1200ms backwards;
 }
 
-#gameover-screen .btn-secondary {
+#gameover-screen .btn-share {
     animation-delay: 1300ms;
+}
+
+#gameover-screen .btn-secondary {
+    animation-delay: 1400ms;
 }
 
 /* ====== VICTORY SCREEN ====== */
@@ -183,8 +187,12 @@
     animation: fade-in-up var(--dur-normal) var(--ease-out) 1200ms backwards;
 }
 
-#victory-screen .btn-secondary {
+#victory-screen .btn-share {
     animation-delay: 1300ms;
+}
+
+#victory-screen .btn-secondary {
+    animation-delay: 1400ms;
 }
 
 /* ====== TOLL DIALOG (Bottom Sheet) ====== */

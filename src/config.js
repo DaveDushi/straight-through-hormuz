@@ -98,6 +98,10 @@ export const CONFIG = {
     BLOCKADE_COLOR: 0x334466,
     POOL_BLOCKADES: 4,
 
+    // Mobile
+    MOBILE_ENTITY_SCALE: 1.5,
+    isMobile: false,
+
     // Resources
     RESOURCE_SIZE: 1.8,
     REPAIR_AMOUNT: 20,

@@ -52,6 +52,7 @@ export class Drone extends Entity {
         super.init(x, z);
         this.laserEvaluated = false;
         this.mesh.position.set(x, CONFIG.DRONE_ALTITUDE, z);
+        this.mesh.scale.setScalar(CONFIG.isMobile ? CONFIG.MOBILE_ENTITY_SCALE : 1);
     }
 
     update(delta, context) {

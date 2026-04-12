@@ -165,6 +165,7 @@ export class Resource extends Entity {
         this._laserMesh.visible = (this.resourceType === 'laser');
 
         this.mesh.position.set(x, 1, z);
+        this.mesh.scale.setScalar(CONFIG.isMobile ? CONFIG.MOBILE_ENTITY_SCALE : 1);
     }
 
     update(delta, context) {

@@ -1,7 +1,7 @@
 import { CONFIG } from '../config.js';
 
 export class PortHub {
-    constructor(onDeploy, saveManager) {
+    constructor(onDeploy, saveManager, onHome) {
         this.el = document.getElementById('port-hub-screen');
         this.saveManager = saveManager;
         this.onDeploy = onDeploy;
@@ -9,6 +9,11 @@ export class PortHub {
         document.getElementById('btn-deploy').addEventListener('click', () => {
             this.hide();
             onDeploy();
+        });
+
+        document.getElementById('btn-port-home').addEventListener('click', () => {
+            this.hide();
+            if (onHome) onHome();
         });
 
         this.upgradeContainer = document.getElementById('upgrades-list');

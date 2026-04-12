@@ -76,7 +76,8 @@ export class Game {
         );
         this.portHub = new PortHub(
             () => this._startGame(),
-            this.save
+            this.save,
+            () => this.fsm.transition('menu')
         );
         this.victory = new VictoryScreen(
             () => this._startGame(),
@@ -97,6 +98,7 @@ export class Game {
         }
         if (this.input.isTouchDevice) {
             document.body.classList.add('touch-device');
+            CONFIG.isMobile = true;
         }
 
         this.fsm = new StateMachine({
@@ -330,6 +332,7 @@ export class Game {
             audio: this.audio,
             inventory: this.inventory,
             ironLaser: this.ironLaser,
+            ceasefireActive: this.ceasefireShootingDisabled,
             releaseEntity,
             addScore: (pts) => this.scoring.addScore(pts),
             notifyPickup: (type) => this.hud.showPickupNotification(type),
@@ -430,6 +433,7 @@ export class Game {
 
     _activateCeasefire(active) {
         this.ceasefireShootingDisabled = active;
+        this.spawner.ceasefireActive = active;
         this.tanker.ceasefireActive = active;
         if (active) {
             this.audio.playSFX('ceasefire');

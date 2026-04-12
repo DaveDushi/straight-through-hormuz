@@ -212,6 +212,7 @@ export class Powerup extends Entity {
         this.mesh.add(this.labelSprite);
 
         this.mesh.position.set(x, 2, z);
+        this.mesh.scale.setScalar(CONFIG.isMobile ? CONFIG.MOBILE_ENTITY_SCALE : 1);
     }
 
     update(delta, context) {

@@ -107,26 +107,9 @@ export class AudioManager {
         }
     }
 
-    playEngine() {
-        if (!this.initialized || this._engineNode) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.value = 35;
-        gain.gain.value = 0.05;
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        osc.start();
-        this._engineNode = osc;
-        this._engineGain = gain;
-    }
+    playEngine() {}
 
-    stopEngine() {
-        if (this._engineNode) {
-            this._engineNode.stop();
-            this._engineNode = null;
-        }
-    }
+    stopEngine() {}
 
     setVolume(v) {
         if (this.masterGain) this.masterGain.gain.value = v;

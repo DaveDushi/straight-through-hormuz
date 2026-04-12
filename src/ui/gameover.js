@@ -9,16 +9,34 @@ export class GameOverScreen {
     this.earnedEl = document.getElementById("go-earned");
     this.quoteEl = document.getElementById("go-quote");
     this.announcer = document.getElementById("sr-announce");
+    this.shareBtn = document.getElementById("btn-go-share");
+    this._distanceKm = 0;
 
     document
       .getElementById("btn-restart")
       .addEventListener("click", () => onRestart());
     const portBtn = document.getElementById("btn-go-port");
     if (portBtn) portBtn.addEventListener("click", () => onPort());
+    if (this.shareBtn) this.shareBtn.addEventListener("click", () => this._share());
+  }
+
+  _share() {
+    const km = this._distanceKm;
+    const text = `Breaking News \u{1F6A8}: Oil Tanker only made it ${km} km through the Strait of Hormuz before getting destroyed by the Iranians. See how far you can make it straitouttahormuz.us`;
+    this._copyText(text);
+  }
+
+  _copyText(text) {
+    if (navigator.share) {
+      navigator.share({ text }).catch(() => {});
+      return;
+    }
+    window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(text), "_blank");
   }
 
   show(data) {
-    this.distEl.textContent = (data.distance / 1000).toFixed(2) + " km";
+    this._distanceKm = (data.distance / 1000).toFixed(2);
+    this.distEl.textContent = this._distanceKm + " km";
     this.scoreEl.textContent = data.score.toLocaleString();
     this.tollsPaidEl.textContent = data.tollsPaid;
     this.tollsRefusedEl.textContent = data.tollsRefused;

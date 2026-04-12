@@ -276,6 +276,16 @@ export class Tanker extends Entity {
             this._oilExhaustGlow.scale.setScalar(0.8 + Math.sin(this._oilExhaustTime * 8) * 0.3);
         }
 
+        if (!this.pakFlagActive && this.invulnTimer <= 0) {
+            if (this.ceasefireActive) {
+                this.bodyMat.emissive.setHex(0x112244);
+            } else if (this.oilBoostActive) {
+                this.bodyMat.emissive.setHex(0x442200);
+            } else {
+                this.bodyMat.emissive.setHex(0x000000);
+            }
+        }
+
         this.syncMesh();
     }
 
@@ -285,7 +295,12 @@ export class Tanker extends Entity {
         this.invulnTimer = CONFIG.HULL_INVULNERABILITY_TIME;
 
         this.bodyMat.emissive.setHex(0xff0000);
-        setTimeout(() => this.bodyMat.emissive.setHex(0x000000), 200);
+        setTimeout(() => {
+            if (this.pakFlagActive) this.bodyMat.emissive.setHex(0x01411C);
+            else if (this.ceasefireActive) this.bodyMat.emissive.setHex(0x112244);
+            else if (this.oilBoostActive) this.bodyMat.emissive.setHex(0x442200);
+            else this.bodyMat.emissive.setHex(0x000000);
+        }, 200);
     }
 
     repair(amount) {

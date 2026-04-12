@@ -443,6 +443,16 @@ body.touch-device #btn-boost {
     box-shadow: none;
 }
 
+.btn-share {
+    border-color: var(--amber-400);
+    color: var(--amber-400);
+}
+
+.btn-share:hover {
+    background: rgba(240, 192, 64, 0.1);
+    box-shadow: 0 0 12px rgba(240, 192, 64, 0.3);
+}
+
 .btn-danger {
     border-color: var(--signal-300);
     color: var(--signal-300);
