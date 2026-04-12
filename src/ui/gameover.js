@@ -1,4 +1,4 @@
-import { refreshPromo } from './promo.js';
+import { refreshPromo } from "./promo.js";
 
 export class GameOverScreen {
   constructor(onRestart, onPort) {
@@ -21,11 +21,12 @@ export class GameOverScreen {
       .addEventListener("click", () => onRestart());
     const portBtn = document.getElementById("btn-go-port");
     if (portBtn) portBtn.addEventListener("click", () => onPort());
-    if (this.shareBtn) this.shareBtn.addEventListener("click", () => this._share());
+    if (this.shareBtn)
+      this.shareBtn.addEventListener("click", () => this._share());
   }
 
   _getShareText() {
-    return `Breaking News \u{1F6A8}: Oil Tanker only made it ${this._distanceKm} km through the Strait of Hormuz before getting destroyed by the Iranians. See how far you can make it straitouttahormuz.us`;
+    return `\u{1F6A8} Breaking News \n Pathetic oil tanker only made it ${this._distanceKm} km through the Strait of Hormuz before Iran destroyed it. Sad! \n How far can YOU make it, tough guy? \n 👉 straitouttahormuz.us`;
   }
 
   _share() {
@@ -37,7 +38,10 @@ export class GameOverScreen {
       navigator.share({ text }).catch(() => {});
       return;
     }
-    window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(text), "_blank");
+    window.open(
+      "https://x.com/intent/tweet?text=" + encodeURIComponent(text),
+      "_blank",
+    );
   }
 
   show(data) {
