@@ -1,0 +1,127 @@
+/* ====== BASE / RESET ====== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+    background: var(--surface-base);
+    font-family: var(--font-ui);
+    color: var(--text-primary);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+    height: 100dvh;
+    height: 100vh; /* fallback */
+}
+
+@supports (height: 100dvh) {
+    body { height: 100dvh; }
+}
+
+#game-canvas {
+    display: block;
+    width: 100vw;
+    height: 100dvh;
+    height: 100vh;
+    touch-action: none;
+}
+
+@supports (height: 100dvh) {
+    #game-canvas { height: 100dvh; }
+}
+
+/* -- Scanline CRT overlay -- */
+body.scanlines::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--z-scanlines);
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(35, 159, 64, 0.02) 2px,
+        rgba(35, 159, 64, 0.02) 4px
+    );
+}
+
+/* -- Damage flash overlay -- */
+#damage-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    border: 3px solid transparent;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+#damage-overlay.active {
+    border-color: var(--signal-300);
+    box-shadow: inset 0 0 40px var(--signal-glow);
+    opacity: 1;
+    animation: damage-flash 0.4s var(--ease-out) forwards;
+}
+
+/* -- Transition overlay -- */
+#transition-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--surface-base);
+    pointer-events: none;
+    z-index: var(--z-transition);
+    opacity: 0;
+    transition: opacity var(--dur-normal) var(--ease-in-out);
+}
+
+#transition-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* -- Steer indicators -- */
+.steer-indicator {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    pointer-events: none;
+    z-index: var(--z-hud);
+    opacity: 0;
+    transition: opacity 80ms linear;
+}
+
+.steer-indicator--left {
+    left: 0;
+    background: linear-gradient(90deg, rgba(35, 159, 64, 0.18), transparent);
+}
+
+.steer-indicator--right {
+    right: 0;
+    background: linear-gradient(-90deg, rgba(35, 159, 64, 0.18), transparent);
+}
+
+/* -- Focus styles -- */
+:focus-visible {
+    outline: 2px solid var(--tactical-400);
+    outline-offset: 3px;
+}
+
+/* -- Reduced motion -- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

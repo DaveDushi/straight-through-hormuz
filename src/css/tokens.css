@@ -1,0 +1,134 @@
+/* ====== DESIGN TOKENS — Lion & Sun ====== */
+:root {
+    /* -- Surfaces -- */
+    --surface-base: #f5f2ec;
+    --surface-primary: #ffffff;
+    --surface-secondary: #eef5e8;
+    --surface-tertiary: #e0edda;
+    --surface-overlay: rgba(245, 242, 236, 0.94);
+    --surface-glass: rgba(255, 255, 255, 0.88);
+
+    /* -- Iranian Green (Primary) -- */
+    --tactical-400: #239f40;
+    --tactical-300: #2ec050;
+    --tactical-600: #1a7830;
+    --tactical-glow: rgba(35, 159, 64, 0.35);
+
+    /* -- Gold (Scoring / Warning) -- */
+    --amber-400: #f0c040;
+    --amber-300: #f5d060;
+    --amber-200: #f8dc80;
+    --amber-glow: rgba(240, 192, 64, 0.35);
+
+    /* -- Iranian Red (Danger) -- */
+    --signal-300: #da0000;
+    --signal-400: #b80000;
+    --signal-glow: rgba(218, 0, 0, 0.4);
+
+    /* -- Naval Blue (Boost / Shields) -- */
+    --naval-300: #3a8fd4;
+    --naval-400: #2870b0;
+    --naval-glow: rgba(58, 143, 212, 0.35);
+
+    /* -- Status -- */
+    --status-health-high: var(--tactical-400);
+    --status-health-mid: var(--amber-400);
+    --status-health-low: var(--signal-300);
+    --status-boost: var(--naval-300);
+    --status-score: var(--amber-300);
+    --status-multiplier: var(--amber-200);
+
+    /* -- Text -- */
+    --text-primary: #1a2a1a;
+    --text-secondary: #4a6050;
+    --text-muted: #8a9a8e;
+    --text-tactical: var(--tactical-400);
+
+    /* -- Speaker Colors -- */
+    --speaker-trump: #cc4422;
+    --speaker-bibi: var(--naval-300);
+    --speaker-command: var(--tactical-400);
+
+    /* -- Powerup -- */
+    --powerup-flare: var(--signal-300);
+    --powerup-flare-bg: rgba(218, 0, 0, 0.10);
+    --powerup-oil: #5a4a2a;
+    --powerup-oil-bg: rgba(90, 74, 42, 0.10);
+    --powerup-ceasefire: var(--naval-300);
+    --powerup-ceasefire-bg: rgba(58, 143, 212, 0.10);
+
+    /* -- Typography -- */
+    --font-display: 'Share Tech Mono', 'Courier New', monospace;
+    --font-ui: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    --font-body: 'IBM Plex Mono', 'Courier New', monospace;
+
+    --text-xs: clamp(0.625rem, 0.55rem + 0.25vw, 0.75rem);
+    --text-sm: clamp(0.6875rem, 0.625rem + 0.25vw, 0.8125rem);
+    --text-base: clamp(0.8125rem, 0.75rem + 0.25vw, 0.9375rem);
+    --text-lg: clamp(1rem, 0.875rem + 0.5vw, 1.25rem);
+    --text-xl: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+    --text-2xl: clamp(1.375rem, 1.125rem + 1vw, 2rem);
+    --text-3xl: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+    --text-4xl: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+
+    --tracking-wide: 0.08em;
+    --tracking-wider: 0.15em;
+    --tracking-widest: 0.25em;
+    --leading-tight: 1.1;
+    --leading-snug: 1.25;
+    --leading-normal: 1.5;
+
+    /* -- Spacing (4px grid) -- */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-14: 56px;
+    --space-16: 64px;
+    --space-20: 80px;
+
+    /* -- Touch targets -- */
+    --touch-min: 48px;
+    --touch-comfortable: 56px;
+    --touch-large: 64px;
+
+    /* -- Border radius -- */
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
+    --radius-xl: 8px;
+    --radius-full: 9999px;
+
+    /* -- Z-index scale -- */
+    --z-water: 0;
+    --z-ceasefire: 5;
+    --z-hud: 10;
+    --z-radio: 20;
+    --z-overlay: 100;
+    --z-transition: 150;
+    --z-scanlines: 1000;
+
+    /* -- Animation -- */
+    --dur-instant: 75ms;
+    --dur-fast: 150ms;
+    --dur-normal: 300ms;
+    --dur-slow: 500ms;
+    --dur-slower: 800ms;
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* -- Shadows / Glows -- */
+    --shadow-glow-green: 0 0 12px var(--tactical-glow), 0 0 4px var(--tactical-glow);
+    --shadow-glow-amber: 0 0 12px var(--amber-glow), 0 0 4px var(--amber-glow);
+    --shadow-glow-red: 0 0 12px var(--signal-glow), 0 0 4px var(--signal-glow);
+    --shadow-glow-blue: 0 0 12px var(--naval-glow), 0 0 4px var(--naval-glow);
+}

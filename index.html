@@ -2,24 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Hormuz Rush</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Strait Through Hormuz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="scanlines">
 
 <canvas id="game-canvas"></canvas>
 
-<!-- Ceasefire overlay -->
+<!-- Overlays -->
+<div id="damage-overlay"></div>
+<div id="transition-overlay"></div>
 <div id="ceasefire-overlay"></div>
+
+<!-- Steer indicators -->
+<div class="steer-indicator steer-indicator--left"></div>
+<div class="steer-indicator steer-indicator--right"></div>
 
 <!-- HUD -->
 <div id="hud">
     <div class="hud-top">
         <div class="hud-left">
             <div class="hud-label">Hull Integrity</div>
-            <div class="hull-bar-container">
-                <div id="hull-fill"></div>
+            <div class="hull-bar-container" role="meter" aria-label="Hull integrity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+                <div id="hull-fill" class="hull-high"></div>
                 <div id="hull-text">100%</div>
             </div>
             <div class="boost-bar-container">
@@ -32,6 +40,8 @@
             <div id="score-value">0</div>
             <div class="hud-label">Distance</div>
             <div id="distance-value">0.0 km</div>
+            <div class="hud-label">Yuan</div>
+            <div id="yuan-value">¥0</div>
         </div>
     </div>
 </div>
@@ -39,85 +49,132 @@
 <div id="phase-name"></div>
 
 <!-- Inventory bar -->
-<div class="inventory-bar">
-    <div class="slot empty" id="slot-0"><span class="slot-key">1</span>-</div>
-    <div class="slot empty" id="slot-1"><span class="slot-key">2</span>-</div>
-    <div class="slot empty" id="slot-2"><span class="slot-key">3</span>-</div>
+<div class="inventory-bar" role="toolbar" aria-label="Power-up inventory">
+    <button class="slot empty" id="slot-0" aria-label="Power-up slot 1: empty"><span class="slot-key">1</span>-</button>
+    <button class="slot empty" id="slot-1" aria-label="Power-up slot 2: empty"><span class="slot-key">2</span>-</button>
+    <button class="slot empty" id="slot-2" aria-label="Power-up slot 3: empty"><span class="slot-key">3</span>-</button>
 </div>
 
+<!-- Powerup pickup notification -->
+<div id="pickup-notification" aria-live="polite"></div>
+
 <!-- Radio bar -->
-<div id="radio-bar">
+<div id="radio-bar" role="log" aria-live="polite">
     <span class="radio-speaker" id="radio-speaker">COMMAND</span>
     <span id="radio-text"></span>
 </div>
 
+<!-- Screen reader announcements -->
+<div id="sr-announce" class="sr-only" aria-live="assertive" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);"></div>
+
 <!-- Menu Screen -->
-<div id="menu-screen" class="screen-overlay" style="display: flex;">
-    <div class="screen-title">Hormuz Rush</div>
+<div id="menu-screen" class="screen-overlay visible">
+    <div class="screen-title">Strait Through Hormuz</div>
     <div class="screen-subtitle">Strait of Hormuz, April 2026</div>
-    <div class="screen-tagline">Steer. Survive. Pay the price.</div>
+    <div class="screen-tagline">Steer. Survive. Sail through.</div>
     <button class="btn" id="btn-play">Set Sail</button>
-    <button class="btn btn-secondary" id="btn-port">Port Briefing</button>
-    <div class="controls-hint">
+    <button class="btn btn-secondary" id="btn-port">Drydock</button>
+    <button class="btn btn-secondary" id="btn-tilt" style="display:none;">Enable Tilt Steering</button>
+    <div class="controls-hint" id="controls-hint">
         Arrow keys / A,D or swipe to steer<br>
-        Space / Shift for emergency boost<br>
+        Space or double-tap for emergency boost<br>
         1, 2, 3 or tap slots to use power-ups
     </div>
 </div>
 
-<!-- Toll Dialog -->
+<!-- Toll Dialog (Bottom Sheet) -->
 <div id="toll-dialog">
-    <div class="toll-content">
+    <div class="toll-content" role="alertdialog" aria-label="Toll demand">
         <div class="toll-title">Radio Transmission</div>
         <div class="toll-message">
-            "Pay <span id="toll-percent">12</span>% cargo value for temporary safe passage?"
+            "Pay <span id="toll-cost">¥0</span> for safe passage?"
         </div>
         <div class="toll-buttons">
             <button class="btn" id="btn-toll-pay">Pay Toll</button>
-            <button class="btn btn-secondary" id="btn-toll-refuse">Refuse</button>
+            <button class="btn btn-danger" id="btn-toll-refuse">Refuse</button>
         </div>
+        <div class="toll-countdown"></div>
     </div>
 </div>
 
 <!-- Game Over Screen -->
 <div id="gameover-screen" class="screen-overlay">
-    <div class="screen-title" style="color: #ff4444;">Lost at Sea</div>
+    <div class="screen-title">Lost at Sea</div>
     <div class="screen-subtitle">MV Eternal Horizon — Final Report</div>
     <div class="go-stats">
-        <div>
+        <div class="go-stat">
             <div class="go-stat-label">Distance</div>
             <div class="go-stat-value" id="go-distance">0 km</div>
         </div>
-        <div>
+        <div class="go-stat">
             <div class="go-stat-label">Score</div>
             <div class="go-stat-value" id="go-score">0</div>
         </div>
-        <div>
+        <div class="go-stat">
             <div class="go-stat-label">Tolls Paid</div>
             <div class="go-stat-value" id="go-tolls-paid">0</div>
         </div>
-        <div>
+        <div class="go-stat">
             <div class="go-stat-label">Tolls Refused</div>
             <div class="go-stat-value" id="go-tolls-refused">0</div>
         </div>
-        <div>
+        <div class="go-stat">
             <div class="go-stat-label">Near Misses</div>
             <div class="go-stat-value" id="go-nearmiss">0</div>
+        </div>
+        <div class="go-stat">
+            <div class="go-stat-label">Yuan Earned</div>
+            <div class="go-stat-value go-stat-earned" id="go-earned">0</div>
         </div>
     </div>
     <div id="go-quote"></div>
     <button class="btn" id="btn-restart">Try Again</button>
-    <button class="btn btn-secondary" id="btn-go-port">Port Briefing</button>
+    <button class="btn btn-secondary" id="btn-go-port">Drydock</button>
+</div>
+
+<!-- Victory Screen -->
+<div id="victory-screen" class="screen-overlay">
+    <div class="screen-title">Safe Passage</div>
+    <div class="screen-subtitle">MV Eternal Horizon — Mission Complete</div>
+    <div class="go-stats">
+        <div class="go-stat">
+            <div class="go-stat-label">Distance</div>
+            <div class="go-stat-value" id="vic-distance">167 km</div>
+        </div>
+        <div class="go-stat">
+            <div class="go-stat-label">Score</div>
+            <div class="go-stat-value" id="vic-score">0</div>
+        </div>
+        <div class="go-stat">
+            <div class="go-stat-label">Tolls Paid</div>
+            <div class="go-stat-value" id="vic-tolls-paid">0</div>
+        </div>
+        <div class="go-stat">
+            <div class="go-stat-label">Tolls Refused</div>
+            <div class="go-stat-value" id="vic-tolls-refused">0</div>
+        </div>
+        <div class="go-stat">
+            <div class="go-stat-label">Near Misses</div>
+            <div class="go-stat-value" id="vic-nearmiss">0</div>
+        </div>
+        <div class="go-stat">
+            <div class="go-stat-label">Yuan Earned</div>
+            <div class="go-stat-value go-stat-earned" id="vic-earned">0</div>
+        </div>
+    </div>
+    <div id="vic-quote"></div>
+    <button class="btn" id="btn-vic-restart">Play Again</button>
+    <button class="btn btn-secondary" id="btn-vic-port">Drydock</button>
 </div>
 
 <!-- Port Hub Screen -->
 <div id="port-hub-screen" class="screen-overlay">
-    <div class="screen-title" style="font-size: 28px;">Port Briefing Hub</div>
-    <div class="screen-subtitle">Upgrade your vessel</div>
+    <div class="screen-title">Drydock</div>
+    <div class="screen-subtitle">Outfit the MV Eternal Horizon</div>
     <div class="port-content">
         <div class="port-header">
             <div class="port-stat">
-                <div class="port-stat-label">Insurance Credits</div>
+                <div class="port-stat-label">Yuan (¥)</div>
                 <div class="port-stat-value" id="credits-value">0</div>
             </div>
             <div class="port-stat">
@@ -130,14 +187,7 @@
     </div>
 </div>
 
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
-    }
-}
-</script>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="/src/main.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,91 @@
+/* ====== KEYFRAME LIBRARY ====== */
+
+@keyframes damage-flash {
+    0%   { border-color: var(--signal-300); box-shadow: inset 0 0 40px var(--signal-glow); opacity: 1; }
+    100% { border-color: transparent; box-shadow: none; opacity: 0; }
+}
+
+@keyframes multiplier-pulse {
+    0%   { transform: scale(1); text-shadow: 0 0 8px var(--amber-glow); }
+    50%  { transform: scale(1.12); text-shadow: 0 0 20px var(--amber-glow); }
+    100% { transform: scale(1); text-shadow: 0 0 8px var(--amber-glow); }
+}
+
+@keyframes hull-critical {
+    0%   { border-color: var(--signal-300); }
+    50%  { border-color: #990000; }
+    100% { border-color: var(--signal-300); }
+}
+
+@keyframes phase-reveal {
+    0%   { clip-path: inset(0 100% 0 0); opacity: 0.5; }
+    100% { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+
+@keyframes slot-ready-pulse {
+    0%   { box-shadow: 0 0 6px var(--current-slot-glow); }
+    50%  { box-shadow: 0 0 14px var(--current-slot-glow); }
+    100% { box-shadow: 0 0 6px var(--current-slot-glow); }
+}
+
+@keyframes ceasefire-pulse {
+    from { border-color: rgba(68, 136, 255, 0.1); }
+    to   { border-color: rgba(68, 136, 255, 0.4); }
+}
+
+@keyframes radio-slide-in {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-down {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+@keyframes scale-in {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sonar-sweep {
+    0%   { background: conic-gradient(from 0deg, transparent 0%, rgba(0, 224, 110, 0.04) 10%, transparent 20%); }
+    100% { background: conic-gradient(from 360deg, transparent 0%, rgba(0, 224, 110, 0.04) 10%, transparent 20%); }
+}
+
+@keyframes score-pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow-breathe {
+    0%   { opacity: 0.6; }
+    50%  { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+@keyframes countdown-drain {
+    from { width: 100%; }
+    to   { width: 0%; }
+}
+
+@keyframes white-flash {
+    0%   { opacity: 0.8; }
+    100% { opacity: 0; }
+}

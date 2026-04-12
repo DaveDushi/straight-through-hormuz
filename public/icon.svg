@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#0a1628"/>
+  <g transform="translate(256,280)">
+    <!-- Water -->
+    <path d="M-200,40 Q-150,20 -100,40 Q-50,60 0,40 Q50,20 100,40 Q150,60 200,40 L200,80 L-200,80 Z" fill="#1a5276" opacity="0.6"/>
+    <!-- Hull -->
+    <path d="M-90,0 L-70,-30 L70,-30 L90,0 L80,20 L-80,20 Z" fill="#2a2a3a"/>
+    <!-- Bridge -->
+    <rect x="-20" y="-55" width="40" height="25" rx="3" fill="#444466"/>
+    <!-- Bow -->
+    <polygon points="-90,0 -110,10 -90,10" fill="#3a3a4a"/>
+  </g>
+  <!-- Title -->
+  <text x="256" y="140" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="64" fill="#7799aa">HR</text>
+</svg>
