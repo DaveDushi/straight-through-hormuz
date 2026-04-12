@@ -103,8 +103,8 @@ export const CONFIG = {
     REPAIR_AMOUNT: 20,
     REPAIR_COLOR: 0x44ff44,
     FUEL_COLOR: 0xffaa22,
-    RADAR_COLOR: 0x44aaff,
-    RADAR_DURATION: 5,
+    LASER_BUFF_COLOR: 0xff4444,
+    LASER_BUFF_DURATION: 10,
 
     // Tolls
     TOLL_INTERVAL_MIN: 8000,

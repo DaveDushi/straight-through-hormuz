@@ -14,18 +14,7 @@ export class InputSystem {
         this._keys = {};
         this._pointerId = null;
 
-        // Double-tap detection for mobile boost
-        this._lastTapTime = 0;
-        this._doubleTapThreshold = 300; // ms
-
         this._isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-        // Tilt controls
-        this._tiltAvailable = false;
-        this._tiltEnabled = false;
-        this._tiltGamma = 0;
-        this._tiltDeadZone = 3;    // degrees
-        this._tiltMaxAngle = 30;   // degrees for full steer
 
         this._bindEvents();
     }
@@ -50,17 +39,6 @@ export class InputSystem {
             this._pointerDown = true;
             this._pointerStartX = e.clientX;
             this._pointerCurrentX = e.clientX;
-
-            // Double-tap detection for boost (touch devices)
-            if (e.pointerType === 'touch') {
-                const now = performance.now();
-                if (now - this._lastTapTime < this._doubleTapThreshold) {
-                    this.boostTriggered = true;
-                    // Haptic feedback for boost
-                    if (navigator.vibrate) navigator.vibrate(15);
-                }
-                this._lastTapTime = now;
-            }
 
             // Capture to receive events even if pointer leaves canvas
             this.canvas.setPointerCapture(e.pointerId);
@@ -90,41 +68,8 @@ export class InputSystem {
         this.canvas.style.touchAction = 'none';
     }
 
-    async enableTilt() {
-        // iOS requires permission
-        if (typeof DeviceOrientationEvent !== 'undefined' &&
-            typeof DeviceOrientationEvent.requestPermission === 'function') {
-            try {
-                const permission = await DeviceOrientationEvent.requestPermission();
-                if (permission !== 'granted') {
-                    return false;
-                }
-            } catch (e) {
-                return false;
-            }
-        }
-
-        if (!('DeviceOrientationEvent' in window)) {
-            return false;
-        }
-
-        window.addEventListener('deviceorientation', (e) => {
-            if (e.gamma !== null) {
-                this._tiltGamma = e.gamma;
-                this._tiltAvailable = true;
-            }
-        });
-
-        this._tiltEnabled = true;
-        return true;
-    }
-
     get isTouchDevice() {
         return this._isTouchDevice;
-    }
-
-    get tiltEnabled() {
-        return this._tiltEnabled;
     }
 
     update() {
@@ -133,17 +78,7 @@ export class InputSystem {
         if (this._keys['ArrowLeft'] || this._keys['KeyA']) this.steer -= 1;
         if (this._keys['ArrowRight'] || this._keys['KeyD']) this.steer += 1;
 
-        // Tilt controls (mobile) — takes priority over drag when available
-        if (this._tiltEnabled && this._tiltAvailable) {
-            let gamma = this._tiltGamma;
-            if (Math.abs(gamma) < this._tiltDeadZone) {
-                gamma = 0;
-            } else {
-                gamma = gamma - Math.sign(gamma) * this._tiltDeadZone;
-            }
-            const effectiveMax = this._tiltMaxAngle - this._tiltDeadZone;
-            this.steer = clamp(gamma / effectiveMax, -1, 1);
-        } else if (this._pointerDown) {
+        if (this._pointerDown) {
             const dx = this._pointerCurrentX - this._pointerStartX;
             const sensitivity = 40;
             this.steer = clamp(dx / sensitivity, -1, 1);

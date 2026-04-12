@@ -47,9 +47,9 @@ const WATER_FRAGMENT = `
         vec2 worldUV = vWorldPos.xz * 0.02;
         float scroll = uScrollOffset * 0.003;
 
-        vec2 uv1 = worldUV + vec2(uTime * 0.02, -scroll + uTime * 0.01);
-        vec2 uv2 = worldUV * 1.4 + vec2(-uTime * 0.015, -scroll * 1.1 + uTime * 0.008);
-        vec2 uv3 = worldUV * 2.8 + vec2(uTime * 0.01, -scroll * 0.9 - uTime * 0.012);
+        vec2 uv1 = worldUV + vec2(uTime * 0.02, scroll + uTime * 0.01);
+        vec2 uv2 = worldUV * 1.4 + vec2(-uTime * 0.015, scroll * 1.1 + uTime * 0.008);
+        vec2 uv3 = worldUV * 2.8 + vec2(uTime * 0.01, scroll * 0.9 - uTime * 0.012);
 
         float n1 = noise(uv1 * 8.0);
         float n2 = noise(uv2 * 12.0);

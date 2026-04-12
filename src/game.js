@@ -85,20 +85,18 @@ export class Game {
 
         this._wakeTimer = 0;
 
-        // Tilt controls setup
-        const tiltBtn = document.getElementById('btn-tilt');
-        if (tiltBtn) {
-            tiltBtn.addEventListener('click', async () => {
-                const success = await this.input.enableTilt();
-                if (success) {
-                    tiltBtn.textContent = 'Tilt Enabled \u2713';
-                    tiltBtn.disabled = true;
-                    tiltBtn.classList.add('tilt-active');
-                } else {
-                    tiltBtn.textContent = 'Tilt Unavailable';
-                    tiltBtn.disabled = true;
-                }
+        // Mobile boost button
+        this._boostBtn = document.getElementById('btn-boost');
+        if (this._boostBtn) {
+            this._boostBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.input.boostTriggered = true;
+                if (navigator.vibrate) navigator.vibrate(15);
             });
+        }
+        if (this.input.isTouchDevice) {
+            document.body.classList.add('touch-device');
         }
 
         this.fsm = new StateMachine({
@@ -331,6 +329,7 @@ export class Game {
             particles: this.particles,
             audio: this.audio,
             inventory: this.inventory,
+            ironLaser: this.ironLaser,
             releaseEntity,
             addScore: (pts) => this.scoring.addScore(pts),
             notifyPickup: (type) => this.hud.showPickupNotification(type),
@@ -431,6 +430,7 @@ export class Game {
 
     _activateCeasefire(active) {
         this.ceasefireShootingDisabled = active;
+        this.tanker.ceasefireActive = active;
         if (active) {
             this.audio.playSFX('ceasefire');
             this.radio.showCustom('COMMAND', 'Ceasefire holding… all shooting stopped.', this.audio);

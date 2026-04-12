@@ -17,6 +17,7 @@ export class Tanker extends Entity {
         this.maxHull = CONFIG.HULL_MAX;
         this.oilBoostActive = false;
         this.pakFlagActive = false;
+        this.ceasefireActive = false;
         this._buildMesh();
     }
 
@@ -125,6 +126,80 @@ export class Tanker extends Entity {
         greenLight.position.set(W / 2, 2.5, -L * 0.4);
         group.add(greenLight);
 
+        // === Active powerup visuals ===
+
+        // Pak Flag on mast
+        this._pakFlagVisual = new THREE.Group();
+        const pfFlagMat = new THREE.MeshPhongMaterial({
+            color: 0x01411C, emissive: 0x002210, side: THREE.DoubleSide
+        });
+        const pfFlag = new THREE.Mesh(
+            new THREE.PlaneGeometry(1.0, 0.65),
+            pfFlagMat
+        );
+        pfFlag.position.set(0.56, 0, 0);
+        this._pakFlagVisual.add(pfFlag);
+        const pfWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+        const pfStripe = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.2, 0.65),
+            pfWhiteMat
+        );
+        pfStripe.position.set(0.08, 0, 0.01);
+        this._pakFlagVisual.add(pfStripe);
+        const pfCrescent = new THREE.Mesh(
+            new THREE.TorusGeometry(0.12, 0.03, 8, 12, Math.PI * 1.3),
+            pfWhiteMat
+        );
+        pfCrescent.position.set(0.65, 0.05, 0.02);
+        pfCrescent.rotation.z = Math.PI * 0.2;
+        this._pakFlagVisual.add(pfCrescent);
+        const pfStar = new THREE.Mesh(
+            new THREE.OctahedronGeometry(0.06, 0),
+            pfWhiteMat
+        );
+        pfStar.position.set(0.82, 0.05, 0.02);
+        this._pakFlagVisual.add(pfStar);
+        this._pakFlagVisual.position.set(0, 4.85, L * 0.25);
+        this._pakFlagVisual.visible = false;
+        group.add(this._pakFlagVisual);
+
+        // Oil exhaust glow at stern
+        this._oilExhaust = new THREE.Group();
+        this._oilExhaustGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(0.6, 8, 8),
+            new THREE.MeshBasicMaterial({
+                color: 0xFF6600, transparent: true, opacity: 0.5
+            })
+        );
+        this._oilExhaust.add(this._oilExhaustGlow);
+        this._oilExhaust.add(new THREE.PointLight(0xFF8800, 1.5, 12));
+        this._oilExhaust.position.set(0, 2, -L * 0.48);
+        this._oilExhaust.visible = false;
+        this._oilExhaustTime = 0;
+        group.add(this._oilExhaust);
+
+        // Ceasefire white flag on bridge
+        this._ceasefireVisual = new THREE.Group();
+        const cfPoleMat = new THREE.MeshPhongMaterial({ color: 0x888888 });
+        const cfPole = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.04, 0.04, 1.5, 6),
+            cfPoleMat
+        );
+        cfPole.position.y = 0.75;
+        this._ceasefireVisual.add(cfPole);
+        const cfFlagMat = new THREE.MeshPhongMaterial({
+            color: 0xffffff, emissive: 0x333333, side: THREE.DoubleSide
+        });
+        const cfFlag = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.8, 0.5),
+            cfFlagMat
+        );
+        cfFlag.position.set(0.44, 1.2, 0);
+        this._ceasefireVisual.add(cfFlag);
+        this._ceasefireVisual.position.set(0, 5.3, -L * 0.32);
+        this._ceasefireVisual.visible = false;
+        group.add(this._ceasefireVisual);
+
         this.mesh = group;
         this.bodyMat = hullMat;
     }
@@ -139,7 +214,12 @@ export class Tanker extends Entity {
         this.invulnTimer = 0;
         this.oilBoostActive = false;
         this.pakFlagActive = false;
+        this.ceasefireActive = false;
         this.active = true;
+        if (this._pakFlagVisual) this._pakFlagVisual.visible = false;
+        if (this._oilExhaust) this._oilExhaust.visible = false;
+        if (this._ceasefireVisual) this._ceasefireVisual.visible = false;
+        this._oilExhaustTime = 0;
         this.syncMesh();
     }
 
@@ -185,6 +265,16 @@ export class Tanker extends Entity {
         this.z += scrollSpeed * delta;
 
         this.mesh.rotation.y = -this.lateralVelocity * 0.015;
+
+        // Active powerup visuals
+        this._pakFlagVisual.visible = this.pakFlagActive;
+        this._ceasefireVisual.visible = this.ceasefireActive;
+        this._oilExhaust.visible = this.oilBoostActive;
+        if (this.oilBoostActive) {
+            this._oilExhaustTime += delta;
+            this._oilExhaustGlow.material.opacity = 0.3 + Math.sin(this._oilExhaustTime * 12) * 0.2;
+            this._oilExhaustGlow.scale.setScalar(0.8 + Math.sin(this._oilExhaustTime * 8) * 0.3);
+        }
 
         this.syncMesh();
     }

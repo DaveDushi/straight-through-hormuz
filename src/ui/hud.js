@@ -13,6 +13,7 @@ export class HUD {
         this.phaseEl = document.getElementById('phase-name');
         this.boostBar = document.getElementById('boost-fill');
         this.damageOverlay = document.getElementById('damage-overlay');
+        this.boostBtn = document.getElementById('btn-boost');
         this.steerLeft = document.querySelector('.steer-indicator--left');
         this.steerRight = document.querySelector('.steer-indicator--right');
         this.slots = [
@@ -167,6 +168,9 @@ export class HUD {
                     this.boostBar.classList.add('boost-ready');
                 } else {
                     this.boostBar.classList.remove('boost-ready');
+                }
+                if (this.boostBtn) {
+                    this.boostBtn.classList.toggle('on-cooldown', boostPct < 100);
                 }
             }
         }

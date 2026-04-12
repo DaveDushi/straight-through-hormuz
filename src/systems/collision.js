@@ -77,8 +77,8 @@ export class CollisionSystem {
                     tanker.repair(CONFIG.REPAIR_AMOUNT);
                 } else if (entity.resourceType === 'fuel') {
                     tanker.boostCooldown = 0;
-                } else if (entity.resourceType === 'radar') {
-                    if (context.radar) context.radar.activate();
+                } else if (entity.resourceType === 'laser') {
+                    if (context.ironLaser) context.ironLaser.activateBuff();
                 }
                 if (context.audio) context.audio.playSFX('pickup');
                 context.releaseEntity(entity);

@@ -5,6 +5,8 @@ export class IronLaserSystem {
     constructor(scene) {
         this.scene = scene;
         this.hitRate = CONFIG.IRON_LASER_BASE_HIT_RATE;
+        this._baseHitRate = this.hitRate;
+        this.buffTimer = 0;
         this.beams = [];
 
         // Pre-allocate beam pool
@@ -20,7 +22,9 @@ export class IronLaserSystem {
     }
 
     reset(upgradeLevel) {
-        this.hitRate = CONFIG.IRON_LASER_BASE_HIT_RATE + upgradeLevel * CONFIG.IRON_LASER_UPGRADE_BONUS;
+        this._baseHitRate = CONFIG.IRON_LASER_BASE_HIT_RATE + upgradeLevel * CONFIG.IRON_LASER_UPGRADE_BONUS;
+        this.hitRate = this._baseHitRate;
+        this.buffTimer = 0;
         for (const beam of this.beams) {
             beam.active = false;
             beam.timer = 0;
@@ -28,7 +32,24 @@ export class IronLaserSystem {
         }
     }
 
+    activateBuff() {
+        this.buffTimer = CONFIG.LASER_BUFF_DURATION;
+        this.hitRate = 1.0;
+    }
+
+    isBuffActive() {
+        return this.buffTimer > 0;
+    }
+
     update(delta, dronePool, tanker, particles, audio, releaseEntity) {
+        if (this.buffTimer > 0) {
+            this.buffTimer -= delta;
+            if (this.buffTimer <= 0) {
+                this.buffTimer = 0;
+                this.hitRate = this._baseHitRate;
+            }
+        }
+
         // Evaluate drones entering laser range
         dronePool.forEach((drone) => {
             if (!drone.active || drone.laserEvaluated) return;

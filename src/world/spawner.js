@@ -55,7 +55,7 @@ export class Spawner {
         }
 
         if (type === 'resource') {
-            const types = ['repair', 'fuel', 'radar'];
+            const types = ['repair', 'fuel', 'laser'];
             entity.resourceType = types[Math.floor(Math.random() * types.length)];
         }
 
