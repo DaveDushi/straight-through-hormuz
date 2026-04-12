@@ -140,7 +140,7 @@ export class Tanker extends Entity {
     }
 
     update(delta, context) {
-        const { input, straitHalfWidth } = context;
+        const { input, straitHalfWidth, scrollSpeed } = context;
 
         if (this.invulnTimer > 0) {
             this.invulnTimer -= delta;
@@ -170,6 +170,9 @@ export class Tanker extends Entity {
 
         this.x += this.lateralVelocity * delta;
         this.x = clamp(this.x, -straitHalfWidth + this.halfW, straitHalfWidth - this.halfW);
+
+        // Move forward through the strait
+        this.z += scrollSpeed * delta;
 
         this.mesh.rotation.y = -this.lateralVelocity * 0.015;
 

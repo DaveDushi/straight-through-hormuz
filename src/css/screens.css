@@ -142,7 +142,7 @@
     font-size: var(--text-sm);
     font-style: italic;
     color: var(--text-secondary);
-    max-width: 420px;
+    max-width: min(420px, calc(100vw - 2rem));
     text-align: center;
     margin: var(--space-4) 0;
     line-height: var(--leading-normal);
@@ -172,7 +172,7 @@
     font-size: var(--text-sm);
     font-style: italic;
     color: var(--text-secondary);
-    max-width: 420px;
+    max-width: min(420px, calc(100vw - 2rem));
     text-align: center;
     margin: var(--space-4) 0;
     line-height: var(--leading-normal);
@@ -212,7 +212,7 @@
     padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
     text-align: center;
     width: 100%;
-    max-width: 480px;
+    max-width: min(480px, 100vw);
     animation: slide-up var(--dur-slow) var(--ease-out);
     position: relative;
     overflow: hidden;
@@ -271,7 +271,7 @@
 
 .port-content {
     width: 90%;
-    max-width: 500px;
+    max-width: min(500px, calc(100vw - 2rem));
     display: flex;
     flex-direction: column;
     max-height: 70vh;

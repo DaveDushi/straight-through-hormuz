@@ -70,7 +70,6 @@ export class Mine extends Entity {
 
     update(delta, context) {
         this.time += delta * CONFIG.MINE_BOB_SPEED;
-        this.z -= context.scrollSpeed * delta;
         this.mesh.position.y = this.baseY + Math.sin(this.time) * CONFIG.MINE_BOB_AMPLITUDE;
         this.mesh.rotation.y += delta * 0.8;
         // Pulsing glow via opacity

@@ -58,7 +58,7 @@ export class Drone extends Entity {
 
     update(delta, context) {
         if (this.frozen) {
-            this.z -= context.scrollSpeed * delta * 0.3;
+            // Frozen drones stop — tanker sails past them
             this.syncMesh();
             this.mesh.position.y = CONFIG.DRONE_ALTITUDE;
             return;
@@ -66,7 +66,8 @@ export class Drone extends Entity {
 
         const dx = context.tankerX - this.x;
         this.x += clamp(dx * CONFIG.DRONE_HOMING_STRENGTH, -CONFIG.DRONE_SPEED, CONFIG.DRONE_SPEED) * delta;
-        this.z -= context.scrollSpeed * delta * 0.5;
+        // Drones fly forward at half the tanker's speed — tanker overtakes them
+        this.z += context.scrollSpeed * 0.5 * delta;
 
         this.bombTimer -= delta;
         if (this.bombTimer <= 0) {

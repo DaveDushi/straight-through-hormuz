@@ -1,13 +1,17 @@
 /**
- * Camera effects: ocean sway + damage shake.
+ * Camera effects: ocean sway + damage shake + tanker following.
  * Zero GPU cost (CPU math only).
  */
 export class CameraController {
-    constructor(camera, basePosition) {
+    constructor(camera, basePosition, lookAtTarget) {
         this.camera = camera;
         this.baseX = basePosition.x;
         this.baseY = basePosition.y;
         this.baseZ = basePosition.z;
+
+        this.lookAtX = lookAtTarget ? lookAtTarget.x : 0;
+        this.lookAtY = lookAtTarget ? lookAtTarget.y : 0;
+        this.lookAtZ = lookAtTarget ? lookAtTarget.z : 20;
 
         this.shakeIntensity = 0;
         this._time = 0;
@@ -22,7 +26,7 @@ export class CameraController {
         this.shakeIntensity = Math.max(this.shakeIntensity, intensity);
     }
 
-    update(delta) {
+    update(delta, tankerZ = 0) {
         this._time += delta;
 
         // Gentle ocean sway
@@ -41,6 +45,8 @@ export class CameraController {
 
         this.camera.position.x = this.baseX + swayX + shakeX;
         this.camera.position.y = this.baseY + swayY + shakeY;
-        this.camera.position.z = this.baseZ;
+        this.camera.position.z = this.baseZ + tankerZ;
+
+        this.camera.lookAt(this.lookAtX, this.lookAtY, this.lookAtZ + tankerZ);
     }
 }

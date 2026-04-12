@@ -76,7 +76,7 @@ export class ParticleSystem {
             p.mesh.visible = true;
             p.vx = side * 3;
             p.vy = 0.5 + Math.random();
-            p.vz = -scrollSpeed * 0.4;
+            p.vz = -2;
             p.mesh.material.color.setHex(0xeeffff);
             p.mesh.scale.setScalar(0.25 + Math.random() * 0.15);
         }
@@ -93,13 +93,13 @@ export class ParticleSystem {
             p.mesh.visible = true;
             p.vx = (Math.random() - 0.5) * 1.5;
             p.vy = 0;
-            p.vz = -scrollSpeed * 0.7;
+            p.vz = -3;
             p.mesh.material.color.setHex(0xcceeee);
             p.mesh.scale.setScalar(0.3 + Math.random() * 0.2);
         }
     }
 
-    spawnSpeedLines(scrollSpeed) {
+    spawnSpeedLines(scrollSpeed, tankerZ) {
         // Speed lines flowing past camera - create sense of forward motion
         for (let i = 0; i < 2; i++) {
             const p = this._acquire();
@@ -109,11 +109,11 @@ export class ParticleSystem {
             p.maxLife = 1.5;
             p.type = 'speedline';
             const x = (Math.random() - 0.5) * 50;
-            p.mesh.position.set(x, 0.2 + Math.random() * 0.3, 120 + Math.random() * 30);
+            p.mesh.position.set(x, 0.2 + Math.random() * 0.3, tankerZ + 120 + Math.random() * 30);
             p.mesh.visible = true;
             p.vx = 0;
             p.vy = 0;
-            p.vz = -scrollSpeed * 1.2;
+            p.vz = -scrollSpeed * 0.2;
             p.mesh.material.color.setHex(0xbbdddd);
             p.mesh.scale.set(0.1, 0.1, 2);
         }
@@ -135,7 +135,6 @@ export class ParticleSystem {
             p.mesh.position.z += p.vz * delta;
 
             if (p.type === 'explosion') {
-                p.mesh.position.z -= scrollSpeed * delta;
                 p.vy -= 10 * delta;
             }
 

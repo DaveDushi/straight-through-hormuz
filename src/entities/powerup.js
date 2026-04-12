@@ -101,7 +101,6 @@ export class Powerup extends Entity {
 
     update(delta, context) {
         this.time += delta;
-        this.z -= context.scrollSpeed * delta;
         this.mesh.position.y = 2 + Math.sin(this.time * CONFIG.POWERUP_BOB_SPEED) * CONFIG.POWERUP_BOB_AMPLITUDE;
         this.mesh.rotation.y += delta * CONFIG.POWERUP_ROTATE_SPEED;
         this.glowMesh.material.opacity = 0.06 + Math.sin(this.time * 4) * 0.04;

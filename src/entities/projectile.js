@@ -36,7 +36,7 @@ export class Projectile extends Entity {
 
     update(delta, context) {
         this.x += this.vx * delta;
-        this.z += this.vz * delta - context.scrollSpeed * delta;
+        this.z += this.vz * delta;
         this.mesh.position.y = Math.max(0.5, this.mesh.position.y - delta * 3);
         this.syncMesh();
     }

@@ -174,6 +174,8 @@
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-widest);
     text-transform: uppercase;
+    max-width: calc(100vw - 2rem);
+    text-align: center;
     color: rgba(255, 255, 255, 0.7);
     text-shadow: 0 1px 3px rgba(0,0,0,0.4);
     pointer-events: none;
@@ -286,7 +288,7 @@
     bottom: calc(max(var(--space-4), env(safe-area-inset-bottom)) + 72px);
     left: 50%;
     transform: translateX(-50%);
-    max-width: 500px;
+    max-width: min(500px, calc(100vw - 2rem));
     width: 90%;
     background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(8px);
@@ -410,6 +412,14 @@
         width: 100%;
         max-width: 320px;
     }
+    #pickup-notification {
+        white-space: normal;
+        text-align: center;
+        font-size: var(--text-sm);
+    }
+    #radio-bar {
+        width: calc(100vw - 1.5rem);
+    }
 }
 
 /* Landscape phone with compressed vertical space */
@@ -457,6 +467,7 @@
     opacity: 0;
     transition: opacity var(--dur-normal) var(--ease-out);
     white-space: nowrap;
+    max-width: calc(100vw - 2rem);
     text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 

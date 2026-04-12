@@ -116,8 +116,9 @@ export class Water {
         scene.add(this.mesh);
     }
 
-    update(delta, distance) {
+    update(delta, distance, tankerZ = 0) {
         this.uniforms.uTime.value += delta;
         this.uniforms.uScrollOffset.value = distance;
+        this.mesh.position.z = tankerZ;
     }
 }

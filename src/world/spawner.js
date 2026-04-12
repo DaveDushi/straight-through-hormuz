@@ -15,19 +15,19 @@ export class Spawner {
         this.ceasefireActive = false;
     }
 
-    update(delta, difficulty, straitHalfWidth, distance) {
+    update(delta, difficulty, straitHalfWidth, distance, tankerZ) {
         if (this.ceasefireActive) return;
 
         const phase = difficulty.currentPhase;
 
-        this._tickSpawn(delta, 'mine', phase.mineRate, straitHalfWidth);
-        this._tickSpawn(delta, 'drone', phase.droneRate, straitHalfWidth);
-        this._tickSpawn(delta, 'boat', phase.boatRate, straitHalfWidth);
-        this._tickSpawn(delta, 'powerup', phase.powerupRate, straitHalfWidth);
-        this._tickSpawn(delta, 'resource', phase.resourceRate, straitHalfWidth);
+        this._tickSpawn(delta, 'mine', phase.mineRate, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'drone', phase.droneRate, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'boat', phase.boatRate, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'powerup', phase.powerupRate, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'resource', phase.resourceRate, straitHalfWidth, tankerZ);
     }
 
-    _tickSpawn(delta, type, rate, straitHalfWidth) {
+    _tickSpawn(delta, type, rate, straitHalfWidth, tankerZ) {
         if (rate <= 0) return;
 
         this.timers[type] += delta;
@@ -35,11 +35,11 @@ export class Spawner {
 
         if (this.timers[type] >= interval) {
             this.timers[type] -= interval;
-            this._spawn(type, straitHalfWidth);
+            this._spawn(type, straitHalfWidth, tankerZ);
         }
     }
 
-    _spawn(type, straitHalfWidth) {
+    _spawn(type, straitHalfWidth, tankerZ) {
         const pool = this.pools[type];
         if (!pool) return;
 
@@ -47,7 +47,7 @@ export class Spawner {
         if (!entity) return;
 
         const x = randomRange(-straitHalfWidth + 2, straitHalfWidth - 2);
-        const z = CONFIG.SPAWN_Z + randomRange(0, 30);
+        const z = tankerZ + CONFIG.SPAWN_Z + randomRange(0, 30);
 
         if (type === 'powerup') {
             const types = ['flare', 'oilSlick', 'ceasefire'];
@@ -73,10 +73,10 @@ export class Spawner {
         }
     }
 
-    despawnOffscreen(pools) {
+    despawnOffscreen(pools, tankerZ) {
         for (const key in pools) {
             pools[key].forEach((entity) => {
-                if (entity.z < CONFIG.DESPAWN_Z) {
+                if (entity.z < tankerZ + CONFIG.DESPAWN_Z) {
                     pools[key].release(entity);
                 }
             });

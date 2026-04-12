@@ -208,7 +208,8 @@ export class Game {
             CONFIG.CAMERA_LOOKAT.z
         );
 
-        this.cameraController = new CameraController(this.camera, CONFIG.CAMERA_POSITION);
+        this.cameraController = new CameraController(this.camera, CONFIG.CAMERA_POSITION, CONFIG.CAMERA_LOOKAT);
+        this._adjustCameraForAspect();
 
         const ambient = new THREE.AmbientLight(0xddeedd, 1.2);
         this.scene.add(ambient);
@@ -250,6 +251,7 @@ export class Game {
         this.radio.reset();
         this.difficulty.update(0);
         this.spawner.ceasefireActive = false;
+        this.terrain.reset();
 
         // Clean up oil slicks
         for (const slick of this.oilSlicks) {
@@ -272,7 +274,7 @@ export class Game {
             if (this.fsm.is('playing')) {
                 this._update(delta);
             } else if (this.fsm.is('toll')) {
-                this.water.update(delta * 0.2, this.scoring.distance);
+                this.water.update(delta * 0.2, this.scoring.distance, this.tanker.z);
                 this.particles.update(delta, 0);
             }
         } catch (e) {
@@ -292,6 +294,7 @@ export class Game {
         this.tanker.update(delta, {
             input: this.input,
             straitHalfWidth,
+            scrollSpeed,
         });
 
         const ctx = {
@@ -334,8 +337,8 @@ export class Game {
         this.hud.updateSteerIndicators(this.input.steer);
 
         this.scoring.update(delta, scrollSpeed, this.collision.nearMisses);
-        this.spawner.update(delta, this.difficulty, straitHalfWidth, this.scoring.distance);
-        this.spawner.despawnOffscreen(this.pools);
+        this.spawner.update(delta, this.difficulty, straitHalfWidth, this.scoring.distance, this.tanker.z);
+        this.spawner.despawnOffscreen(this.pools, this.tanker.z);
 
         const powerupSlot = this.input.consumePowerupActivation();
         if (powerupSlot >= 0) {
@@ -355,16 +358,14 @@ export class Game {
             this.fsm.transition('toll', tollOffer);
         }
 
-        this.water.update(delta, this.scoring.distance);
-        this.terrain.update(delta, scrollSpeed, straitHalfWidth);
+        this.water.update(delta, this.scoring.distance, this.tanker.z);
+        this.terrain.update(delta, this.tanker.z, straitHalfWidth);
         this.particles.update(delta, scrollSpeed);
 
         // Oil slick update
         for (let i = this.oilSlicks.length - 1; i >= 0; i--) {
             const slick = this.oilSlicks[i];
             slick.timer -= delta;
-            slick.z -= scrollSpeed * delta;
-            slick.mesh.position.z = slick.z;
 
             if (slick.timer < 2) {
                 slick.mesh.material.opacity = 0.55 * (slick.timer / 2);
@@ -394,7 +395,7 @@ export class Game {
         if (this._wakeTimer > 0.08) {
             this._wakeTimer = 0;
             this.particles.spawnWake(this.tanker.x, this.tanker.z, scrollSpeed);
-            this.particles.spawnSpeedLines(scrollSpeed);
+            this.particles.spawnSpeedLines(scrollSpeed, this.tanker.z);
         }
 
         this.hud.update({
@@ -410,8 +411,8 @@ export class Game {
             ceasefireActive: this.inventory.isCeasefireActive(),
         });
 
-        // Camera sway/shake
-        this.cameraController.update(delta);
+        // Camera follows tanker + sway/shake
+        this.cameraController.update(delta, this.tanker.z);
 
         if (this.scoring.distance >= CONFIG.WIN_DISTANCE) {
             this.fsm.transition('victory');
@@ -485,9 +486,25 @@ export class Game {
         this.fsm.transition('playing');
     }
 
-    _onResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
+    _adjustCameraForAspect() {
+        const aspect = window.innerWidth / window.innerHeight;
+        this.camera.aspect = aspect;
+
+        if (aspect < 1) {
+            // Portrait / narrow: widen FOV + raise camera to show more of the strait
+            const narrow = 1 - aspect;
+            this.camera.fov = CONFIG.CAMERA_FOV + narrow * 25;
+            this.cameraController.baseY = CONFIG.CAMERA_POSITION.y + narrow * 20;
+        } else {
+            this.camera.fov = CONFIG.CAMERA_FOV;
+            this.cameraController.baseY = CONFIG.CAMERA_POSITION.y;
+        }
+
         this.camera.updateProjectionMatrix();
+    }
+
+    _onResize() {
+        this._adjustCameraForAspect();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 }

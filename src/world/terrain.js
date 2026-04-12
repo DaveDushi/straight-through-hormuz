@@ -90,7 +90,6 @@ export class Terrain {
         this.chunkLength = CONFIG.TERRAIN_CHUNK_LENGTH;
         this.chunkWidth = CONFIG.TERRAIN_CHUNK_WIDTH;
         this.overlap = CONFIG.TERRAIN_OVERLAP;
-        this.scrollOffset = 0;
         this.octaves = quality.settings.terrainOctaves;
 
         const segX = quality.settings.terrainSegX;
@@ -128,8 +127,7 @@ export class Terrain {
     _createChunkPair(zOffset) {
         const pair = {
             left: null, right: null,
-            z: zOffset,
-            worldZ: this.scrollOffset + zOffset,
+            worldZ: zOffset,
         };
 
         const geoL = this._createGeometry();
@@ -215,25 +213,28 @@ export class Terrain {
     _positionChunk(chunk, straitHalfWidth) {
         const ov = this.overlap;
         const hw = this.chunkWidth / 2;
-        chunk.left.position.set(-straitHalfWidth + ov - hw, 0, chunk.z);
-        chunk.right.position.set(straitHalfWidth - ov + hw, 0, chunk.z);
+        chunk.left.position.set(-straitHalfWidth + ov - hw, 0, chunk.worldZ);
+        chunk.right.position.set(straitHalfWidth - ov + hw, 0, chunk.worldZ);
     }
 
-    update(delta, scrollSpeed, straitHalfWidth) {
-        const move = scrollSpeed * delta;
-        this.scrollOffset += move;
+    reset() {
+        for (let i = 0; i < this.chunks.length; i++) {
+            this.chunks[i].worldZ = i * this.chunkLength;
+            this._updateChunkHeights(this.chunks[i], CONFIG.STRAIT_WIDTH_START / 2);
+            this._positionChunk(this.chunks[i], CONFIG.STRAIT_WIDTH_START / 2);
+        }
+    }
 
+    update(delta, tankerZ, straitHalfWidth) {
         for (const chunk of this.chunks) {
-            chunk.z -= move;
             this._positionChunk(chunk, straitHalfWidth);
         }
 
-        // Recycle chunks that scrolled behind camera
+        // Recycle chunks that fell behind the camera
         for (const chunk of this.chunks) {
-            if (chunk.z < -this.chunkLength) {
-                const maxZ = Math.max(...this.chunks.map(c => c.z));
-                chunk.z = maxZ + this.chunkLength;
-                chunk.worldZ = this.scrollOffset + chunk.z;
+            if (chunk.worldZ < tankerZ - this.chunkLength) {
+                const maxWorldZ = Math.max(...this.chunks.map(c => c.worldZ));
+                chunk.worldZ = maxWorldZ + this.chunkLength;
                 this._updateChunkHeights(chunk, straitHalfWidth);
                 this._positionChunk(chunk, straitHalfWidth);
             }

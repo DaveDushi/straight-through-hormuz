@@ -66,7 +66,6 @@ export class Resource extends Entity {
 
     update(delta, context) {
         this.time += delta;
-        this.z -= context.scrollSpeed * delta;
         this.mesh.position.y = 1 + Math.sin(this.time * 3) * 0.3;
         this.mesh.rotation.y += delta * 1.5;
         this.syncMesh();
