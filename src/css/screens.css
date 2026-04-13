@@ -885,6 +885,12 @@
     animation: fade-in-up var(--dur-normal) var(--ease-out) 400ms backwards;
 }
 
+#port-promo-slot {
+    display: none;
+    margin-top: auto;
+    max-width: 100%;
+}
+
 /* ====== PROMO SLOT ====== */
 .promo-slot {
     width: 100%;
@@ -1354,6 +1360,14 @@
     #port-hub-screen .port-actions {
         max-width: 100%;
     }
+
+    #port-promo-slot {
+        display: flex;
+        max-width: 100%;
+        margin-top: auto;
+        padding: var(--space-2) var(--space-3);
+        animation-delay: 600ms;
+    }
 }
 
 /* ====== DESKTOP DOCK (wide layout) ====== */
@@ -1428,5 +1442,12 @@
     #port-hub-screen .port-actions {
         max-width: 100%;
         padding-top: var(--space-3);
+    }
+
+    #port-promo-slot {
+        display: flex;
+        max-width: 100%;
+        margin-top: auto;
+        animation-delay: 600ms;
     }
 }

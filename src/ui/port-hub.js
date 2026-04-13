@@ -1,5 +1,6 @@
 import { CONFIG } from '../config.js';
 import { DockShipView } from './dock-ship-view.js';
+import { refreshPromo } from './promo.js';
 
 const UPGRADE_ICONS = {
   rudder: '\u2699',
@@ -86,6 +87,7 @@ export class PortHub {
     this.upgradeContainer = document.getElementById('upgrades-list');
     this.creditsEl = document.getElementById('credits-value');
     this.farthestEl = document.getElementById('farthest-value');
+    this.promoSlot = document.getElementById('port-promo-slot');
 
     const viewport = document.getElementById('dock-ship-viewport');
     this.shipView = new DockShipView(viewport);
@@ -106,6 +108,7 @@ export class PortHub {
     }
     this._updateAll();
     this.shipView.start();
+    refreshPromo(this.promoSlot);
   }
 
   hide() {
