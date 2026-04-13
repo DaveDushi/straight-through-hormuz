@@ -213,6 +213,10 @@ export class HUD {
     }
 
     showPickupNotification(type) {
+        if (!this._seenPickups) this._seenPickups = new Set();
+        if (this._seenPickups.has(type)) return;
+        this._seenPickups.add(type);
+
         const descriptions = {
             oil: 'OIL \u2014 Speed & steering boost for 8s',
             ceasefire: 'CEASEFIRE \u2014 Stops all shooting for 10s',
@@ -229,6 +233,10 @@ export class HUD {
         el.classList.add('active');
         clearTimeout(this._pickupTimer);
         this._pickupTimer = setTimeout(() => el.classList.remove('active'), 2500);
+    }
+
+    resetPickupNotifications() {
+        this._seenPickups = new Set();
     }
 
     _powerupLabel(type) {
