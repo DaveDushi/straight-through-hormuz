@@ -587,35 +587,64 @@ body.touch-device #btn-boost-left {
     animation: scale-in var(--dur-normal) var(--ease-spring);
 }
 
-/* ====== ROTATE DEVICE OVERLAY ====== */
+/* ====== ORIENTATION SUGGESTION BANNER ====== */
 #rotate-overlay {
     display: none;
     position: fixed;
-    inset: 0;
-    background: var(--surface-base);
+    bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 22, 40, 0.92);
     z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    border-radius: 12px;
+    padding: var(--space-3) var(--space-5);
+    width: max-content;
+    max-width: 90vw;
+    animation: fade-in-up var(--dur-normal) var(--ease-out);
+    border: 1px solid rgba(74, 95, 130, 0.3);
+}
+
+#rotate-overlay.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
 }
 
 .rotate-content {
-    text-align: center;
-    padding: var(--space-8);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
 }
 
 .rotate-icon {
-    font-size: 64px;
-    color: var(--text-primary);
+    font-size: 24px;
+    color: #e0e6f0;
     animation: rotate-hint 2s ease-in-out infinite;
-    margin-bottom: var(--space-4);
+    flex-shrink: 0;
 }
 
 .rotate-text {
     font-family: var(--font-display);
-    font-size: var(--text-lg);
-    color: var(--text-primary);
+    font-size: var(--text-sm);
+    color: #e0e6f0;
     letter-spacing: var(--tracking-wider);
+}
+
+.rotate-dismiss {
+    background: none;
+    border: none;
+    color: #8899aa;
+    font-size: 24px;
+    cursor: pointer;
+    padding: var(--space-2) var(--space-3);
+    flex-shrink: 0;
+    line-height: 1;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 @media (orientation: portrait) and (max-width: 767px) {

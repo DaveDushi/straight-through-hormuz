@@ -105,11 +105,16 @@ export class Game {
         if (this.input.isTouchDevice) {
             document.body.classList.add('touch-device');
             CONFIG.isMobile = true;
-            try {
-                if (screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(() => {});
-                }
-            } catch (e) {}
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+            if (isPWA) {
+                try {
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(() => {});
+                    }
+                } catch (e) {}
+            } else {
+                this._showOrientationBanner();
+            }
         }
 
         this.fsm = new StateMachine({
@@ -540,5 +545,18 @@ export class Game {
     _onResize() {
         this._adjustCameraForAspect();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    _showOrientationBanner() {
+        const banner = document.getElementById('rotate-overlay');
+        if (!banner || sessionStorage.getItem('orientation-dismissed')) return;
+        const dismiss = () => {
+            banner.classList.add('fade-out');
+            setTimeout(() => banner.remove(), 300);
+            sessionStorage.setItem('orientation-dismissed', '1');
+        };
+        const btn = banner.querySelector('.rotate-dismiss');
+        if (btn) btn.addEventListener('click', dismiss);
+        setTimeout(dismiss, 5000);
     }
 }

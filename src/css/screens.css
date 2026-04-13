@@ -1000,11 +1000,11 @@
     }
 }
 
-/* Short portrait phones — ensure result screens fit without scrolling */
-@media (max-height: 700px) and (orientation: portrait) {
+/* Portrait phones — tighten result screens for vertical space */
+@media (orientation: portrait) and (max-width: 767px) {
     .screen-title {
-        font-size: var(--text-2xl);
-        margin-bottom: var(--space-1);
+        font-size: var(--text-3xl);
+        margin-bottom: var(--space-2);
     }
 
     .screen-subtitle {
@@ -1013,8 +1013,8 @@
     }
 
     .result-hero {
-        padding: var(--space-3) var(--space-4);
-        margin: var(--space-2) 0;
+        padding: var(--space-3) var(--space-5);
+        margin: var(--space-3) 0;
     }
 
     .result-hero-value {
@@ -1022,11 +1022,11 @@
     }
 
     .result-hero-divider {
-        height: 28px;
+        height: 32px;
     }
 
     .result-secondary {
-        margin-bottom: var(--space-2);
+        margin-bottom: var(--space-3);
     }
 
     .result-sec-value {
@@ -1035,12 +1035,85 @@
 
     .result-quote {
         padding: var(--space-2) var(--space-3);
-        margin-bottom: var(--space-2);
+        margin-bottom: var(--space-3);
         font-size: var(--text-xs);
     }
 
     .result-actions {
         gap: var(--space-2);
+    }
+
+    .result-actions .btn {
+        min-height: 40px;
+        padding: var(--space-2) var(--space-5);
+    }
+
+    .promo-slot {
+        margin-top: var(--space-3);
+        padding: var(--space-2) var(--space-3);
+    }
+
+    /* Port hub — distribute space between ship and upgrades */
+    .dock-ship-viewport {
+        height: auto;
+        flex: 0 0 25vh;
+    }
+
+    .port-content {
+        align-items: stretch;
+        padding: var(--space-3) var(--space-4);
+        padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+        justify-content: space-evenly;
+    }
+
+    .port-hud {
+        padding: var(--space-2) var(--space-3);
+        padding-left: max(var(--space-3), env(safe-area-inset-left));
+        padding-right: max(var(--space-3), env(safe-area-inset-right));
+    }
+
+    #port-hub-screen #upgrades-list {
+        max-width: none;
+        gap: 6px;
+    }
+
+    #port-hub-screen #upgrade-detail {
+        max-width: none;
+        padding: var(--space-2);
+    }
+
+    #port-hub-screen .port-actions {
+        max-width: none;
+        gap: var(--space-2);
+    }
+}
+
+/* Short portrait phones — further compress */
+@media (max-height: 700px) and (orientation: portrait) {
+    .screen-title {
+        font-size: var(--text-2xl);
+        margin-bottom: var(--space-1);
+    }
+
+    .screen-subtitle {
+        margin-bottom: var(--space-1);
+    }
+
+    .result-hero {
+        padding: var(--space-2) var(--space-4);
+        margin: var(--space-2) 0;
+    }
+
+    .result-hero-divider {
+        height: 24px;
+    }
+
+    .result-secondary {
+        margin-bottom: var(--space-2);
+    }
+
+    .result-quote {
+        margin-bottom: var(--space-2);
     }
 
     .result-actions .btn {
@@ -1050,7 +1123,20 @@
 
     .promo-slot {
         margin-top: var(--space-2);
-        padding: var(--space-2) var(--space-3);
+    }
+
+    /* Port hub — compress on short phones */
+    .port-hud-title .screen-subtitle {
+        display: none;
+    }
+
+    #upgrades-list {
+        gap: 4px;
+    }
+
+    #upgrade-detail {
+        padding: var(--space-1) var(--space-2);
+        margin-bottom: var(--space-1);
     }
 }
 
