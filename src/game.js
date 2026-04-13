@@ -112,32 +112,6 @@ export class Game {
             } catch (e) {}
         }
 
-        this._fullscreenBtn = document.getElementById('btn-fullscreen');
-        this._fullscreenMenuBtn = document.getElementById('btn-fullscreen-menu');
-        const fsEnabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
-        const isStandalone = window.matchMedia('(display-mode: fullscreen)').matches
-            || window.matchMedia('(display-mode: standalone)').matches
-            || window.navigator.standalone;
-        if (fsEnabled && !isStandalone) {
-            if (this._fullscreenMenuBtn) this._fullscreenMenuBtn.style.display = '';
-            const toggleFullscreen = () => {
-                if (document.fullscreenElement || document.webkitFullscreenElement) {
-                    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-                } else {
-                    const el = document.documentElement;
-                    (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
-                }
-            };
-            if (this._fullscreenBtn) this._fullscreenBtn.addEventListener('click', toggleFullscreen);
-            if (this._fullscreenMenuBtn) this._fullscreenMenuBtn.addEventListener('click', toggleFullscreen);
-            const onFsChange = () => {
-                const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-                if (this._fullscreenMenuBtn) this._fullscreenMenuBtn.textContent = isFs ? 'Exit Fullscreen' : 'Fullscreen';
-            };
-            document.addEventListener('fullscreenchange', onFsChange);
-            document.addEventListener('webkitfullscreenchange', onFsChange);
-        }
-
         this.fsm = new StateMachine({
             'menu': {
                 onEnter: () => {
@@ -154,11 +128,8 @@ export class Game {
                 onEnter: () => {
                     this.hud.show();
                     this.tollDialog.hide();
-                    if (this._fullscreenBtn) this._fullscreenBtn.style.display = 'block';
                 },
-                onExit: () => {
-                    if (this._fullscreenBtn) this._fullscreenBtn.style.display = 'none';
-                },
+                onExit: () => {},
             },
             'toll': {
                 onEnter: (data) => {

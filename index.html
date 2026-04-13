@@ -134,9 +134,6 @@
             </button>
         </div>
 
-        <!-- Fullscreen toggle -->
-        <button id="btn-fullscreen" aria-label="Toggle fullscreen">&#x26F6;</button>
-
         <!-- Mobile boost buttons -->
         <button id="btn-boost" aria-label="Emergency Boost">BOOST</button>
         <button id="btn-boost-left" aria-label="Emergency Boost">BOOST</button>
@@ -166,7 +163,9 @@
 
         <!-- Menu Screen -->
         <div id="menu-screen" class="screen-overlay visible">
-            <div class="menu-coords" aria-hidden="true">26.5667°N 56.2500°E</div>
+            <div class="menu-coords" aria-hidden="true">
+                26.5667°N 56.2500°E
+            </div>
             <div class="screen-title">
                 <span class="title-line-1">Strait Outta</span>
                 <span class="title-line-2">Hormuz</span>
@@ -174,15 +173,18 @@
             <div class="screen-subtitle">— Strait of Hormuz, April 2026 —</div>
             <div class="menu-tagline">Steer. Survive. Sail through.</div>
             <div class="menu-actions">
-                <button class="btn btn-primary btn-hero" id="btn-play">Set Sail</button>
+                <button class="btn btn-primary btn-hero" id="btn-play">
+                    Set Sail
+                </button>
                 <button class="btn btn-secondary" id="btn-port">Dock</button>
             </div>
             <div class="controls-hint" id="controls-hint">
                 <div class="hint-line">Arrow keys / A,D or drag to steer</div>
                 <div class="hint-line">Space for emergency boost</div>
-                <div class="hint-line">1, 2, 3 or tap slots to use power-ups</div>
+                <div class="hint-line">
+                    1, 2, 3 or tap slots to use power-ups
+                </div>
             </div>
-            <button class="btn btn-secondary btn-fullscreen" id="btn-fullscreen-menu" aria-label="Toggle fullscreen">Fullscreen</button>
         </div>
 
         <!-- Toll Dialog (Bottom Sheet) -->
@@ -209,7 +211,9 @@
         <!-- Game Over Screen -->
         <div id="gameover-screen" class="screen-overlay">
             <div class="screen-title">Lost at Sea</div>
-            <div class="screen-subtitle">MT Make Hormuz Great Again — Final Report</div>
+            <div class="screen-subtitle">
+                MT Make Hormuz Great Again — Final Report
+            </div>
 
             <div class="result-hero" id="go-hero">
                 <div class="result-hero-stat">
@@ -218,7 +222,12 @@
                 </div>
                 <div class="result-hero-divider"></div>
                 <div class="result-hero-stat">
-                    <div class="result-hero-value result-hero-earned" id="go-earned">+¥0</div>
+                    <div
+                        class="result-hero-value result-hero-earned"
+                        id="go-earned"
+                    >
+                        +¥0
+                    </div>
                     <div class="result-hero-label">Yuan Earned</div>
                 </div>
             </div>
@@ -242,32 +251,45 @@
 
             <div class="share-card">
                 <div class="share-card-header">Share Your Voyage</div>
-                <button class="btn btn-share" id="btn-go-share">Copy & Share</button>
+                <button class="btn btn-share" id="btn-go-share">Share</button>
             </div>
 
             <div class="result-actions">
-                <button class="btn btn-primary" id="btn-restart">Try Again</button>
+                <button class="btn btn-primary" id="btn-restart">
+                    Try Again
+                </button>
                 <button class="btn btn-secondary" id="btn-go-port">Dock</button>
             </div>
 
             <div class="promo-slot" id="go-promo-slot">
-                <div class="promo-divider" aria-hidden="true">— Incoming Transmission —</div>
+                <div class="promo-divider" aria-hidden="true">
+                    — Incoming Transmission —
+                </div>
             </div>
         </div>
 
         <!-- Victory Screen -->
         <div id="victory-screen" class="screen-overlay">
             <div class="screen-title">Safe Passage</div>
-            <div class="screen-subtitle">MT Make Hormuz Great Again — Mission Complete</div>
+            <div class="screen-subtitle">
+                MT Make Hormuz Great Again — Mission Complete
+            </div>
 
             <div class="result-hero result-hero--victory" id="vic-hero">
                 <div class="result-hero-stat">
-                    <div class="result-hero-value" id="vic-distance">167 km</div>
+                    <div class="result-hero-value" id="vic-distance">
+                        167 km
+                    </div>
                     <div class="result-hero-label">Distance</div>
                 </div>
                 <div class="result-hero-divider"></div>
                 <div class="result-hero-stat">
-                    <div class="result-hero-value result-hero-earned" id="vic-earned">+¥0</div>
+                    <div
+                        class="result-hero-value result-hero-earned"
+                        id="vic-earned"
+                    >
+                        +¥0
+                    </div>
                     <div class="result-hero-label">Yuan Earned</div>
                 </div>
             </div>
@@ -295,12 +317,18 @@
             </div>
 
             <div class="result-actions">
-                <button class="btn btn-primary" id="btn-vic-restart">Play Again</button>
-                <button class="btn btn-secondary" id="btn-vic-port">Dock</button>
+                <button class="btn btn-primary" id="btn-vic-restart">
+                    Play Again
+                </button>
+                <button class="btn btn-secondary" id="btn-vic-port">
+                    Dock
+                </button>
             </div>
 
             <div class="promo-slot" id="vic-promo-slot">
-                <div class="promo-divider" aria-hidden="true">— Incoming Transmission —</div>
+                <div class="promo-divider" aria-hidden="true">
+                    — Incoming Transmission —
+                </div>
             </div>
         </div>
 
@@ -313,11 +341,17 @@
                 </div>
                 <div class="port-hud-title">
                     <div class="screen-title">Dock</div>
-                    <div class="screen-subtitle">Outfit the MT Make Hormuz Great Again</div>
+                    <div class="screen-subtitle">
+                        Outfit the MT Make Hormuz Great Again
+                    </div>
                 </div>
                 <div class="port-hud-stat">
                     <span class="port-hud-icon">&#x279C;</span>
-                    <span class="port-hud-value port-hud-dist" id="farthest-value">0 km</span>
+                    <span
+                        class="port-hud-value port-hud-dist"
+                        id="farthest-value"
+                        >0 km</span
+                    >
                 </div>
             </div>
             <div class="port-body">
@@ -326,8 +360,15 @@
                     <div class="port-section-label">Ship Upgrades</div>
                     <div id="upgrades-list"></div>
                     <div class="port-actions">
-                        <button class="btn btn-primary btn-hero" id="btn-deploy">Deploy</button>
-                        <button class="btn btn-secondary" id="btn-port-home">Home</button>
+                        <button
+                            class="btn btn-primary btn-hero"
+                            id="btn-deploy"
+                        >
+                            Deploy
+                        </button>
+                        <button class="btn btn-secondary" id="btn-port-home">
+                            Home
+                        </button>
                     </div>
                 </div>
             </div>

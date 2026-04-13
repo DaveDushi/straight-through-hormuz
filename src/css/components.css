@@ -8,7 +8,7 @@
     padding: var(--space-2) var(--space-3);
     padding-top: max(var(--space-2), env(safe-area-inset-top));
     padding-left: max(var(--space-3), env(safe-area-inset-left));
-    padding-right: max(calc(var(--space-3) + 44px), calc(env(safe-area-inset-right) + 44px));
+    padding-right: max(var(--space-3), env(safe-area-inset-right));
     display: none;
     z-index: var(--z-hud);
     opacity: 0;
@@ -266,41 +266,6 @@
 /* Hide slot key numbers on mobile (they're keyboard shortcuts) */
 @media (max-width: 767px) {
     .slot-key { display: none; }
-}
-
-/* ====== FULLSCREEN BUTTON ====== */
-#btn-fullscreen {
-    position: fixed;
-    top: var(--space-2);
-    top: max(var(--space-2), env(safe-area-inset-top));
-    right: var(--space-2);
-    right: max(var(--space-2), env(safe-area-inset-right));
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(0, 0, 0, 0.35);
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 16px;
-    line-height: 1;
-    cursor: pointer;
-    z-index: var(--z-hud);
-    pointer-events: auto;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    transition: opacity var(--dur-fast), background var(--dur-fast);
-    display: none;
-}
-
-#btn-fullscreen:hover {
-    background: rgba(0, 0, 0, 0.55);
-    color: #fff;
-}
-
-.btn-fullscreen {
-    margin-top: var(--space-3);
-    font-size: var(--text-xs);
-    display: none;
 }
 
 /* ====== MOBILE BOOST BUTTONS ====== */

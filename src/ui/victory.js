@@ -35,21 +35,24 @@ export class VictoryScreen {
       return;
     }
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        if (this.shareBtn) {
-          this.shareBtn.classList.add('share-copied');
-          this.shareBtn.textContent = 'Copied!';
-          setTimeout(() => {
-            this.shareBtn.classList.remove('share-copied');
-            this.shareBtn.textContent = 'Copy & Share';
-          }, 2000);
-        }
-      }).catch(() => {
-        window.open(
-          "https://x.com/intent/tweet?text=" + encodeURIComponent(text),
-          "_blank",
-        );
-      });
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          if (this.shareBtn) {
+            this.shareBtn.classList.add("share-copied");
+            this.shareBtn.textContent = "Copied!";
+            setTimeout(() => {
+              this.shareBtn.classList.remove("share-copied");
+              this.shareBtn.textContent = "Share";
+            }, 2000);
+          }
+        })
+        .catch(() => {
+          window.open(
+            "https://x.com/intent/tweet?text=" + encodeURIComponent(text),
+            "_blank",
+          );
+        });
       return;
     }
     window.open(
@@ -65,7 +68,8 @@ export class VictoryScreen {
     this.tollsRefusedEl.textContent = data.tollsRefused;
     this.nearMissEl.textContent = data.nearMissCount;
     if (this.earnedEl) {
-      this.earnedEl.textContent = "+\u00A5" + (data.earned || 0).toLocaleString();
+      this.earnedEl.textContent =
+        "+\u00A5" + (data.earned || 0).toLocaleString();
     }
 
     const quotes = [

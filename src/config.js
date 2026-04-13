@@ -75,8 +75,8 @@ export const CONFIG = {
   IRON_BEAM_BEAM_DURATION: 0.3,
 
   // Fast boats
-  BOAT_WIDTH: 1.5,
-  BOAT_LENGTH: 4,
+  BOAT_WIDTH: 2,
+  BOAT_LENGTH: 5,
   BOAT_SPEED: 20,
   BOAT_RAM_DAMAGE: 15,
   BOAT_ROCKET_DAMAGE: 10,
@@ -85,7 +85,7 @@ export const CONFIG = {
   BOAT_COLOR: 0x557755,
 
   // Projectiles
-  PROJECTILE_RADIUS: 0.4,
+  PROJECTILE_RADIUS: 0.6,
   PROJECTILE_COLOR: 0xda0000,
 
   // Power-ups

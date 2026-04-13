@@ -44,7 +44,7 @@ export class GameOverScreen {
             this.shareBtn.textContent = "Copied!";
             setTimeout(() => {
               this.shareBtn.classList.remove("share-copied");
-              this.shareBtn.textContent = "Copy & Share";
+              this.shareBtn.textContent = "Share";
             }, 2000);
           }
         })
