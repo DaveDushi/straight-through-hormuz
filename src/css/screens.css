@@ -583,7 +583,7 @@
     gap: var(--space-2);
     width: 100%;
     max-width: 440px;
-    margin-bottom: var(--space-3);
+    margin: 0 auto var(--space-3);
 }
 
 .upgrade-tile {
@@ -1048,6 +1048,10 @@
         padding: var(--space-2) var(--space-5);
     }
 
+    .result-actions .btn-share {
+        width: auto;
+    }
+
     .promo-slot {
         margin-top: var(--space-3);
         padding: var(--space-2) var(--space-3);
@@ -1167,7 +1171,7 @@
         flex-wrap: wrap;
         justify-content: center;
         align-content: center;
-        gap: 0;
+        gap: var(--space-1);
     }
 
     .screen-title {
@@ -1203,11 +1207,14 @@
     .menu-actions {
         flex-direction: row;
         gap: var(--space-2);
+        max-width: 420px;
     }
 
     .menu-actions .btn {
         width: auto;
         flex: 1;
+        padding-inline: var(--space-5);
+        white-space: nowrap;
     }
 
     /* Full-width children stay stacked as rows */
@@ -1313,7 +1320,7 @@
     }
 
     .dock-ship-viewport {
-        width: clamp(180px, 35%, 280px);
+        width: clamp(200px, 40%, 360px);
         height: auto;
         flex-shrink: 0;
         border-bottom: none;

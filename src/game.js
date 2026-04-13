@@ -112,9 +112,8 @@ export class Game {
                         screen.orientation.lock('landscape').catch(() => {});
                     }
                 } catch (e) {}
-            } else {
-                this._showOrientationBanner();
             }
+            this._showOrientationBanner();
         }
 
         this.fsm = new StateMachine({
@@ -556,7 +555,7 @@ export class Game {
             sessionStorage.setItem('orientation-dismissed', '1');
         };
         const btn = banner.querySelector('.rotate-dismiss');
-        if (btn) btn.addEventListener('click', dismiss);
+        if (btn) btn.addEventListener('pointerup', dismiss);
         setTimeout(dismiss, 5000);
     }
 }
