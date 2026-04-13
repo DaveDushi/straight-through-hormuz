@@ -8,9 +8,25 @@ export class RadioUI {
         this.timer = 0;
         this.lastMessageIndex = -1;
         this.queue = [];
+        this.voiceDelayTimer = 0;
+        this.pendingVoice = null;
+        this.pendingAudio = null;
     }
 
     update(delta, distance, audio) {
+        if (this.voiceDelayTimer > 0) {
+            this.voiceDelayTimer -= delta;
+            if (this.voiceDelayTimer <= 0) {
+                const duration = this.pendingAudio.playVoice(this.pendingVoice);
+                if (duration > 0) {
+                    const needed = duration + 0.5;
+                    if (needed > this.timer) this.timer = needed;
+                }
+                this.pendingVoice = null;
+                this.pendingAudio = null;
+            }
+        }
+
         if (this.timer > 0) {
             this.timer -= delta;
             if (this.timer <= 0) {
@@ -36,12 +52,19 @@ export class RadioUI {
         this.timer = 4;
 
         this.speakerEl.className = 'radio-speaker speaker-' + speaker;
-
-        // Set speaker-specific left border accent
         this.el.className = 'speaker-' + speaker + '-active';
         this.el.id = 'radio-bar';
 
         if (audio) audio.playSFX('radio');
+
+        if (msg.voice && audio && audio.voiceLoaded) {
+            this.pendingVoice = msg.voice;
+            this.pendingAudio = audio;
+            this.voiceDelayTimer = CONFIG.VOICE_RADIO_DELAY;
+        } else {
+            this.pendingVoice = null;
+            this.pendingAudio = null;
+        }
     }
 
     showCustom(speaker, text, audio) {
@@ -51,6 +74,9 @@ export class RadioUI {
     reset() {
         this.lastMessageIndex = -1;
         this.timer = 0;
+        this.voiceDelayTimer = 0;
+        this.pendingVoice = null;
+        this.pendingAudio = null;
         this.el.style.display = 'none';
         this.el.className = '';
         this.el.id = 'radio-bar';

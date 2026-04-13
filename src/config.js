@@ -60,7 +60,7 @@ export const CONFIG = {
   MINE_BOB_AMPLITUDE: 0.4,
 
   // Drones (kamikaze)
-  DRONE_SIZE: 1.5,
+  DRONE_SIZE: 2,
   DRONE_SPEED: 12,
   DRONE_COLOR: 0xaaaaaa,
   DRONE_ALTITUDE: 8,
@@ -223,87 +223,107 @@ export const CONFIG = {
   PARTICLE_WAKE_RATE: 0.05,
   PARTICLE_LIFETIME: 1.5,
 
+  // Voice audio
+  VOICE_VOLUME: 0.7,
+  VOICE_RADIO_DELAY: 0.15,
+
   // Radio chatter
   RADIO_MESSAGES: [
     {
       distance: 500,
       text: "MT Make Hormuz Great Again, you are cleared for transit. Godspeed.",
       speaker: "COMMAND",
+      voice: "mt-make-hormuz-great-again--yo.wav",
     },
     {
       distance: 3000,
       text: "Scattered mines reported ahead. Stay in the channel.",
       speaker: "COMMAND",
+      voice: "scattered-mines-reported-ahead.wav",
     },
     {
       distance: 8000,
       text: "We're gonna get you through. Believe me. Nobody does safe passage better.",
       speaker: "TRUMP",
+      voice: "we-re-gonna-get-you-through--b.wav",
     },
     {
       distance: 15000,
       text: "IRGC patrol boats detected on radar. Maintain course.",
       speaker: "COMMAND",
+      voice: "irgc-patrol-boats-detected-on-.wav",
     },
     {
       distance: 25000,
       text: "The ceasefire is holding. For now. Stay vigilant.",
       speaker: "BIBI",
+      voice: "the-ceasefire-is-holding--for-.wav",
     },
     {
       distance: 35000,
       text: "Multiple drone signatures detected. This is getting serious, folks.",
       speaker: "TRUMP",
+      voice: "multiple-drone-signatures-dete.wav",
     },
     {
       distance: 50000,
       text: "Ceasefire breach! All stations — defensive posture!",
       speaker: "COMMAND",
+      voice: "ceasefire-breach--all-stations.wav",
     },
     {
       distance: 65000,
       text: "We will not allow any vessel to be threatened. Israel stands ready.",
       speaker: "BIBI",
+      voice: "we-will-not-allow-any-vessel-t.wav",
     },
     {
       distance: 80000,
       text: "Halfway mark. Nobody thought we'd make it this far. Nobody.",
       speaker: "TRUMP",
+      voice: "halfway-mark--nobody-thought-w.wav",
     },
     {
       distance: 95000,
       text: "I told them — you mess with our ships, there will be consequences. Big consequences.",
       speaker: "TRUMP",
+      voice: "i-told-them---you-mess-with-ou.wav",
     },
     {
       distance: 105000,
       text: "Iron Gauntlet ahead. They're throwing everything at you now.",
       speaker: "COMMAND",
+      voice: "iron-gauntlet-ahead--they-re-t.wav",
     },
     {
       distance: 120000,
       text: "Israel's Iron Dome is covering your corridor. Stay in the channel.",
       speaker: "BIBI",
+      voice: "israel-s-iron-dome-is-covering.wav",
     },
     {
       distance: 140000,
       text: "Final blockade zone. No passage they said — prove them wrong.",
       speaker: "COMMAND",
+      voice: "final-blockade-zone--no-passag.wav",
     },
     {
       distance: 155000,
       text: "You can see the other side now. Incredible. The best ship captain, maybe ever.",
       speaker: "TRUMP",
+      voice: "you-can-see-the-other-side-now.wav",
     },
     {
       distance: 163000,
       text: "Almost through! The world is watching, Eternal Horizon.",
       speaker: "COMMAND",
+      voice: "almost-through--the-world-is-w.wav",
     },
     {
       distance: 166000,
       text: "One kilometer to open water. Hold steady!",
       speaker: "BIBI",
+      voice: "one-kilometer-to-open-water--h.wav",
     },
   ],
 

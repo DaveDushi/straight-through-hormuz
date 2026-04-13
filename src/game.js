@@ -141,6 +141,7 @@ export class Game {
                 onEnter: () => {
                     this.hud.hide();
                     this.audio.stopEngine();
+                    this.audio.stopVoice();
                     const earned = this.save.addRun(
                         this.scoring.getDisplayScore(),
                         this.scoring.distance
@@ -161,6 +162,7 @@ export class Game {
                 onEnter: () => {
                     this.hud.hide();
                     this.audio.stopEngine();
+                    this.audio.stopVoice();
                     const earned = this.save.addRun(
                         this.scoring.getDisplayScore(),
                         this.scoring.distance
@@ -256,6 +258,7 @@ export class Game {
 
     _startGame() {
         this.audio.init();
+        this.audio.preloadVoice();
         this.audio.playEngine();
 
         for (const key in this.pools) {

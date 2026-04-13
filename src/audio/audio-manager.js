@@ -1,8 +1,14 @@
+import { CONFIG } from '../config.js';
+
 export class AudioManager {
     constructor() {
         this.ctx = null;
         this.masterGain = null;
         this.initialized = false;
+        this.voiceGain = null;
+        this.voiceBuffers = {};
+        this.currentVoiceSource = null;
+        this.voiceLoaded = false;
     }
 
     init() {
@@ -12,9 +18,55 @@ export class AudioManager {
             this.masterGain = this.ctx.createGain();
             this.masterGain.connect(this.ctx.destination);
             this.masterGain.gain.value = 0.3;
+            this.voiceGain = this.ctx.createGain();
+            this.voiceGain.connect(this.masterGain);
+            this.voiceGain.gain.value = CONFIG.VOICE_VOLUME;
             this.initialized = true;
         } catch (e) {
             console.warn('Web Audio not available');
+        }
+    }
+
+    async preloadVoice() {
+        if (!this.initialized) return;
+        const files = CONFIG.RADIO_MESSAGES.map(m => m.voice).filter(Boolean);
+        const results = await Promise.allSettled(
+            files.map(f => this._loadClip(f))
+        );
+        const loaded = results.filter(r => r.status === 'fulfilled' && r.value).length;
+        this.voiceLoaded = loaded > 0;
+    }
+
+    async _loadClip(filename) {
+        if (this.voiceBuffers[filename]) return this.voiceBuffers[filename];
+        const res = await fetch('/' + filename);
+        if (!res.ok) return null;
+        const buf = await res.arrayBuffer();
+        const decoded = await this.ctx.decodeAudioData(buf);
+        this.voiceBuffers[filename] = decoded;
+        return decoded;
+    }
+
+    playVoice(filename) {
+        if (!this.initialized || !filename) return 0;
+        const buffer = this.voiceBuffers[filename];
+        if (!buffer) return 0;
+        this.stopVoice();
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.voiceGain);
+        source.start();
+        this.currentVoiceSource = source;
+        source.onended = () => {
+            if (this.currentVoiceSource === source) this.currentVoiceSource = null;
+        };
+        return buffer.duration;
+    }
+
+    stopVoice() {
+        if (this.currentVoiceSource) {
+            try { this.currentVoiceSource.stop(); } catch (e) {}
+            this.currentVoiceSource = null;
         }
     }
 

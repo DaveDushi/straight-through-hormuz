@@ -26,7 +26,7 @@
     letter-spacing: var(--tracking-widest);
     text-transform: uppercase;
     text-align: center;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-2);
     line-height: var(--leading-tight);
     animation: fade-in-down var(--dur-slow) var(--ease-out);
 }
@@ -36,7 +36,7 @@
     font-size: var(--text-sm);
     color: var(--text-secondary);
     letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
     animation: fade-in var(--dur-slow) var(--ease-out) 100ms backwards;
 }
 
@@ -145,8 +145,8 @@
     background: var(--surface-secondary);
     border: 1px solid var(--result-defeat-accent);
     border-radius: var(--radius-lg);
-    padding: var(--space-5) var(--space-6);
-    margin: var(--space-5) 0;
+    padding: var(--space-4) var(--space-5);
+    margin: var(--space-4) 0;
     width: 100%;
     max-width: 380px;
     animation: fade-in-up var(--dur-slow) var(--ease-out) 600ms backwards;
@@ -174,8 +174,8 @@
 }
 
 .result-hero-earned {
-    color: var(--amber-400);
-    text-shadow: 0 0 8px rgba(240, 192, 64, 0.2);
+    color: #c89b20;
+    text-shadow: 0 0 8px rgba(200, 155, 32, 0.25);
 }
 
 .result-hero-label {
@@ -199,7 +199,7 @@
     display: flex;
     justify-content: center;
     gap: var(--space-6);
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-4);
     width: 100%;
     max-width: 380px;
     animation: fade-in-up var(--dur-normal) var(--ease-out) 800ms backwards;
@@ -237,70 +237,40 @@
     line-height: var(--leading-normal);
     border-left: 2px solid var(--text-muted);
     background: rgba(0, 0, 0, 0.03);
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    margin-top: var(--space-2);
     margin-bottom: var(--space-5);
     animation: terminal-reveal var(--dur-slow) var(--ease-out) 1100ms backwards;
-}
-
-/* -- Share card -- */
-.share-card {
-    width: 100%;
-    max-width: 380px;
-    background: var(--surface-secondary);
-    border: 1px solid rgba(240, 192, 64, 0.25);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    margin-bottom: var(--space-5);
-    animation: fade-in var(--dur-normal) var(--ease-out) 1300ms backwards;
-}
-
-.share-card-header {
-    font-family: var(--font-ui);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-wider);
-    text-transform: uppercase;
-    color: var(--amber-400);
-    margin-bottom: var(--space-3);
-}
-
-.share-card-preview {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-    background: var(--surface-primary);
-    border: 1px solid rgba(138, 154, 142, 0.15);
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
-    line-height: var(--leading-normal);
-    margin-bottom: var(--space-3);
-    white-space: pre-line;
-}
-
-.share-card .btn-share {
-    width: 100%;
-    margin: 0;
-    min-height: var(--touch-min);
-}
-
-.share-card .btn-share.share-copied {
-    border-color: var(--tactical-400);
-    color: var(--tactical-400);
 }
 
 /* -- Action buttons -- */
 .result-actions {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
     width: 100%;
     max-width: 380px;
     animation: fade-in-up var(--dur-normal) var(--ease-out) 1500ms backwards;
 }
 
 .result-actions .btn {
-    width: 100%;
+    flex: 1;
     margin: 0;
+}
+
+.result-actions .btn-share {
+    flex: 0 0 auto;
+    font-size: var(--text-xs);
+    padding: var(--space-2) var(--space-4);
+    min-height: 0;
+    border-color: var(--text-secondary);
+    color: var(--text-secondary);
+}
+
+.result-actions .btn-share.share-copied {
+    border-color: var(--tactical-400);
+    color: var(--tactical-400);
+    opacity: 1;
 }
 
 /* ====== GAME OVER SCREEN ====== */
@@ -789,12 +759,19 @@
 .promo-slot {
     width: 100%;
     max-width: 380px;
-    margin-top: var(--space-4);
-    min-height: 48px;
+    margin-top: var(--space-3);
     display: flex;
     flex-direction: column;
     align-items: center;
-    animation: fade-in var(--dur-slow) var(--ease-out) 1800ms backwards;
+    background: var(--surface-secondary);
+    border: 1px solid rgba(180, 140, 30, 0.25);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-4);
+    animation: fade-in-up var(--dur-slow) var(--ease-out) 1800ms backwards;
+}
+
+.promo-slot:empty {
+    display: none;
 }
 
 .promo-divider {
@@ -802,12 +779,10 @@
     font-size: 9px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: #b48c1e;
     text-align: center;
     width: 100%;
-    padding-bottom: var(--space-3);
-    border-top: 1px dashed rgba(138, 154, 142, 0.2);
-    padding-top: var(--space-3);
+    padding-bottom: var(--space-2);
     margin-bottom: var(--space-2);
 }
 
@@ -815,11 +790,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
     text-align: center;
-    padding: var(--space-3) var(--space-4);
-    border: 1px solid rgba(138, 154, 142, 0.12);
-    border-radius: var(--radius-md);
     width: 100%;
 }
 
@@ -861,8 +833,8 @@
     text-decoration: none;
     text-align: center;
     padding: var(--space-2) var(--space-6);
-    border: 2px solid var(--amber-400);
-    color: var(--amber-400);
+    border: 2px solid #b48c1e;
+    color: #b48c1e;
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: background var(--dur-fast), box-shadow var(--dur-fast);
@@ -871,8 +843,8 @@
 }
 
 .btn-coffee:hover {
-    background: rgba(240, 192, 64, 0.1);
-    box-shadow: 0 0 12px rgba(240, 192, 64, 0.3);
+    background: rgba(180, 140, 30, 0.1);
+    box-shadow: 0 0 12px rgba(180, 140, 30, 0.3);
 }
 
 .btn-coffee:active {
@@ -889,6 +861,60 @@
     }
     .toll-buttons .btn {
         width: 100%;
+    }
+}
+
+/* Short portrait phones — ensure result screens fit without scrolling */
+@media (max-height: 700px) and (orientation: portrait) {
+    .screen-title {
+        font-size: var(--text-2xl);
+        margin-bottom: var(--space-1);
+    }
+
+    .screen-subtitle {
+        font-size: var(--text-xs);
+        margin-bottom: var(--space-2);
+    }
+
+    .result-hero {
+        padding: var(--space-3) var(--space-4);
+        margin: var(--space-2) 0;
+    }
+
+    .result-hero-value {
+        font-size: var(--text-xl);
+    }
+
+    .result-hero-divider {
+        height: 28px;
+    }
+
+    .result-secondary {
+        margin-bottom: var(--space-2);
+    }
+
+    .result-sec-value {
+        font-size: var(--text-base);
+    }
+
+    .result-quote {
+        padding: var(--space-2) var(--space-3);
+        margin-bottom: var(--space-2);
+        font-size: var(--text-xs);
+    }
+
+    .result-actions {
+        gap: var(--space-2);
+    }
+
+    .result-actions .btn {
+        min-height: 36px;
+        padding: var(--space-1) var(--space-5);
+    }
+
+    .promo-slot {
+        margin-top: var(--space-2);
+        padding: var(--space-2) var(--space-3);
     }
 }
 
@@ -1001,17 +1027,6 @@
         padding: var(--space-1) var(--space-3);
     }
 
-    .share-card {
-        flex: 0 0 100%;
-        max-width: 100%;
-        padding: var(--space-2) var(--space-3);
-        margin-bottom: var(--space-1);
-    }
-
-    .share-card-preview {
-        display: none;
-    }
-
     .result-actions {
         flex-direction: row;
         gap: var(--space-2);
@@ -1030,16 +1045,14 @@
         flex: 0 0 100%;
         max-width: 100%;
         margin-top: var(--space-1);
+        padding: var(--space-1) var(--space-3);
     }
 
     .promo-divider {
-        padding-top: var(--space-1);
         padding-bottom: var(--space-1);
-        margin-bottom: var(--space-1);
     }
 
     .promo-card {
-        padding: var(--space-2) var(--space-3);
         flex-direction: row;
         gap: var(--space-3);
     }
