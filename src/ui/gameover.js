@@ -26,7 +26,7 @@ export class GameOverScreen {
   }
 
   _getShareText() {
-    return `\u{1F6A8} Breaking News \nPathetic oil tanker only made it ${this._distanceKm} km through the Strait of Hormuz before Iran destroyed it. Sad! \nHow far can YOU make it, tough guy? \n\u{1F449} straitouttahormuz.us`;
+    return `\u{1F6A8} Breaking News \nThe heroic oil tanker, MT Make  Hormuz Great Again, only made it ${this._distanceKm} km through the Strait of Hormuz before Iran destroyed it. \nSad! \nHow far can YOU make it, tough guy? \n\u{1F449} straitouttahormuz.us`;
   }
 
   _share() {
@@ -36,21 +36,24 @@ export class GameOverScreen {
       return;
     }
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        if (this.shareBtn) {
-          this.shareBtn.classList.add('share-copied');
-          this.shareBtn.textContent = 'Copied!';
-          setTimeout(() => {
-            this.shareBtn.classList.remove('share-copied');
-            this.shareBtn.textContent = 'Copy & Share';
-          }, 2000);
-        }
-      }).catch(() => {
-        window.open(
-          "https://x.com/intent/tweet?text=" + encodeURIComponent(text),
-          "_blank",
-        );
-      });
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          if (this.shareBtn) {
+            this.shareBtn.classList.add("share-copied");
+            this.shareBtn.textContent = "Copied!";
+            setTimeout(() => {
+              this.shareBtn.classList.remove("share-copied");
+              this.shareBtn.textContent = "Copy & Share";
+            }, 2000);
+          }
+        })
+        .catch(() => {
+          window.open(
+            "https://x.com/intent/tweet?text=" + encodeURIComponent(text),
+            "_blank",
+          );
+        });
       return;
     }
     window.open(
@@ -66,7 +69,8 @@ export class GameOverScreen {
     this.tollsRefusedEl.textContent = data.tollsRefused;
     this.nearMissEl.textContent = data.nearMissCount;
     if (this.earnedEl) {
-      this.earnedEl.textContent = "+\u00A5" + (data.earned || 0).toLocaleString();
+      this.earnedEl.textContent =
+        "+\u00A5" + (data.earned || 0).toLocaleString();
     }
 
     const titleEl = this.el.querySelector(".screen-title");
@@ -78,8 +82,8 @@ export class GameOverScreen {
       titleEl.style.color = "var(--naval-300)";
       titleEl.style.textShadow = "0 2px 8px rgba(58, 143, 212, 0.3)";
       if (this.heroEl) {
-        this.heroEl.classList.remove('result-hero--victory');
-        this.heroEl.classList.add('result-hero--blockade');
+        this.heroEl.classList.remove("result-hero--victory");
+        this.heroEl.classList.add("result-hero--blockade");
       }
       this.quoteEl.textContent =
         '"Your oil now belongs to America. Effective immediately \u2014 BLOCKADED!" \u2014 Donald Trump';
@@ -89,7 +93,10 @@ export class GameOverScreen {
       titleEl.style.color = "";
       titleEl.style.textShadow = "";
       if (this.heroEl) {
-        this.heroEl.classList.remove('result-hero--victory', 'result-hero--blockade');
+        this.heroEl.classList.remove(
+          "result-hero--victory",
+          "result-hero--blockade",
+        );
       }
       const quotes = [
         '"We almost had it\u2026 Tremendous effort though." \u2014 Trump',

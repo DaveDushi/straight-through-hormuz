@@ -208,7 +208,7 @@ export class Powerup extends Entity {
             this.mesh.remove(this.labelSprite);
         }
         this.labelSprite = getLabelSprite(label, hexStr);
-        this.labelSprite.position.y = 7;
+        this.labelSprite.position.y = 9;
         this.mesh.add(this.labelSprite);
 
         this.mesh.position.set(x, 2, z);

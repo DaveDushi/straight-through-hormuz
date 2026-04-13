@@ -3,15 +3,15 @@ export const CONFIG = {
   CANVAS_ID: "game-canvas",
 
   // Camera
-  CAMERA_FOV: 62,
-  CAMERA_POSITION: { x: 0, y: 86, z: -30 },
+  CAMERA_FOV: 55,
+  CAMERA_POSITION: { x: 0, y: 78, z: -30 },
   CAMERA_LOOKAT: { x: 0, y: 0, z: 20 },
 
   // World
   WORLD_SCROLL_BASE_SPEED: 15,
   WORLD_WIDTH: 60,
-  STRAIT_WIDTH_START: 50,
-  STRAIT_WIDTH_MIN: 20,
+  STRAIT_WIDTH_START: 58,
+  STRAIT_WIDTH_MIN: 26,
   WATER_PLANE_SIZE: 300,
   TERRAIN_CHUNK_LENGTH: 200,
   TERRAIN_CHUNKS_VISIBLE: 4,
@@ -52,7 +52,7 @@ export const CONFIG = {
   WALL_HIT_COOLDOWN: 0.5,
 
   // Mines
-  MINE_RADIUS: 1.5,
+  MINE_RADIUS: 1.2,
   MINE_DAMAGE: 20,
   MINE_COLOR: 0x1a1a1a,
   MINE_SPIKE_COLOR: 0xff2200,
@@ -89,7 +89,7 @@ export const CONFIG = {
   PROJECTILE_COLOR: 0xda0000,
 
   // Power-ups
-  POWERUP_SIZE: 3.0,
+  POWERUP_SIZE: 3.2,
   POWERUP_BOB_SPEED: 3,
   POWERUP_BOB_AMPLITUDE: 0.8,
   POWERUP_ROTATE_SPEED: 2,
@@ -113,7 +113,7 @@ export const CONFIG = {
   isMobile: false,
 
   // Resources
-  RESOURCE_SIZE: 1.8,
+  RESOURCE_SIZE: 3,
   REPAIR_AMOUNT: 20,
   REPAIR_COLOR: 0x44ff44,
   FUEL_COLOR: 0xffaa22,

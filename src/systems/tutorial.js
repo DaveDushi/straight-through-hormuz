@@ -80,8 +80,8 @@ function makeSteps() {
         tut.ui.showStep({
           speaker: "COMMAND",
           text: isTouchDevice
-            ? "Good. Now tap BOOST for emergency maneuvers."
-            : "Good. Now hit SPACE for an emergency boost.",
+            ? "Good. Now tap BOOST \u2014 it burns fuel for a burst of sharper steering."
+            : "Good. Now hit SPACE \u2014 it burns fuel for a burst of sharper steering.",
           highlight: "#btn-boost",
         });
       },
@@ -172,6 +172,92 @@ function makeSteps() {
       },
     },
 
+    // --- Oil Boost tutorial ---
+    {
+      type: "guided",
+      speaker: "COMMAND",
+      text: "Oil barrel ahead. Grab it \u2014 it supercharges your speed.",
+      allowSteering: true,
+      scrolling: true,
+      runCollision: true,
+      onEnter(game, tut) {
+        tut._spawnEntity(game, "powerup", game.tanker.x, 80, {
+          powerupType: "oil",
+        });
+      },
+      checkComplete(game, tut) {
+        return game.inventory.slots.some((s) => s === "oil");
+      },
+    },
+    {
+      type: "action",
+      speaker: "COMMAND",
+      text: null,
+      allowSteering: true,
+      scrolling: true,
+      highlight: ".inventory-bar",
+      onEnter(game, tut) {
+        const isTouchDevice = game.input.isTouchDevice;
+        const slotIndex = game.inventory.slots.indexOf("oil");
+        tut.ui.showStep({
+          speaker: "COMMAND",
+          text: isTouchDevice
+            ? `Activate it \u2014 tap Slot ${slotIndex + 1}. 8 seconds of boosted speed.`
+            : `Activate it \u2014 press ${slotIndex + 1}. 8 seconds of boosted speed.`,
+          highlight: ".inventory-bar",
+        });
+      },
+      checkComplete(game, tut) {
+        return !game.inventory.slots.some((s) => s === "oil") && tut._stepState.hadOil;
+      },
+      onUpdate(game, tut) {
+        if (game.inventory.slots.some((s) => s === "oil")) tut._stepState.hadOil = true;
+      },
+    },
+
+    // --- Pak Flag tutorial ---
+    {
+      type: "guided",
+      speaker: "COMMAND",
+      text: "Pakistan's flag ahead \u2014 grab it for full invulnerability.",
+      allowSteering: true,
+      scrolling: true,
+      runCollision: true,
+      onEnter(game, tut) {
+        tut._spawnEntity(game, "powerup", game.tanker.x, 80, {
+          powerupType: "pakFlag",
+        });
+      },
+      checkComplete(game, tut) {
+        return game.inventory.slots.some((s) => s === "pakFlag");
+      },
+    },
+    {
+      type: "action",
+      speaker: "COMMAND",
+      text: null,
+      allowSteering: true,
+      scrolling: true,
+      highlight: ".inventory-bar",
+      onEnter(game, tut) {
+        const isTouchDevice = game.input.isTouchDevice;
+        const slotIndex = game.inventory.slots.indexOf("pakFlag");
+        tut.ui.showStep({
+          speaker: "COMMAND",
+          text: isTouchDevice
+            ? `Activate it \u2014 tap Slot ${slotIndex + 1}. 10 seconds of invulnerability.`
+            : `Activate it \u2014 press ${slotIndex + 1}. 10 seconds of invulnerability.`,
+          highlight: ".inventory-bar",
+        });
+      },
+      checkComplete(game, tut) {
+        return !game.inventory.slots.some((s) => s === "pakFlag") && tut._stepState.hadPak;
+      },
+      onUpdate(game, tut) {
+        if (game.inventory.slots.some((s) => s === "pakFlag")) tut._stepState.hadPak = true;
+      },
+    },
+
     // --- Send-off ---
     {
       type: "narrative",
@@ -207,6 +293,8 @@ export class Tutorial {
     this._advancing = false;
     game.spawner.suppressed = true;
     game.tanker.invulnTimer = 9999;
+    this._savedCameraY = game.cameraController.baseY;
+    game.cameraController.baseY = 55;
     this.ui.show();
     this._advanceStep(game);
   }
@@ -390,6 +478,7 @@ export class Tutorial {
     game.spawner.suppressed = false;
     game.tanker.invulnTimer = 0;
     game.tanker.mesh.visible = true;
+    game.cameraController.baseY = this._savedCameraY;
     game.scoring.reset();
     game.tanker.reset();
     game.inventory.reset();

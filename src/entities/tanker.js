@@ -232,7 +232,9 @@ export class Tanker extends Entity {
 
         if (this.invulnTimer > 0) {
             this.invulnTimer -= delta;
-            if (this.pakFlagActive) {
+            if (this.invulnTimer >= 9990) {
+                this.mesh.visible = true;
+            } else if (this.pakFlagActive) {
                 this.mesh.visible = true;
                 this.bodyMat.emissive.setHex(0x01411C);
             } else {

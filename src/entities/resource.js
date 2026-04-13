@@ -184,7 +184,7 @@ export class Resource extends Entity {
             this.mesh.remove(this.labelSprite);
         }
         this.labelSprite = getLabelSprite(label, hexStr);
-        this.labelSprite.position.y = 4;
+        this.labelSprite.position.y = 6;
         this.mesh.add(this.labelSprite);
 
         this.mesh.position.set(x, 1, z);

@@ -28,23 +28,23 @@ export function getLabelSprite(text, colorHex) {
     const key = text + '_' + colorHex;
     if (!labelTextureCache.has(key)) {
         const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 128;
+        canvas.width = 768;
+        canvas.height = 192;
         const ctx = canvas.getContext('2d');
-        ctx.font = 'bold 52px Courier New';
+        ctx.font = 'bold 72px Courier New';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.strokeStyle = '#000';
-        ctx.lineWidth = 4;
-        ctx.strokeText(text, 256, 64);
+        ctx.lineWidth = 6;
+        ctx.strokeText(text, 384, 96);
         ctx.fillStyle = colorHex;
-        ctx.fillText(text, 256, 64);
+        ctx.fillText(text, 384, 96);
         const tex = new THREE.CanvasTexture(canvas);
         const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
         labelTextureCache.set(key, mat);
     }
     // Each sprite needs its own Sprite instance (they share material)
     const sprite = new THREE.Sprite(labelTextureCache.get(key));
-    sprite.scale.set(12, 3, 1);
+    sprite.scale.set(16, 4, 1);
     return sprite;
 }
