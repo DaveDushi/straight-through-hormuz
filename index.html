@@ -61,7 +61,7 @@
             <div class="rotate-content">
                 <span class="rotate-icon">&#x21BB;</span>
                 <p class="rotate-text">Landscape recommended for best gameplay</p>
-                <button class="rotate-dismiss" aria-label="Dismiss">&times;</button>
+                <button class="rotate-dismiss" aria-label="Dismiss" onclick="var o=document.getElementById('rotate-overlay');if(o){o.classList.add('fade-out');setTimeout(function(){o.remove()},300);sessionStorage.setItem('orientation-dismissed','1')}">&times;</button>
             </div>
         </div>
 
