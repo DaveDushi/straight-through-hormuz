@@ -175,14 +175,14 @@ export class DockShipView {
     const metalMat = new THREE.MeshPhongMaterial({ color: 0x666666, shininess: 60 });
     const goldMat = new THREE.MeshPhongMaterial({ color: 0xccaa44, shininess: 80, emissive: 0x332200 });
 
-    // === RUDDER: Large rudder fin at stern, grows with level ===
+    // === RUDDER: fin at stern, grows with level (8 levels) ===
     this._upgradeMeshes.rudder = [];
-    for (let i = 0; i < 5; i++) {
-      const h = 0.6 + i * 0.25;
-      const w = 0.3 + i * 0.08;
+    for (let i = 0; i < 8; i++) {
+      const h = 0.5 + i * 0.18;
+      const w = 0.25 + i * 0.06;
       const fin = new THREE.Mesh(
         new THREE.BoxGeometry(w, h, 0.08),
-        i >= 3 ? goldMat.clone() : metalMat.clone()
+        i >= 5 ? goldMat.clone() : metalMat.clone()
       );
       fin.position.set(0, -0.2 + h / 2, L * 0.48 + 0.1);
       fin.visible = false;
@@ -190,20 +190,20 @@ export class DockShipView {
       this._upgradeMeshes.rudder.push(fin);
     }
 
-    // === HULL: Armor plates along the sides, more = tougher ===
+    // === HULL: Armor plates along sides (8 levels) ===
     this._upgradeMeshes.hull = [];
-    const plateMat = new THREE.MeshPhongMaterial({ color: 0x556677, shininess: 40 });
-    const plateMatHeavy = new THREE.MeshPhongMaterial({ color: 0x445566, shininess: 50, emissive: 0x111122 });
-    for (let i = 0; i < 5; i++) {
+    const plateMat = new THREE.MeshPhongMaterial({ color: 0x7788aa, shininess: 60 });
+    const plateMatHeavy = new THREE.MeshPhongMaterial({ color: 0x99aacc, shininess: 80, emissive: 0x112233 });
+    for (let i = 0; i < 8; i++) {
       const group = new THREE.Group();
-      const zPos = L * 0.2 - i * L * 0.15;
-      const mat = i >= 3 ? plateMatHeavy : plateMat;
+      const zPos = L * 0.25 - i * L * 0.09;
+      const mat = i >= 5 ? plateMatHeavy : plateMat;
       for (let side = -1; side <= 1; side += 2) {
         const plate = new THREE.Mesh(
-          new THREE.BoxGeometry(0.15, 1.2 + i * 0.15, L * 0.12),
+          new THREE.BoxGeometry(0.2, 1.2 + i * 0.1, L * 0.08),
           mat
         );
-        plate.position.set(side * (W / 2 + 0.08), 1.2, zPos);
+        plate.position.set(side * (W / 2 + 0.1), 1.3, zPos);
         group.add(plate);
       }
       group.visible = false;
@@ -211,11 +211,11 @@ export class DockShipView {
       this._upgradeMeshes.hull.push(group);
     }
 
-    // === RADAR: Dish on top of bridge, larger each level ===
+    // === RADAR: Dish on bridge (6 levels) ===
     this._upgradeMeshes.radar = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       const group = new THREE.Group();
-      const poleH = 1.0 + i * 0.4;
+      const poleH = 0.8 + i * 0.25;
       const pole = new THREE.Mesh(
         new THREE.CylinderGeometry(0.04, 0.04, poleH, 6),
         metalMat
@@ -223,7 +223,7 @@ export class DockShipView {
       pole.position.y = poleH / 2;
       group.add(pole);
 
-      const dishR = 0.3 + i * 0.2;
+      const dishR = 0.2 + i * 0.12;
       const dish = new THREE.Mesh(
         new THREE.SphereGeometry(dishR, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2),
         new THREE.MeshPhongMaterial({ color: 0xeeeeee, shininess: 90, side: THREE.DoubleSide })
@@ -232,8 +232,8 @@ export class DockShipView {
       dish.position.y = poleH;
       group.add(dish);
 
-      if (i === 2) {
-        const glow = new THREE.PointLight(0x44ff88, 0.6, 8);
+      if (i >= 4) {
+        const glow = new THREE.PointLight(0x44ff88, 0.3 + (i - 4) * 0.3, 8);
         glow.position.y = poleH + 0.2;
         group.add(glow);
       }
@@ -244,23 +244,23 @@ export class DockShipView {
       this._upgradeMeshes.radar.push(group);
     }
 
-    // === TOLL DISCOUNT: Diplomatic flags / gold trim ===
+    // === TOLL DISCOUNT: Diplomatic flags / gold trim (5 levels) ===
     this._upgradeMeshes.tollDiscount = [];
-    const flagColors = [0x2244aa, 0xeecc22, 0xff4444];
-    for (let i = 0; i < 3; i++) {
+    const flagColors = [0x2244aa, 0xeecc22, 0xff4444, 0x22aa44, 0xffffff];
+    for (let i = 0; i < 5; i++) {
       const group = new THREE.Group();
       const flagMat = new THREE.MeshPhongMaterial({
         color: flagColors[i], side: THREE.DoubleSide, emissive: 0x111111
       });
       const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.5), flagMat);
-      const yOff = 4.0 - i * 0.7;
+      const yOff = 4.0 - i * 0.5;
       flag.position.set(0.45, yOff, L * 0.25);
       group.add(flag);
 
       if (i >= 1) {
         for (let side = -1; side <= 1; side += 2) {
           const trim = new THREE.Mesh(
-            new THREE.BoxGeometry(0.06, 0.06, L * 0.5),
+            new THREE.BoxGeometry(0.06, 0.06, L * (0.3 + i * 0.05)),
             goldMat
           );
           trim.position.set(side * (W / 2 - 0.1), 2.35, -L * 0.1);
@@ -273,11 +273,11 @@ export class DockShipView {
       this._upgradeMeshes.tollDiscount.push(group);
     }
 
-    // === IRON BEAM: Turret on foredeck ===
+    // === IRON BEAM: Turret on foredeck (6 levels) ===
     this._upgradeMeshes.ironBeam = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       const group = new THREE.Group();
-      const baseR = 0.35 + i * 0.1;
+      const baseR = 0.3 + i * 0.06;
       const base = new THREE.Mesh(
         new THREE.CylinderGeometry(baseR, baseR + 0.05, 0.4, 8),
         new THREE.MeshPhongMaterial({ color: 0x445544, shininess: 40 })
@@ -285,31 +285,109 @@ export class DockShipView {
       base.position.y = 0;
       group.add(base);
 
-      const barrelLen = 1.0 + i * 0.5;
+      const barrelLen = 0.8 + i * 0.3;
       const barrel = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.06 + i * 0.02, 0.08 + i * 0.02, barrelLen, 6),
+        new THREE.CylinderGeometry(0.05 + i * 0.012, 0.07 + i * 0.012, barrelLen, 6),
         new THREE.MeshPhongMaterial({ color: 0x333333, shininess: 70 })
       );
       barrel.rotation.x = Math.PI / 2;
       barrel.position.set(0, 0.15, -barrelLen / 2);
       group.add(barrel);
 
-      if (i >= 1) {
-        const glow = new THREE.PointLight(i === 2 ? 0xff4422 : 0xff8844, 0.5, 6);
+      if (i >= 2) {
+        const intensity = i >= 4 ? 0xff4422 : 0xff8844;
+        const glow = new THREE.PointLight(intensity, 0.3 + (i - 2) * 0.15, 6);
         glow.position.set(0, 0.2, -barrelLen);
         group.add(glow);
       }
 
-      group.position.set(0, 2.55, L * 0.05 + i * 0.3);
+      group.position.set(0, 2.55, L * 0.05 + i * 0.15);
       group.visible = false;
       this.shipGroup.add(group);
       this._upgradeMeshes.ironBeam.push(group);
+    }
+
+    // === FUEL TANK: Cylindrical tanks on deck (5 levels) ===
+    this._upgradeMeshes.fuelTank = [];
+    const tankMat = new THREE.MeshPhongMaterial({ color: 0xcc7722, shininess: 60 });
+    const tankMatHeavy = new THREE.MeshPhongMaterial({ color: 0xeeaa44, shininess: 80, emissive: 0x332200 });
+    for (let i = 0; i < 5; i++) {
+      const group = new THREE.Group();
+      const r = 0.2 + i * 0.04;
+      const tankLen = 1.2 + i * 0.3;
+      const mat = i >= 3 ? tankMatHeavy : tankMat;
+      for (let side = -1; side <= 1; side += 2) {
+        const tank = new THREE.Mesh(
+          new THREE.CylinderGeometry(r, r, tankLen, 8),
+          mat
+        );
+        tank.rotation.x = Math.PI / 2;
+        tank.position.set(side * W * 0.22, 2.55, L * 0.12 - i * 0.15);
+        group.add(tank);
+      }
+      group.visible = false;
+      this.shipGroup.add(group);
+      this._upgradeMeshes.fuelTank.push(group);
+    }
+
+    // === REINFORCED BOW: Armor plating at bow (4 levels) ===
+    this._upgradeMeshes.reinforcedBow = [];
+    const bowMat = new THREE.MeshPhongMaterial({ color: 0x8899aa, shininess: 60 });
+    const bowMatHeavy = new THREE.MeshPhongMaterial({ color: 0xaabbcc, shininess: 80, emissive: 0x223344 });
+    for (let i = 0; i < 4; i++) {
+      const group = new THREE.Group();
+      const thickness = 0.12 + i * 0.04;
+      const height = 1.0 + i * 0.3;
+      const mat = i >= 2 ? bowMatHeavy : bowMat;
+      const plate = new THREE.Mesh(
+        new THREE.BoxGeometry(W * (0.5 + i * 0.08), height, thickness),
+        mat
+      );
+      plate.position.set(0, 1.2, -(L * 0.45 + i * 0.15));
+      group.add(plate);
+      group.visible = false;
+      this.shipGroup.add(group);
+      this._upgradeMeshes.reinforcedBow.push(group);
+    }
+
+    // === CARGO INSURANCE: Cargo crates on deck (4 levels) ===
+    this._upgradeMeshes.cargoInsurance = [];
+    const crateMat = new THREE.MeshPhongMaterial({ color: 0xcc9966, shininess: 40 });
+    const crateMatGold = new THREE.MeshPhongMaterial({ color: 0xeecc77, shininess: 70, emissive: 0x332211 });
+    for (let i = 0; i < 4; i++) {
+      const group = new THREE.Group();
+      const count = i + 1;
+      const mat = i >= 2 ? crateMatGold : crateMat;
+      for (let c = 0; c < count; c++) {
+        const size = 0.4 + i * 0.05;
+        const crate = new THREE.Mesh(
+          new THREE.BoxGeometry(size, size, size),
+          mat
+        );
+        crate.position.set(
+          (c - (count - 1) / 2) * (size + 0.1),
+          2.45 + size / 2,
+          -L * 0.08
+        );
+        group.add(crate);
+      }
+      group.visible = false;
+      this.shipGroup.add(group);
+      this._upgradeMeshes.cargoInsurance.push(group);
     }
   }
 
   applyUpgrades(upgrades) {
     if (!this._built) return;
-    for (const [key, meshes] of Object.entries(this._upgradeMeshes)) {
+
+    // Upgrades that replace (show only latest level)
+    const replaceKeys = ['rudder', 'radar', 'ironBeam'];
+    // Upgrades that stack (show all up to current level)
+    const stackKeys = ['hull', 'tollDiscount', 'fuelTank', 'reinforcedBow', 'cargoInsurance'];
+
+    for (const key of replaceKeys) {
+      const meshes = this._upgradeMeshes[key];
+      if (!meshes) continue;
       const level = upgrades[key] || 0;
       for (let i = 0; i < meshes.length; i++) {
         meshes[i].visible = false;
@@ -319,13 +397,29 @@ export class DockShipView {
       }
     }
 
-    // Hull color darkens with hull plating upgrades
+    for (const key of stackKeys) {
+      const meshes = this._upgradeMeshes[key];
+      if (!meshes) continue;
+      const level = upgrades[key] || 0;
+      for (let i = 0; i < meshes.length; i++) {
+        meshes[i].visible = i < level;
+      }
+    }
+
+    // Hull color shifts toward armored blue-steel with upgrades
     const hullLevel = upgrades.hull || 0;
     if (this._hullMat) {
-      const r = 0x33 - hullLevel * 0x04;
-      const g = 0x44 - hullLevel * 0x03;
-      const b = 0x55 + hullLevel * 0x08;
+      const r = Math.max(0x20, 0x33 - hullLevel * 0x01);
+      const g = Math.max(0x30, 0x44 - hullLevel * 0x01);
+      const b = Math.min(0x80, 0x55 + hullLevel * 0x04);
       this._hullMat.color.setHex((r << 16) | (g << 8) | b);
+      if (hullLevel >= 6) {
+        this._hullMat.emissive.setHex(0x0a1520);
+        this._hullMat.shininess = 30 + hullLevel * 5;
+      } else {
+        this._hullMat.emissive.setHex(0x000000);
+        this._hullMat.shininess = 30;
+      }
     }
   }
 

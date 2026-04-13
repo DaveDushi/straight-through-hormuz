@@ -163,6 +163,21 @@
 
         <!-- Menu Screen -->
         <div id="menu-screen" class="screen-overlay visible">
+            <button class="sound-toggle" id="btn-sound-toggle"
+                    aria-label="Mute sound" aria-pressed="true">
+                <svg class="sound-icon sound-icon-on" viewBox="0 0 24 24" width="20" height="20"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+                    <path d="M3 9h4l5-5v16l-5-5H3V9z"/>
+                    <path d="M19 5c1.5 1.8 2.3 4.2 2.3 7s-.8 5.2-2.3 7"/>
+                    <path d="M16 8.5c.8 1 1.2 2.2 1.2 3.5s-.4 2.5-1.2 3.5"/>
+                </svg>
+                <svg class="sound-icon sound-icon-off" viewBox="0 0 24 24" width="20" height="20"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+                    <path d="M3 9h4l5-5v16l-5-5H3V9z"/>
+                    <line x1="23" y1="9" x2="17" y2="15"/>
+                    <line x1="17" y1="9" x2="23" y2="15"/>
+                </svg>
+            </button>
             <div class="menu-coords" aria-hidden="true">
                 26.5667°N 56.2500°E
             </div>
@@ -360,6 +375,7 @@
             </div>
         </div>
 
+        <script async src="https://vibejam.cc/2026/widget.js"></script>
         <script type="module" src="/src/main.js"></script>
     </body>
 </html>

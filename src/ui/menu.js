@@ -1,8 +1,11 @@
+import { AudioManager } from '../audio/audio-manager.js';
+
 export class MenuScreen {
   constructor(onPlay, onPort) {
     this.el = document.getElementById('menu-screen');
     this.playBtn = document.getElementById('btn-play');
     this.portBtn = document.getElementById('btn-port');
+    this.soundBtn = document.getElementById('btn-sound-toggle');
 
     const hints = document.querySelectorAll('#controls-hint .hint-line');
     if (hints.length && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
@@ -15,10 +18,26 @@ export class MenuScreen {
     if (this.portBtn) {
       this.portBtn.addEventListener('click', () => onPort());
     }
+
+    if (this.soundBtn) {
+      this._updateSoundButton(!AudioManager.isMuted());
+      this.soundBtn.addEventListener('click', () => {
+        const nowMuted = !AudioManager.isMuted();
+        AudioManager.setMuted(nowMuted);
+        this._updateSoundButton(!nowMuted);
+      });
+    }
+  }
+
+  _updateSoundButton(isOn) {
+    if (!this.soundBtn) return;
+    this.soundBtn.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+    this.soundBtn.setAttribute('aria-label', isOn ? 'Mute sound' : 'Unmute sound');
   }
 
   show() {
     this.el.classList.add('visible');
+    if (this.soundBtn) this._updateSoundButton(!AudioManager.isMuted());
   }
 
   hide() {

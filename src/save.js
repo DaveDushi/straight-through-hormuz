@@ -37,12 +37,12 @@ export class SaveManager {
         } catch (e) {}
     }
 
-    addRun(score, distance) {
+    addRun(score, distance, bonusMult = 1) {
         this.data.totalRuns++;
         if (distance > this.data.farthestDistance) {
             this.data.farthestDistance = distance;
         }
-        const earned = Math.floor(score * 0.1);
+        const earned = Math.floor(score * 0.1 * bonusMult);
         this.data.currency += earned;
         this.save();
         return earned;

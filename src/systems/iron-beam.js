@@ -21,8 +21,9 @@ export class IronBeamSystem {
         }
     }
 
-    reset(upgradeLevel) {
+    reset(upgradeLevel, radarLevel = 0) {
         this._baseHitRate = CONFIG.IRON_BEAM_BASE_HIT_RATE + upgradeLevel * CONFIG.IRON_BEAM_UPGRADE_BONUS;
+        this._rangeBonus = radarLevel * CONFIG.UPGRADES.radar.effect;
         this.hitRate = this._baseHitRate;
         this.buffTimer = 0;
         for (const beam of this.beams) {
@@ -58,7 +59,7 @@ export class IronBeamSystem {
             const dz = drone.z - tanker.z;
             const dist = Math.sqrt(dx * dx + dz * dz);
 
-            if (dist < CONFIG.IRON_BEAM_RANGE) {
+            if (dist < CONFIG.IRON_BEAM_RANGE + (this._rangeBonus || 0)) {
                 drone.laserEvaluated = true;
                 const hit = Math.random() < this.hitRate;
 

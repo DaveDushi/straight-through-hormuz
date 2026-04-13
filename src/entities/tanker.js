@@ -17,6 +17,10 @@ export class Tanker extends Entity {
         this.wallHitCooldown = 0;
         this.wallHitThisFrame = false;
         this.maxHull = CONFIG.HULL_MAX;
+        this.steerSpeedBonus = 0;
+        this.maxFuel = CONFIG.TANKER_FUEL_MAX;
+        this.fuelRegenCap = CONFIG.TANKER_FUEL_REGEN_CAP;
+        this.wallDamageReduction = 0;
         this.oilBoostActive = false;
         this.pakFlagActive = false;
         this.ceasefireActive = false;
@@ -212,7 +216,7 @@ export class Tanker extends Entity {
         this.lateralVelocity = 0;
         this.hull = this.maxHull;
         this.boostTimer = 0;
-        this.fuel = CONFIG.TANKER_FUEL_MAX;
+        this.fuel = this.maxFuel;
         this.invulnTimer = 0;
         this.wallHitCooldown = 0;
         this.wallHitThisFrame = false;
@@ -247,8 +251,8 @@ export class Tanker extends Entity {
 
         if (this.boostTimer > 0) this.boostTimer -= delta;
 
-        if (this.fuel < CONFIG.TANKER_FUEL_REGEN_CAP) {
-            this.fuel = Math.min(this.fuel + CONFIG.TANKER_FUEL_REGEN_RATE * delta, CONFIG.TANKER_FUEL_REGEN_CAP);
+        if (this.fuel < this.fuelRegenCap) {
+            this.fuel = Math.min(this.fuel + CONFIG.TANKER_FUEL_REGEN_RATE * delta, this.fuelRegenCap);
         }
 
         if (input.consumeBoostTrigger() && this.fuel >= CONFIG.TANKER_FUEL_PER_BOOST) {
@@ -260,7 +264,8 @@ export class Tanker extends Entity {
         if (this.oilBoostActive) steerMult *= CONFIG.OIL_BOOST_SPEED_MULT;
         let speedPenalty = this.hull < CONFIG.HULL_FIRE_THRESHOLD ? CONFIG.HULL_SPEED_PENALTY_FACTOR : 1;
 
-        this.lateralVelocity += -input.steer * CONFIG.TANKER_STEER_SPEED * steerMult * delta;
+        const steerSpeed = CONFIG.TANKER_STEER_SPEED * (1 + this.steerSpeedBonus);
+        this.lateralVelocity += -input.steer * steerSpeed * steerMult * delta;
         this.lateralVelocity *= CONFIG.TANKER_INERTIA;
         this.lateralVelocity = clamp(
             this.lateralVelocity,
@@ -280,7 +285,9 @@ export class Tanker extends Entity {
             if (absVel > CONFIG.WALL_DAMAGE_VELOCITY_MIN && this.wallHitCooldown <= 0) {
                 const t = (absVel - CONFIG.WALL_DAMAGE_VELOCITY_MIN)
                     / (CONFIG.TANKER_MAX_LATERAL_SPEED - CONFIG.WALL_DAMAGE_VELOCITY_MIN);
-                this.takeDamage(Math.ceil(CONFIG.WALL_DAMAGE_MAX * Math.min(t, 1)));
+                const rawDmg = Math.ceil(CONFIG.WALL_DAMAGE_MAX * Math.min(t, 1));
+                const reduction = 1 - Math.min(this.wallDamageReduction, 0.8);
+                this.takeDamage(Math.max(1, Math.ceil(rawDmg * reduction)));
                 this.wallHitCooldown = CONFIG.WALL_HIT_COOLDOWN;
                 this.wallHitThisFrame = true;
             }

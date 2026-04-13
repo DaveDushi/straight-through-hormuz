@@ -125,3 +125,19 @@ body.scanlines::after {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* -- Vibe Jam widget: move to top-left so it doesn't block game controls -- */
+a[href*="vibej"] {
+    bottom: auto !important;
+    right: auto !important;
+    top: -1px !important;
+    left: -1px !important;
+    border-radius: 0 0 12px 0 !important;
+    border-top-left-radius: 0 !important;
+    opacity: 0.75;
+}
+
+body:not(:has(#menu-screen.visible)) a[href*="vibej"] {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}

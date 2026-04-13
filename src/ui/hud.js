@@ -155,7 +155,7 @@ export class HUD {
 
         // Fuel / Boost
         if (this.boostBar) {
-            const fuelPct = Math.round((data.fuel / CONFIG.TANKER_FUEL_MAX) * 100);
+            const fuelPct = Math.round((data.fuel / (data.maxFuel || CONFIG.TANKER_FUEL_MAX)) * 100);
             const canBoost = data.fuel >= CONFIG.TANKER_FUEL_PER_BOOST;
             if (fuelPct !== this._prev.boostPct) {
                 this._prev.boostPct = fuelPct;

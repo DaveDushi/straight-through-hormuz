@@ -1,5 +1,7 @@
 import { CONFIG } from '../config.js';
 
+const SOUND_KEY = 'soh_sound';
+
 export class AudioManager {
     constructor() {
         this.ctx = null;
@@ -17,7 +19,7 @@ export class AudioManager {
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             this.masterGain = this.ctx.createGain();
             this.masterGain.connect(this.ctx.destination);
-            this.masterGain.gain.value = 0.3;
+            this.masterGain.gain.value = AudioManager.isMuted() ? 0 : 0.3;
             this.voiceGain = this.ctx.createGain();
             this.voiceGain.connect(this.masterGain);
             this.voiceGain.gain.value = CONFIG.VOICE_VOLUME;
@@ -177,5 +179,20 @@ export class AudioManager {
 
     setVolume(v) {
         if (this.masterGain) this.masterGain.gain.value = v;
+    }
+
+    applyMuteState() {
+        if (!this.masterGain) return;
+        this.masterGain.gain.value = AudioManager.isMuted() ? 0 : 0.3;
+    }
+
+    static isMuted() {
+        try { return localStorage.getItem(SOUND_KEY) === 'off'; }
+        catch { return false; }
+    }
+
+    static setMuted(muted) {
+        try { localStorage.setItem(SOUND_KEY, muted ? 'off' : 'on'); }
+        catch {}
     }
 }

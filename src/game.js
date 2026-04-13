@@ -142,9 +142,11 @@ export class Game {
                     this.hud.hide();
                     this.audio.stopEngine();
                     this.audio.stopVoice();
+                    const insuranceBonus = 1 + this.save.getUpgradeLevel('cargoInsurance') * CONFIG.UPGRADES.cargoInsurance.effect;
                     const earned = this.save.addRun(
                         this.scoring.getDisplayScore(),
-                        this.scoring.distance
+                        this.scoring.distance,
+                        insuranceBonus
                     );
                     this.gameover.show({
                         distance: this.scoring.distance,
@@ -163,9 +165,11 @@ export class Game {
                     this.hud.hide();
                     this.audio.stopEngine();
                     this.audio.stopVoice();
+                    const insuranceBonus = 1 + this.save.getUpgradeLevel('cargoInsurance') * CONFIG.UPGRADES.cargoInsurance.effect;
                     const earned = this.save.addRun(
                         this.scoring.getDisplayScore(),
-                        this.scoring.distance
+                        this.scoring.distance,
+                        insuranceBonus
                     );
                     this.victory.show({
                         distance: this.scoring.distance,
@@ -258,6 +262,7 @@ export class Game {
 
     _startGame() {
         this.audio.init();
+        this.audio.applyMuteState();
         this.audio.preloadVoice();
         this.audio.playEngine();
 
@@ -266,6 +271,13 @@ export class Game {
         }
 
         this.tanker.maxHull = CONFIG.HULL_MAX + this.save.getUpgradeLevel('hull') * CONFIG.UPGRADES.hull.effect;
+        this.tanker.steerSpeedBonus = this.save.getUpgradeLevel('rudder') * CONFIG.UPGRADES.rudder.effect;
+
+        const fuelLevel = this.save.getUpgradeLevel('fuelTank');
+        this.tanker.maxFuel = CONFIG.TANKER_FUEL_MAX + fuelLevel * CONFIG.UPGRADES.fuelTank.effect;
+        this.tanker.fuelRegenCap = CONFIG.TANKER_FUEL_REGEN_CAP + fuelLevel * 3;
+
+        this.tanker.wallDamageReduction = this.save.getUpgradeLevel('reinforcedBow') * CONFIG.UPGRADES.reinforcedBow.effect;
         this.tanker.reset();
 
         this.scoring.reset();
@@ -276,7 +288,7 @@ export class Game {
         this.radio.reset();
         this.difficulty.update(0);
         this.terrain.reset();
-        this.ironBeam.reset(this.save.getUpgradeLevel('ironBeam'));
+        this.ironBeam.reset(this.save.getUpgradeLevel('ironBeam'), this.save.getUpgradeLevel('radar'));
         this.blockadeSystem.reset();
         this.spawner.spawnRateMultiplier = 1;
         this.spawner.spawnRateBoostTimer = 0;
@@ -430,6 +442,7 @@ export class Game {
             multiplier: this.scoring.multiplier,
             phaseName: this.difficulty.phaseName,
             fuel: this.tanker.fuel,
+            maxFuel: this.tanker.maxFuel,
             inventory: this.inventory.slots,
             ceasefireActive: this.inventory.isCeasefireActive(),
             pakFlagActive: this.inventory.isPakFlagActive(),

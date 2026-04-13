@@ -47,6 +47,47 @@
         var(--surface-overlay);
 }
 
+/* -- Sound toggle -- */
+.sound-toggle {
+    position: absolute;
+    top: max(var(--space-4), env(safe-area-inset-top));
+    right: max(var(--space-4), env(safe-area-inset-right));
+    width: var(--touch-min);
+    height: var(--touch-min);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    z-index: 1;
+    transition: border-color var(--dur-fast), color var(--dur-fast);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    animation: fade-in var(--dur-slow) var(--ease-out) 1200ms backwards;
+}
+
+.sound-toggle:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+.sound-toggle:active {
+    transform: scale(0.92);
+}
+
+.sound-toggle .sound-icon-off { display: none; }
+.sound-toggle .sound-icon-on  { display: block; }
+
+.sound-toggle[aria-pressed="false"] .sound-icon-on  { display: none; }
+.sound-toggle[aria-pressed="false"] .sound-icon-off { display: block; }
+.sound-toggle[aria-pressed="false"] {
+    color: var(--text-muted);
+    border-color: rgba(138, 154, 142, 0.3);
+}
+
 .menu-coords {
     font-family: var(--font-ui);
     font-size: var(--text-xs);
@@ -534,80 +575,141 @@
     text-align: center;
 }
 
+/* -- Upgrade tile grid -- */
 #upgrades-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    margin-bottom: var(--space-5);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    flex: 1;
-    min-height: 0;
-    padding: var(--space-1);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-2);
     width: 100%;
     max-width: 440px;
+    margin-bottom: var(--space-3);
 }
 
-/* -- Upgrade cards -- */
-.upgrade-item {
+.upgrade-tile {
+    aspect-ratio: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-3);
+    justify-content: center;
+    gap: 3px;
+    background: var(--surface-secondary);
+    border: 2px solid rgba(35, 159, 64, 0.15);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    padding: var(--space-1);
+    transition: border-color var(--dur-fast), background var(--dur-fast),
+                box-shadow var(--dur-fast), transform var(--dur-fast);
+    animation: fade-in-up var(--dur-normal) var(--ease-out) backwards;
+}
+
+.upgrade-tile:nth-child(1) { animation-delay: 50ms; }
+.upgrade-tile:nth-child(2) { animation-delay: 100ms; }
+.upgrade-tile:nth-child(3) { animation-delay: 150ms; }
+.upgrade-tile:nth-child(4) { animation-delay: 200ms; }
+.upgrade-tile:nth-child(5) { animation-delay: 250ms; }
+.upgrade-tile:nth-child(6) { animation-delay: 300ms; }
+.upgrade-tile:nth-child(7) { animation-delay: 350ms; }
+.upgrade-tile:nth-child(8) { animation-delay: 400ms; }
+
+.upgrade-tile:hover {
+    border-color: rgba(35, 159, 64, 0.4);
+    background: var(--surface-tertiary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 42, 26, 0.1);
+}
+
+.upgrade-tile.selected {
+    border-color: var(--tactical-400);
+    background: rgba(35, 159, 64, 0.06);
+    box-shadow: 0 0 0 2px rgba(35, 159, 64, 0.12);
+}
+
+.upgrade-tile.maxed {
+    border-color: rgba(240, 192, 64, 0.4);
+    background: rgba(240, 192, 64, 0.04);
+}
+
+.upgrade-tile.maxed .tile-icon {
+    color: var(--amber-400);
+    text-shadow: 0 0 6px var(--amber-glow);
+}
+
+.upgrade-tile.too-expensive {
+    opacity: 0.5;
+    border-color: rgba(138, 154, 142, 0.15);
+}
+
+.upgrade-tile.almost-maxed:not(.selected) {
+    animation: almost-pulse 2s ease-in-out infinite;
+}
+
+.upgrade-tile.tile-flash {
+    animation: card-flash 400ms var(--ease-out);
+}
+
+@keyframes almost-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(240, 192, 64, 0); }
+    50% { box-shadow: 0 0 10px 2px rgba(240, 192, 64, 0.18); }
+}
+
+.tile-icon {
+    font-size: clamp(1.4rem, 1rem + 2vw, 2rem);
+    line-height: 1;
+}
+
+.tile-name {
+    font-family: var(--font-ui);
+    font-size: clamp(8px, 7px + 0.3vw, 10px);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.2;
+}
+
+.tile-pips {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+}
+
+.tile-pips .pip {
+    width: 8px;
+    height: 3px;
+}
+
+/* -- Upgrade detail flyout -- */
+#upgrade-detail {
+    width: 100%;
+    max-width: 440px;
     padding: var(--space-3) var(--space-4);
     background: var(--surface-secondary);
     border: 1px solid rgba(35, 159, 64, 0.22);
     border-left: 3px solid var(--tactical-400);
     border-radius: var(--radius-lg);
     box-shadow: 0 1px 4px rgba(26, 42, 26, 0.08);
-    transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast);
-    animation: fade-in-up var(--dur-normal) var(--ease-out) backwards;
-    position: relative;
+    margin-bottom: var(--space-4);
+    animation: fade-in-up var(--dur-normal) var(--ease-out) 450ms backwards;
 }
 
-.upgrade-item:nth-child(1) { animation-delay: 100ms; }
-.upgrade-item:nth-child(2) { animation-delay: 160ms; }
-.upgrade-item:nth-child(3) { animation-delay: 220ms; }
-.upgrade-item:nth-child(4) { animation-delay: 280ms; }
-.upgrade-item:nth-child(5) { animation-delay: 340ms; }
-
-.upgrade-item:hover {
-    border-color: rgba(35, 159, 64, 0.5);
-    background: var(--surface-tertiary);
-    box-shadow: 0 3px 12px rgba(26, 42, 26, 0.12), 0 0 0 1px rgba(35, 159, 64, 0.1);
-    transform: translateY(-1px);
-}
-
-.upgrade-item.too-expensive {
-    opacity: 0.6;
-    border-left-color: var(--text-muted);
-    background: rgba(245, 242, 236, 0.6);
-}
-
-.upgrade-item.too-expensive .upgrade-icon {
-    opacity: 0.4;
-    border-color: rgba(138, 154, 142, 0.15);
-    background: rgba(138, 154, 142, 0.06);
-}
-
-.upgrade-item.maxed {
+#upgrade-detail.maxed {
     border-color: rgba(240, 192, 64, 0.3);
+    border-left-color: var(--amber-400);
     background: rgba(240, 192, 64, 0.04);
 }
 
-.upgrade-item.maxed .upgrade-icon {
-    color: var(--amber-400);
-    text-shadow: 0 0 8px var(--amber-glow);
+.detail-top {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    margin-bottom: var(--space-2);
 }
 
-.upgrade-item.card-flash {
-    animation: card-flash 400ms var(--ease-out);
-}
-
-/* -- Upgrade icon -- */
-.upgrade-icon {
+.detail-icon {
     font-size: clamp(1.3rem, 1rem + 1vw, 1.6rem);
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -615,56 +717,83 @@
     border: 1px solid rgba(35, 159, 64, 0.2);
     border-radius: var(--radius-lg);
     flex-shrink: 0;
-    color: var(--text-primary);
-    transition: color var(--dur-fast), text-shadow var(--dur-fast), background var(--dur-fast);
 }
 
-/* -- Upgrade info -- */
-.upgrade-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
+#upgrade-detail.maxed .detail-icon {
+    color: var(--amber-400);
+    text-shadow: 0 0 8px var(--amber-glow);
+}
+
+.detail-info {
     flex: 1;
     min-width: 0;
 }
 
-.upgrade-header {
+.detail-header {
     display: flex;
     align-items: baseline;
     gap: var(--space-2);
 }
 
-.upgrade-name {
+.detail-name {
     font-family: var(--font-ui);
     font-size: var(--text-sm);
     font-weight: 700;
     color: var(--text-primary);
 }
 
-.upgrade-level {
+.detail-level {
     font-family: var(--font-ui);
     font-size: 9px;
     color: var(--text-muted);
     letter-spacing: var(--tracking-wide);
 }
 
-.maxed .upgrade-level {
+#upgrade-detail.maxed .detail-level {
     color: var(--amber-400);
     font-weight: 700;
 }
 
-.upgrade-desc {
+.detail-pips {
+    display: flex;
+    gap: 3px;
+    margin: 3px 0;
+}
+
+.detail-desc {
     font-family: var(--font-body);
     font-size: clamp(0.5625rem, 0.5rem + 0.2vw, 0.6875rem);
     color: var(--text-muted);
     line-height: 1.3;
 }
 
-/* -- Level pips -- */
-.upgrade-pips {
+.detail-bottom {
     display: flex;
-    gap: 3px;
-    margin: 3px 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.detail-stat {
+    font-family: var(--font-ui);
+    font-size: clamp(0.5625rem, 0.5rem + 0.2vw, 0.6875rem);
+    color: var(--text-secondary);
+    line-height: 1.3;
+    font-weight: 600;
+    flex: 1;
+}
+
+.stat-arrow {
+    color: var(--tactical-400);
+    font-weight: 700;
+}
+
+.stat-next {
+    color: var(--tactical-300);
+}
+
+#upgrade-detail.maxed .detail-stat {
+    color: var(--amber-400);
 }
 
 .pip {
@@ -963,6 +1092,13 @@
         display: none;
     }
 
+    .sound-toggle {
+        top: var(--space-2);
+        right: var(--space-3);
+        width: 36px;
+        height: 36px;
+    }
+
     .title-line-1 {
         font-size: var(--text-lg);
     }
@@ -1106,27 +1242,35 @@
     }
 
     #upgrades-list {
-        flex: 1;
-        margin-bottom: var(--space-2);
+        margin-bottom: var(--space-1);
+        gap: var(--space-1);
     }
 
-    .upgrade-item {
+    .tile-icon {
+        font-size: 1.1rem;
+    }
+
+    .tile-name {
+        font-size: 7px;
+    }
+
+    .tile-pips .pip {
+        width: 6px;
+        height: 2px;
+    }
+
+    #upgrade-detail {
         padding: var(--space-2) var(--space-3);
-        gap: var(--space-2);
+        margin-bottom: var(--space-1);
     }
 
-    .upgrade-icon {
+    .detail-icon {
         width: 32px;
         height: 32px;
         font-size: 1rem;
     }
 
-    .pip {
-        width: 10px;
-        height: 4px;
-    }
-
-    .upgrade-desc {
+    .detail-desc {
         display: none;
     }
 
@@ -1151,5 +1295,71 @@
     .toll-message {
         font-size: var(--text-sm);
         margin-bottom: var(--space-2);
+    }
+}
+
+/* ====== DESKTOP DOCK (wide layout) ====== */
+@media (min-width: 1024px) and (min-height: 520px) {
+    #port-hub-screen {
+        background:
+            radial-gradient(ellipse at 30% 50%, rgba(42, 120, 136, 0.08) 0%, transparent 60%),
+            var(--surface-overlay);
+    }
+
+    #port-hub-screen .port-hud {
+        padding: var(--space-4) var(--space-8);
+    }
+
+    #port-hub-screen .port-hud-title .screen-title {
+        font-size: var(--text-2xl);
+    }
+
+    #port-hub-screen .port-hud-title .screen-subtitle {
+        display: block;
+    }
+
+    #port-hub-screen .port-hud-value {
+        font-size: var(--text-lg);
+    }
+
+    #port-hub-screen .port-body {
+        flex-direction: row;
+        flex: 1;
+        min-height: 0;
+    }
+
+    #port-hub-screen .dock-ship-viewport {
+        width: 55%;
+        height: 100%;
+        border-bottom: none;
+        border-right: 1px solid rgba(138, 154, 142, 0.15);
+    }
+
+    #port-hub-screen .dock-ship-viewport::after {
+        display: none;
+    }
+
+    #port-hub-screen .port-content {
+        width: 45%;
+        padding: var(--space-5) var(--space-6);
+        padding-bottom: var(--space-5);
+    }
+
+    #port-hub-screen .port-section-label {
+        display: block;
+        max-width: 100%;
+    }
+
+    #port-hub-screen #upgrades-list {
+        max-width: 100%;
+    }
+
+    #port-hub-screen #upgrade-detail {
+        max-width: 100%;
+    }
+
+    #port-hub-screen .port-actions {
+        max-width: 100%;
+        padding-top: var(--space-3);
     }
 }
