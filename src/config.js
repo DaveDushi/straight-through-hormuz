@@ -226,6 +226,15 @@ export const CONFIG = {
   // Voice audio
   VOICE_VOLUME: 0.7,
   VOICE_RADIO_DELAY: 0.15,
+  CUSTOM_VOICE: [
+    'oil-reserves-tapped---full-spe.wav',
+    'ceasefire-holding--all-shootin.wav',
+    'ceasefire-collapsed--brace-.wav',
+    'pakistan-stands-with-you--full.wav',
+    'smart-move--sometimes-you-gott.wav',
+    'brave--israel-respects-courage.wav',
+    'usa-naval-blockade-ahead--navi.wav',
+  ],
 
   // Radio chatter
   RADIO_MESSAGES: [

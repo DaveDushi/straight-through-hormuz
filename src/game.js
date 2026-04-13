@@ -465,7 +465,7 @@ export class Game {
         this.tanker.oilBoostActive = active;
         if (active) {
             this.audio.playSFX('boost');
-            this.radio.showCustom('COMMAND', 'Oil reserves tapped — full speed ahead!', this.audio);
+            this.radio.showCustom('COMMAND', 'Oil reserves tapped — full speed ahead!', this.audio, 'oil-reserves-tapped---full-spe.wav');
         }
     }
 
@@ -475,11 +475,11 @@ export class Game {
         this.tanker.ceasefireActive = active;
         if (active) {
             this.audio.playSFX('ceasefire');
-            this.radio.showCustom('COMMAND', 'Ceasefire holding… all shooting stopped.', this.audio);
+            this.radio.showCustom('COMMAND', 'Ceasefire holding… all shooting stopped.', this.audio, 'ceasefire-holding--all-shootin.wav');
             // Clear all projectiles in the air
             this.pools.projectile.releaseAll();
         } else {
-            this.radio.showCustom('COMMAND', 'Ceasefire collapsed! Brace!', this.audio);
+            this.radio.showCustom('COMMAND', 'Ceasefire collapsed! Brace!', this.audio, 'ceasefire-collapsed--brace-.wav');
         }
     }
 
@@ -488,7 +488,7 @@ export class Game {
         if (active) {
             this.tanker.invulnTimer = CONFIG.PAK_FLAG_DURATION;
             this.audio.playSFX('ceasefire');
-            this.radio.showCustom('COMMAND', 'Pakistan stands with you! Full protection!', this.audio);
+            this.radio.showCustom('COMMAND', 'Pakistan stands with you! Full protection!', this.audio, 'pakistan-stands-with-you--full.wav');
         } else {
             this.tanker.bodyMat.emissive.setHex(0x000000);
         }
@@ -497,10 +497,10 @@ export class Game {
     _onTollChoice(accepted) {
         this.toll.resolve(accepted, this.scoring, this.save);
         if (accepted) {
-            this.radio.showCustom('TRUMP', 'Smart move. Sometimes you gotta pay to play.', this.audio);
+            this.radio.showCustom('TRUMP', 'Smart move. Sometimes you gotta pay to play.', this.audio, 'smart-move--sometimes-you-gott.wav');
             this.blockadeSystem.scheduleTollBlockade(this.tanker.z, this.difficulty.getStraitHalfWidth());
         } else {
-            this.radio.showCustom('BIBI', 'Brave. Israel respects courage.', this.audio);
+            this.radio.showCustom('BIBI', 'Brave. Israel respects courage.', this.audio, 'brave--israel-respects-courage.wav');
             this.spawner.spawnRateMultiplier = CONFIG.TOLL_REFUSE_SPAWN_MULTIPLIER;
             this.spawner.spawnRateBoostTimer = 10;
         }

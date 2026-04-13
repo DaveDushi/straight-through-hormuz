@@ -26,7 +26,7 @@
     letter-spacing: var(--tracking-widest);
     text-transform: uppercase;
     text-align: center;
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-3);
     line-height: var(--leading-tight);
     animation: fade-in-down var(--dur-slow) var(--ease-out);
 }
@@ -36,7 +36,7 @@
     font-size: var(--text-sm);
     color: var(--text-secondary);
     letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-3);
     animation: fade-in var(--dur-slow) var(--ease-out) 100ms backwards;
 }
 
@@ -146,7 +146,7 @@
     border: 1px solid var(--result-defeat-accent);
     border-radius: var(--radius-lg);
     padding: var(--space-4) var(--space-5);
-    margin: var(--space-4) 0;
+    margin: var(--space-5) 0;
     width: 100%;
     max-width: 380px;
     animation: fade-in-up var(--dur-slow) var(--ease-out) 600ms backwards;
@@ -199,7 +199,7 @@
     display: flex;
     justify-content: center;
     gap: var(--space-6);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-5);
     width: 100%;
     max-width: 380px;
     animation: fade-in-up var(--dur-normal) var(--ease-out) 800ms backwards;
@@ -238,8 +238,8 @@
     border-left: 2px solid var(--text-muted);
     background: rgba(0, 0, 0, 0.03);
     padding: var(--space-2) var(--space-4);
-    margin-top: var(--space-2);
-    margin-bottom: var(--space-5);
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-6);
     animation: terminal-reveal var(--dur-slow) var(--ease-out) 1100ms backwards;
 }
 
@@ -759,7 +759,7 @@
 .promo-slot {
     width: 100%;
     max-width: 380px;
-    margin-top: var(--space-3);
+    margin-top: var(--space-8);
     display: flex;
     flex-direction: column;
     align-items: center;

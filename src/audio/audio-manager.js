@@ -29,9 +29,11 @@ export class AudioManager {
 
     async preloadVoice() {
         if (!this.initialized) return;
-        const files = CONFIG.RADIO_MESSAGES.map(m => m.voice).filter(Boolean);
+        const radio = CONFIG.RADIO_MESSAGES.map(m => m.voice).filter(Boolean);
+        const custom = CONFIG.CUSTOM_VOICE || [];
+        const all = [...radio, ...custom];
         const results = await Promise.allSettled(
-            files.map(f => this._loadClip(f))
+            all.map(f => this._loadClip(f))
         );
         const loaded = results.filter(r => r.status === 'fulfilled' && r.value).length;
         this.voiceLoaded = loaded > 0;

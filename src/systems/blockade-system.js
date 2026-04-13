@@ -27,7 +27,7 @@ export class BlockadeSystem {
             // Radio warning ~120 units before blockade
             if (!this.warned.has(i) && tankerZ > p.triggerZ - 120) {
                 this.warned.add(i);
-                radio.showCustom('COMMAND', 'USA naval blockade ahead! Navigate through the gap!', audio);
+                radio.showCustom('COMMAND', 'USA naval blockade ahead! Navigate through the gap!', audio, 'usa-naval-blockade-ahead--navi.wav');
             }
 
             if (tankerZ > p.triggerZ - CONFIG.SPAWN_Z) {

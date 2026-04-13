@@ -67,8 +67,8 @@ export class RadioUI {
         }
     }
 
-    showCustom(speaker, text, audio) {
-        this.showMessage({ speaker, text }, audio);
+    showCustom(speaker, text, audio, voice) {
+        this.showMessage({ speaker, text, voice }, audio);
     }
 
     reset() {
