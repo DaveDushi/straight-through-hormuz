@@ -520,7 +520,7 @@
 /* -- Ship viewport (garage hero) -- */
 .dock-ship-viewport {
     width: 100%;
-    height: clamp(140px, 30vh, 240px);
+    height: clamp(100px, 22vh, 200px);
     flex-shrink: 0;
     position: relative;
     background: linear-gradient(to bottom, #1e4a54 0%, #2a7888 40%, #1a5a6a 100%);
@@ -554,8 +554,8 @@
     align-items: center;
     flex: 1;
     min-height: 0;
-    padding: var(--space-4) var(--space-5);
-    padding-bottom: max(var(--space-5), env(safe-area-inset-bottom));
+    padding: var(--space-3) var(--space-4);
+    padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -567,12 +567,13 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--text-muted);
-    padding-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
     border-bottom: 1px solid rgba(138, 154, 142, 0.15);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
     width: 100%;
     max-width: 440px;
     text-align: center;
+    display: none;
 }
 
 /* -- Upgrade tile grid -- */
@@ -683,13 +684,13 @@
 #upgrade-detail {
     width: 100%;
     max-width: 440px;
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-2) var(--space-3);
     background: var(--surface-secondary);
     border: 1px solid rgba(35, 159, 64, 0.22);
     border-left: 3px solid var(--tactical-400);
     border-radius: var(--radius-lg);
     box-shadow: 0 1px 4px rgba(26, 42, 26, 0.08);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
     animation: fade-in-up var(--dur-normal) var(--ease-out) 450ms backwards;
 }
 
@@ -707,9 +708,9 @@
 }
 
 .detail-icon {
-    font-size: clamp(1.3rem, 1rem + 1vw, 1.6rem);
-    width: 44px;
-    height: 44px;
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.6rem);
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1065,7 +1066,7 @@
 }
 
 /* ====== LANDSCAPE PHONE (compact vertical) ====== */
-@media (orientation: landscape) and (max-height: 500px) {
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 1023px) {
     .screen-overlay {
         padding: var(--space-2) var(--space-8);
         padding-left: max(var(--space-8), env(safe-area-inset-left));
@@ -1204,7 +1205,7 @@
     }
 
     .port-hud-title .screen-title {
-        font-size: var(--text-base);
+        font-size: var(--text-sm);
     }
 
     .port-hud-title .screen-subtitle {
@@ -1220,8 +1221,9 @@
     }
 
     .dock-ship-viewport {
-        width: 45%;
+        width: clamp(180px, 35%, 280px);
         height: auto;
+        flex-shrink: 0;
         border-bottom: none;
         border-right: 1px solid rgba(138, 154, 142, 0.15);
     }
@@ -1231,10 +1233,12 @@
     }
 
     .port-content {
-        width: 55%;
+        width: auto;
         flex: 1;
-        padding: var(--space-3) var(--space-4);
-        padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+        padding: var(--space-2);
+        padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+        overflow-y: hidden;
+        justify-content: center;
     }
 
     .port-section-label {
@@ -1242,16 +1246,23 @@
     }
 
     #upgrades-list {
-        margin-bottom: var(--space-1);
-        gap: var(--space-1);
+        margin-bottom: var(--space-2);
+        gap: 6px;
+        max-width: none;
+    }
+
+    .upgrade-tile {
+        aspect-ratio: auto;
+        padding: var(--space-1);
+        gap: 3px;
     }
 
     .tile-icon {
-        font-size: 1.1rem;
+        font-size: clamp(1.2rem, 1rem + 1vw, 1.6rem);
     }
 
     .tile-name {
-        font-size: 7px;
+        font-size: clamp(7px, 6px + 0.3vw, 9px);
     }
 
     .tile-pips .pip {
@@ -1260,30 +1271,33 @@
     }
 
     #upgrade-detail {
-        padding: var(--space-2) var(--space-3);
-        margin-bottom: var(--space-1);
+        padding: 0 var(--space-2);
+        margin-bottom: var(--space-2);
+        height: 44px;
+        display: flex;
+        align-items: center;
+        max-width: none;
     }
 
-    .detail-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 1rem;
-    }
-
-    .detail-desc {
+    .detail-top {
         display: none;
+    }
+
+    .detail-bottom {
+        width: 100%;
     }
 
     .port-actions {
         flex-direction: row;
         gap: var(--space-2);
-        padding-top: var(--space-1);
+        padding-top: 0;
+        max-width: none;
     }
 
     .port-actions .btn {
         flex: 1;
-        min-height: 32px;
-        padding: var(--space-1) var(--space-5);
+        min-height: 44px;
+        padding: var(--space-1) var(--space-4);
         font-size: var(--text-xs);
     }
 
@@ -1295,6 +1309,50 @@
     .toll-message {
         font-size: var(--text-sm);
         margin-bottom: var(--space-2);
+    }
+}
+
+/* ====== TABLET DOCK (mid-size side-by-side) ====== */
+@media (min-width: 700px) and (min-height: 480px) {
+    #port-hub-screen .port-body {
+        flex-direction: row;
+        flex: 1;
+        min-height: 0;
+    }
+
+    #port-hub-screen .dock-ship-viewport {
+        width: 50%;
+        height: 100%;
+        border-bottom: none;
+        border-right: 1px solid rgba(138, 154, 142, 0.15);
+        min-height: auto;
+    }
+
+    #port-hub-screen .dock-ship-viewport::after {
+        display: none;
+    }
+
+    #port-hub-screen .port-content {
+        width: 50%;
+        padding: var(--space-4) var(--space-5);
+        padding-bottom: var(--space-4);
+    }
+
+    #port-hub-screen .port-section-label {
+        display: block;
+        max-width: 100%;
+    }
+
+    #port-hub-screen #upgrades-list {
+        max-width: 100%;
+    }
+
+    #port-hub-screen #upgrade-detail {
+        max-width: 100%;
+    }
+
+    #port-hub-screen .port-actions {
+        max-width: 100%;
     }
 }
 
@@ -1333,6 +1391,7 @@
         height: 100%;
         border-bottom: none;
         border-right: 1px solid rgba(138, 154, 142, 0.15);
+        min-height: auto;
     }
 
     #port-hub-screen .dock-ship-viewport::after {
@@ -1356,6 +1415,14 @@
 
     #port-hub-screen #upgrade-detail {
         max-width: 100%;
+        padding: var(--space-3) var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+
+    #port-hub-screen .detail-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.5rem;
     }
 
     #port-hub-screen .port-actions {

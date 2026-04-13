@@ -186,6 +186,7 @@ export class PortHub {
     if (this._tileRefs[key]) {
       this._tileRefs[key].tile.classList.add('selected');
     }
+    this.shipView.highlightUpgrade(key);
     this._updateDetail();
   }
 
@@ -279,5 +280,8 @@ export class PortHub {
     }
 
     this._updateAll();
+    if (this._selectedKey) {
+      this.shipView.highlightUpgrade(this._selectedKey);
+    }
   }
 }

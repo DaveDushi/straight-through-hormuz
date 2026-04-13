@@ -1,6 +1,17 @@
 import * as THREE from 'three';
 import { CONFIG } from '../config.js';
 
+const HIGHLIGHT_ROTATIONS = {
+  rudder: 0.5,
+  hull: -0.8,
+  radar: 0.1,
+  tollDiscount: -0.3,
+  ironBeam: -1.2,
+  fuelTank: -0.5,
+  reinforcedBow: -1.6,
+  cargoInsurance: -0.6,
+};
+
 export class DockShipView {
   constructor(container) {
     this.container = container;
@@ -12,6 +23,8 @@ export class DockShipView {
     this._dragging = false;
     this._lastPointerX = 0;
     this._upgradeMeshes = {};
+    this._highlightedKey = null;
+    this._hlMats = null;
   }
 
   _build() {
@@ -423,6 +436,47 @@ export class DockShipView {
     }
   }
 
+  highlightUpgrade(key) {
+    if (!this._built) return;
+    this._clearHighlight();
+    this._highlightedKey = key;
+
+    if (!this._dragging) {
+      this._targetRotY = HIGHLIGHT_ROTATIONS[key] ?? -0.5;
+    }
+
+    const meshes = this._upgradeMeshes[key];
+    if (!meshes) return;
+    this._hlMats = [];
+    for (const mesh of meshes) {
+      if (!mesh.visible) continue;
+      this._collectHlMats(mesh);
+    }
+  }
+
+  _collectHlMats(obj) {
+    if (obj.material && !obj.material.__hlStored) {
+      obj.material.__hlOrig = obj.material.emissive.getHex();
+      obj.material.__hlStored = true;
+      this._hlMats.push(obj.material);
+    }
+    if (obj.children) {
+      for (const child of obj.children) this._collectHlMats(child);
+    }
+  }
+
+  _clearHighlight() {
+    if (this._hlMats) {
+      for (const mat of this._hlMats) {
+        mat.emissive.setHex(mat.__hlOrig);
+        delete mat.__hlStored;
+        delete mat.__hlOrig;
+      }
+      this._hlMats = null;
+    }
+    this._highlightedKey = null;
+  }
+
   _bindDrag() {
     const el = this.canvas;
     let startX = 0;
@@ -497,6 +551,20 @@ export class DockShipView {
         if (g.visible && g.children[1]) {
           g.children[1].rotation.y += 0.03;
         }
+      }
+    }
+
+    if (this._hlMats && this._hlMats.length > 0) {
+      const pulse = 0.5 + Math.sin(this._time * 3) * 0.5;
+      for (const mat of this._hlMats) {
+        const origR = ((mat.__hlOrig >> 16) & 0xff) / 255;
+        const origG = ((mat.__hlOrig >> 8) & 0xff) / 255;
+        const origB = (mat.__hlOrig & 0xff) / 255;
+        mat.emissive.setRGB(
+          origR + 0.1 * pulse,
+          origG + 0.4 * pulse,
+          origB + 0.15 * pulse
+        );
       }
     }
 
