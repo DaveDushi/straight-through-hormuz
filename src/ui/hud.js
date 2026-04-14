@@ -223,7 +223,7 @@ export class HUD {
         const descriptions = {
             oil: `OIL \u2014 ${activateHint} to boost speed & steering (8s)`,
             ceasefire: `CEASEFIRE \u2014 ${activateHint} to stop all shooting (10s)`,
-            pakFlag: `PAK FLAG \u2014 ${activateHint} for invincibility (10s)`,
+            pakFlag: `PAKISTANI FLAG \u2014 ${activateHint} for invincibility (10s)`,
             repair: 'REPAIR \u2014 Hull +20',
             fuel: 'FUEL \u2014 Boost +50',
             laser: 'LASER \u2014 Iron Beam buffed for 10s',

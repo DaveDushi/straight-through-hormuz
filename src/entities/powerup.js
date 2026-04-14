@@ -12,7 +12,7 @@ const POWERUP_COLORS = {
 const POWERUP_LABELS = {
     oil: 'OIL',
     ceasefire: 'CEASEFIRE',
-    pakFlag: 'PAK FLAG',
+    pakFlag: 'PAKISTANI FLAG',
 };
 
 export class Powerup extends Entity {
