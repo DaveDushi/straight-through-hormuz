@@ -35,6 +35,8 @@ import { quality } from './utils/quality-manager.js';
 import { CameraController } from './utils/camera-controller.js';
 import { Tutorial } from './systems/tutorial.js';
 import { TutorialUI } from './ui/tutorial-ui.js';
+import { PortalSystem } from './portal/portal-system.js';
+import { track } from './analytics.js';
 
 export class Game {
     constructor() {
@@ -88,6 +90,7 @@ export class Game {
 
         this.tutorialUI = new TutorialUI(() => this._endTutorial());
         this.tutorial = new Tutorial(this.tutorialUI);
+        this.portalSystem = new PortalSystem();
 
         this._wakeTimer = 0;
 
@@ -205,6 +208,7 @@ export class Game {
     }
 
     start() {
+        this.portalSystem.init(this);
         requestAnimationFrame(this._bound_loop);
     }
 
@@ -301,6 +305,11 @@ export class Game {
 
         this.fsm.transition('playing');
 
+        track('game_start', {
+            run_number: this.save.data.totalRuns + 1,
+            upgrades: JSON.stringify(this.save.data.upgrades),
+        });
+
         if (this.save.data.totalRuns === 0 && !this.save.data.tutorialComplete) {
             this.tutorial.start(this);
         }
@@ -373,6 +382,7 @@ export class Game {
             }
         };
         this.ironBeam.update(delta, this.pools.drone, this.tanker, this.particles, this.audio, releaseEntity);
+        this.portalSystem.update(delta, this);
 
         const poolArray = Object.values(this.pools);
         const prevHull = this.tanker.hull;
@@ -412,6 +422,13 @@ export class Game {
         };
         const powerupSlot = this.input.consumePowerupActivation();
         if (powerupSlot >= 0) {
+            const powerupType = this.inventory.slots[powerupSlot];
+            if (powerupType) {
+                track('powerup_used', {
+                    powerup: powerupType,
+                    distance: Math.round(this.scoring.distance),
+                });
+            }
             this.inventory.activate(powerupSlot, powerupCtx);
         }
         this.inventory.update(delta, powerupCtx);
@@ -512,6 +529,11 @@ export class Game {
     }
 
     _onTollChoice(accepted) {
+        track('toll_decision', {
+            decision: accepted ? 'accepted' : 'refused',
+            toll_cost: this.toll.pendingToll ? this.toll.pendingToll.cost : 0,
+            distance: Math.round(this.scoring.distance),
+        });
         this.toll.resolve(accepted, this.scoring, this.save);
         if (accepted) {
             this.radio.showCustom('TRUMP', 'Smart move. Sometimes you gotta pay to play.', this.audio, 'smart-move--sometimes-you-gott.wav');
