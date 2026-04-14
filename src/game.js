@@ -420,7 +420,8 @@ export class Game {
 
         const baseScrollSpeed = this.difficulty.getScrollSpeed();
         const scrollSpeed = this.tanker.oilBoostActive ? baseScrollSpeed * CONFIG.OIL_BOOST_SPEED_MULT : baseScrollSpeed;
-        const straitHalfWidth = this.difficulty.getStraitHalfWidth();
+        const straitHalfWidth = this.difficulty.getStraitHalfWidth()
+            + this.portalSystem.getExtraWidth(this.tanker.z);
 
         this.tanker.update(delta, {
             input: this.input,

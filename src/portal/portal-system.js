@@ -7,8 +7,9 @@ const EXIT_COLOR = 0x8800ff;
 const START_COLOR = 0x00ddff;
 const EXIT_Z_OFFSET = 120;
 const START_Z_OFFSET = 30;
-const PORTAL_Y = 6;
 const DEACTIVATE_BEHIND = 40;
+const PORTAL_ZONE_HALF_LENGTH = 15;
+const PORTAL_EXTRA_WIDTH = 12;
 
 export class PortalSystem {
     constructor() {
@@ -78,14 +79,26 @@ export class PortalSystem {
         }
     }
 
+    getExtraWidth(tankerZ) {
+        if (!ENABLED || !this._positioned) return 0;
+        const portals = [this.exitPortal, this.startPortal];
+        for (const p of portals) {
+            if (p && p.active && Math.abs(tankerZ - p.z) < PORTAL_ZONE_HALF_LENGTH) {
+                return PORTAL_EXTRA_WIDTH;
+            }
+        }
+        return 0;
+    }
+
     _positionPortals(game) {
         const tankerZ = game.tanker.z;
         const halfW = game.difficulty.getStraitHalfWidth();
 
-        this.exitPortal.init(halfW, tankerZ + EXIT_Z_OFFSET, -Math.PI / 2);
+        // Push portal into the cliff so the tunnel mouth sits at the terrain edge
+        this.exitPortal.init(halfW + 4, tankerZ + EXIT_Z_OFFSET, -Math.PI / 2);
 
         if (this.startPortal) {
-            this.startPortal.init(-halfW, tankerZ + START_Z_OFFSET, Math.PI / 2);
+            this.startPortal.init(-(halfW + 4), tankerZ + START_Z_OFFSET, Math.PI / 2);
         }
     }
 
