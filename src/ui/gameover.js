@@ -1,4 +1,5 @@
 import { refreshPromo } from "./promo.js";
+import { track } from "../analytics.js";
 
 export class GameOverScreen {
   constructor(onRestart, onPort) {
@@ -31,6 +32,7 @@ export class GameOverScreen {
 
   _share() {
     const text = this._getShareText();
+    track('share', { screen: 'gameover', method: navigator.share ? 'native' : 'clipboard' });
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
       return;
@@ -113,6 +115,17 @@ export class GameOverScreen {
 
     this.el.classList.add("visible");
     refreshPromo(this.promoSlot);
+
+    track('game_over', {
+      distance: Math.round(data.distance),
+      distance_km: this._distanceKm,
+      score: data.score,
+      tolls_paid: data.tollsPaid,
+      tolls_refused: data.tollsRefused,
+      near_misses: data.nearMissCount,
+      currency_earned: data.earned || 0,
+      reason: data.reason || 'destroyed',
+    });
 
     if (this.announcer) {
       this.announcer.textContent = `Game over. Distance: ${(data.distance / 1000).toFixed(1)} kilometers.`;

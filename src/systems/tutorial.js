@@ -1,4 +1,5 @@
 import { CONFIG } from "../config.js";
+import { track } from "../analytics.js";
 
 const SCROLL_SPEED = CONFIG.WORLD_SCROLL_BASE_SPEED * 0.5;
 
@@ -484,6 +485,7 @@ export class Tutorial {
     game.inventory.reset();
     game.save.data.tutorialComplete = true;
     game.save.save();
+    track('tutorial_complete');
     this.ui.hide();
   }
 

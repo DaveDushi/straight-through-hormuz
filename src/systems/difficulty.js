@@ -1,5 +1,6 @@
 import { CONFIG } from '../config.js';
 import { lerp } from '../utils/math-utils.js';
+import { track } from '../analytics.js';
 
 export class DifficultySystem {
     constructor() {
@@ -35,6 +36,13 @@ export class DifficultySystem {
             this.currentPhase = CONFIG.DIFFICULTY[idx];
         }
 
+        if (idx !== this.phaseIndex && idx > 0) {
+            track('phase_reached', {
+                phase: CONFIG.DIFFICULTY[idx].name,
+                phase_index: idx,
+                distance: Math.round(distance),
+            });
+        }
         this.phaseIndex = idx;
         this.phaseName = CONFIG.DIFFICULTY[idx].name;
     }

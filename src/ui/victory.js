@@ -1,4 +1,5 @@
 import { refreshPromo } from "./promo.js";
+import { track } from "../analytics.js";
 
 export class VictoryScreen {
   constructor(onRestart, onPort) {
@@ -30,6 +31,7 @@ export class VictoryScreen {
 
   _share() {
     const text = this._getShareText();
+    track('share', { screen: 'victory', method: navigator.share ? 'native' : 'clipboard' });
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
       return;
@@ -86,6 +88,16 @@ export class VictoryScreen {
 
     this.el.classList.add("visible");
     refreshPromo(this.promoSlot);
+
+    track('victory', {
+      distance: Math.round(data.distance),
+      distance_km: this._distanceKm,
+      score: data.score,
+      tolls_paid: data.tollsPaid,
+      tolls_refused: data.tollsRefused,
+      near_misses: data.nearMissCount,
+      currency_earned: data.earned || 0,
+    });
 
     if (this.announcer) {
       this.announcer.textContent = `Victory! You made it through the strait. Distance: ${(data.distance / 1000).toFixed(1)} kilometers.`;

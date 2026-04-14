@@ -1,6 +1,7 @@
 import { CONFIG } from '../config.js';
 import { DockShipView } from './dock-ship-view.js';
 import { refreshPromo } from './promo.js';
+import { track } from '../analytics.js';
 
 const UPGRADE_ICONS = {
   rudder: '\u2699',
@@ -101,6 +102,7 @@ export class PortHub {
   }
 
   show() {
+    track('port_hub_view');
     this.el.classList.add('visible');
     if (!this._built) {
       this._buildTiles();
@@ -270,6 +272,13 @@ export class PortHub {
     save.currency -= cost;
     save.upgrades[key] = level + 1;
     this.saveManager.save();
+
+    track('upgrade_purchase', {
+      upgrade: key,
+      level: level + 1,
+      cost: cost,
+      currency_remaining: save.currency,
+    });
 
     const refs = this._tileRefs[key];
     if (refs && refs.pips[level]) {

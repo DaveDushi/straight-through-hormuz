@@ -35,6 +35,7 @@ import { quality } from './utils/quality-manager.js';
 import { CameraController } from './utils/camera-controller.js';
 import { Tutorial } from './systems/tutorial.js';
 import { TutorialUI } from './ui/tutorial-ui.js';
+import { PauseScreen } from './ui/pause.js';
 import { PortalSystem } from './portal/portal-system.js';
 import { track } from './analytics.js';
 
@@ -88,6 +89,11 @@ export class Game {
             () => this.fsm.transition('port-hub')
         );
 
+        this.pause = new PauseScreen(
+            () => this._resumeGame(),
+            () => this._exitToHome()
+        );
+
         this.tutorialUI = new TutorialUI(() => this._endTutorial());
         this.tutorial = new Tutorial(this.tutorialUI);
         this.portalSystem = new PortalSystem();
@@ -119,6 +125,25 @@ export class Game {
             this._showOrientationBanner();
         }
 
+        this._pauseBtn = document.getElementById('btn-pause');
+        if (this._pauseBtn) {
+            this._pauseBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this._pauseGame();
+            });
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Escape') {
+                if (this.fsm.is('playing')) {
+                    this._pauseGame();
+                } else if (this.fsm.is('paused')) {
+                    this._resumeGame();
+                }
+            }
+        });
+
         this.fsm = new StateMachine({
             'menu': {
                 onEnter: () => {
@@ -127,6 +152,7 @@ export class Game {
                     this.gameover.hide();
                     this.victory.hide();
                     this.tollDialog.hide();
+                    this.pause.hide();
                     this.portHub.hide();
                 },
                 onExit: () => this.menu.hide(),
@@ -143,6 +169,16 @@ export class Game {
                     this.tollDialog.show(data.cost, this.save.data.currency);
                 },
                 onExit: () => this.tollDialog.hide(),
+            },
+            'paused': {
+                onEnter: () => {
+                    this.pause.show();
+                    this.audio.stopEngine();
+                    this.audio.stopVoice();
+                },
+                onExit: () => {
+                    this.pause.hide();
+                },
             },
             'gameover': {
                 onEnter: () => {
@@ -315,6 +351,39 @@ export class Game {
         }
     }
 
+    _pauseGame() {
+        if (!this.fsm.is('playing')) return;
+        this.fsm.transition('paused');
+        track('game_paused', { distance: Math.round(this.scoring.distance) });
+    }
+
+    _resumeGame() {
+        if (!this.fsm.is('paused')) return;
+        this.fsm.transition('playing');
+        this.audio.playEngine();
+        this.audio.applyMuteState();
+    }
+
+    _exitToHome() {
+        if (!this.fsm.is('paused')) return;
+
+        for (const key in this.pools) {
+            this.pools[key].releaseAll();
+        }
+        this.inventory.reset();
+        this.radio.reset();
+        this.ironBeam.reset(0, 0);
+        this.blockadeSystem.reset();
+
+        if (this.tutorial.active) {
+            this.tutorial.active = false;
+            this.tutorialUI.hide();
+        }
+
+        track('game_exit_to_home', { distance: Math.round(this.scoring.distance) });
+        this.fsm.transition('menu');
+    }
+
     _endTutorial() {
         this.tutorial.end(this);
     }
@@ -328,7 +397,7 @@ export class Game {
         try {
             if (this.fsm.is('playing')) {
                 this._update(delta);
-            } else if (this.fsm.is('toll')) {
+            } else if (this.fsm.is('toll') || this.fsm.is('paused')) {
                 this.water.update(delta * 0.2, this.scoring.distance, this.tanker.z);
                 this.particles.update(delta, 0);
             }

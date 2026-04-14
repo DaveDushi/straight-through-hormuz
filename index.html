@@ -84,6 +84,7 @@
 
         <!-- HUD -->
         <div id="hud">
+            <button class="hud-pause-btn" id="btn-pause" aria-label="Pause game">&#x23F8;</button>
             <div class="hud-top">
                 <div class="hud-left">
                     <div class="hud-label">Hull Integrity</div>
@@ -229,6 +230,19 @@
                     </button>
                 </div>
                 <div class="toll-countdown"></div>
+            </div>
+        </div>
+
+        <!-- Pause Screen -->
+        <div id="pause-screen" class="screen-overlay">
+            <div class="screen-title">
+                <span class="title-line-1">Strait Outta</span>
+                <span class="title-line-2">Hormuz</span>
+            </div>
+            <div class="pause-heading">Paused</div>
+            <div class="pause-actions">
+                <button class="btn btn-primary" id="btn-resume">Resume</button>
+                <button class="btn btn-secondary" id="btn-exit-home">Exit to Home</button>
             </div>
         </div>
 
