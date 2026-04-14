@@ -1,4 +1,5 @@
 import { AudioManager } from '../audio/audio-manager.js';
+import { hasUpdate, applyUpdate } from './pwa.js';
 
 export class MenuScreen {
   constructor(onPlay, onPort) {
@@ -6,6 +7,12 @@ export class MenuScreen {
     this.playBtn = document.getElementById('btn-play');
     this.portBtn = document.getElementById('btn-port');
     this.soundBtn = document.getElementById('btn-sound-toggle');
+    this.updateBanner = document.getElementById('update-banner');
+    this.updateBtn = document.getElementById('btn-update');
+
+    if (this.updateBtn) {
+      this.updateBtn.addEventListener('click', () => applyUpdate());
+    }
 
     const hints = document.querySelectorAll('#controls-hint .hint-line');
     if (hints.length && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
@@ -38,6 +45,7 @@ export class MenuScreen {
   show() {
     this.el.classList.add('visible');
     if (this.soundBtn) this._updateSoundButton(!AudioManager.isMuted());
+    if (this.updateBanner && hasUpdate()) this.updateBanner.hidden = false;
   }
 
   hide() {

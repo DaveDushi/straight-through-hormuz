@@ -14,6 +14,8 @@
             name="viewport"
             content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
         />
+        <meta name="theme-color" content="#0a1628" />
+        <meta name="description" content="Steer a tanker 167 km through the Strait of Hormuz in this arcade naval action game" />
         <title>Strait Outta Hormuz</title>
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link
@@ -33,20 +35,12 @@
             sizes="180x180"
             href="/apple-touch-icon.png"
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
             rel="preload"
-            href="https://fonts.gstatic.com/s/sharetechmono/v15/J7aHnp1uDWRBEqV98dVQztYldFcLowEF.woff2"
+            href="/fonts/share-tech-mono-400.woff2"
             as="font"
             type="font/woff2"
             crossorigin
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap"
-            rel="stylesheet"
-            media="print"
-            onload="this.media = 'all'"
         />
     </head>
     <body class="scanlines">
@@ -182,6 +176,10 @@
                     Set Sail
                 </button>
                 <button class="btn btn-secondary" id="btn-port">Dock</button>
+            </div>
+            <div class="update-banner" id="update-banner" hidden>
+                New version available
+                <button class="update-banner-btn" id="btn-update">Update</button>
             </div>
             <div class="controls-hint" id="controls-hint">
                 <div class="hint-line">Arrow keys / A,D or drag to steer</div>
