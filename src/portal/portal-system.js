@@ -17,7 +17,6 @@ export class PortalSystem {
         this.exitPortal = null;
         this.startPortal = null;
         this._initialized = false;
-        this._positioned = false;
     }
 
     init(game) {
@@ -43,14 +42,10 @@ export class PortalSystem {
 
     update(delta, game) {
         if (!ENABLED || !this.params) return;
-        if (!game.fsm.is('playing')) {
-            this._positioned = false;
-            return;
-        }
+        if (!game.fsm.is('playing')) return;
 
-        if (!this._positioned) {
+        if (!this.exitPortal.active) {
             this._positionPortals(game);
-            this._positioned = true;
         }
 
         const tanker = game.tanker;
@@ -68,7 +63,7 @@ export class PortalSystem {
     }
 
     getExtraWidth(tankerZ) {
-        if (!ENABLED || !this._positioned) return 0;
+        if (!ENABLED) return 0;
         const portals = [this.exitPortal, this.startPortal];
         for (const p of portals) {
             if (p && p.active && Math.abs(tankerZ - p.z) < PORTAL_ZONE_HALF_LENGTH) {
