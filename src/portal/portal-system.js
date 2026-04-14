@@ -52,28 +52,13 @@ export class PortalSystem {
 
         const tanker = game.tanker;
 
-        if (this.exitPortal && this.exitPortal.active) {
-            this.exitPortal.update(delta);
-            if (this.exitPortal.z < tanker.z - DEACTIVATE_BEHIND) {
-                this.exitPortal.deactivate();
-            } else if (aabbOverlap(
-                tanker.x, tanker.z, tanker.halfW, tanker.halfH,
-                this.exitPortal.x, this.exitPortal.z, this.exitPortal.halfW, this.exitPortal.halfH
-            )) {
-                this._enterPortal(this.exitPortal, game);
-                return;
-            }
-        }
-
-        if (this.startPortal && this.startPortal.active) {
-            this.startPortal.update(delta);
-            if (this.startPortal.z < tanker.z - DEACTIVATE_BEHIND) {
-                this.startPortal.deactivate();
-            } else if (aabbOverlap(
-                tanker.x, tanker.z, tanker.halfW, tanker.halfH,
-                this.startPortal.x, this.startPortal.z, this.startPortal.halfW, this.startPortal.halfH
-            )) {
-                this._enterPortal(this.startPortal, game);
+        for (const portal of [this.exitPortal, this.startPortal]) {
+            if (!portal || !portal.active) continue;
+            portal.update(delta);
+            if (portal.z < tanker.z - DEACTIVATE_BEHIND) {
+                portal.deactivate();
+            } else if (this._tankerInsidePortal(tanker, portal)) {
+                this._enterPortal(portal, game);
                 return;
             }
         }
@@ -100,6 +85,12 @@ export class PortalSystem {
         if (this.startPortal) {
             this.startPortal.init(-(halfW + 4), tankerZ + START_Z_OFFSET, Math.PI / 2);
         }
+    }
+
+    _tankerInsidePortal(tanker, portal) {
+        const dx = Math.abs(tanker.x - portal.x);
+        const dz = Math.abs(tanker.z - portal.z);
+        return dx < portal.halfW + tanker.halfW && dz < portal.halfH + tanker.halfH;
     }
 
     _applyIncomingParams(game) {

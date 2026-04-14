@@ -10,8 +10,8 @@ export class PortalEntity extends Entity {
         super();
         this.type = 'portal';
         this.portalKind = kind;
-        this.halfW = 8;
-        this.halfH = 8;
+        this.halfW = 3;
+        this.halfH = 4;
         this._color = color;
         this._time = 0;
         this._buildMesh();
