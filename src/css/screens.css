@@ -40,6 +40,37 @@
     animation: fade-in var(--dur-slow) var(--ease-out) 100ms backwards;
 }
 
+/* ====== PAUSE SCREEN ====== */
+#pause-screen {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(35, 159, 64, 0.10) 0%, transparent 60%),
+        var(--surface-overlay);
+}
+
+.pause-heading {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-8);
+    animation: fade-in var(--dur-slow) var(--ease-out) 100ms backwards;
+}
+
+.pause-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: 320px;
+}
+
+.pause-actions .btn {
+    width: 100%;
+    margin: 0;
+}
+
 /* ====== MENU SCREEN ====== */
 #menu-screen {
     background:

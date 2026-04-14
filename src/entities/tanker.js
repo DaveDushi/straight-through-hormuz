@@ -137,34 +137,35 @@ export class Tanker extends Entity {
         // Pak Flag on mast
         this._pakFlagVisual = new THREE.Group();
         const pfFlagMat = new THREE.MeshPhongMaterial({
-            color: 0x01411C, emissive: 0x002210, side: THREE.DoubleSide
+            color: 0x00CC44, emissive: 0x009922, side: THREE.DoubleSide
         });
         const pfFlag = new THREE.Mesh(
-            new THREE.PlaneGeometry(1.0, 0.65),
+            new THREE.PlaneGeometry(1.4, 0.9),
             pfFlagMat
         );
         pfFlag.position.set(0.56, 0, 0);
         this._pakFlagVisual.add(pfFlag);
-        const pfWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+        const pfWhiteMat = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x888888, side: THREE.DoubleSide });
         const pfStripe = new THREE.Mesh(
-            new THREE.PlaneGeometry(0.2, 0.65),
+            new THREE.PlaneGeometry(0.28, 0.9),
             pfWhiteMat
         );
-        pfStripe.position.set(0.08, 0, 0.01);
+        pfStripe.position.set(-0.02, 0, 0.01);
         this._pakFlagVisual.add(pfStripe);
         const pfCrescent = new THREE.Mesh(
-            new THREE.TorusGeometry(0.12, 0.03, 8, 12, Math.PI * 1.3),
+            new THREE.TorusGeometry(0.17, 0.04, 8, 12, Math.PI * 1.3),
             pfWhiteMat
         );
-        pfCrescent.position.set(0.65, 0.05, 0.02);
+        pfCrescent.position.set(0.7, 0.05, 0.02);
         pfCrescent.rotation.z = Math.PI * 0.2;
         this._pakFlagVisual.add(pfCrescent);
         const pfStar = new THREE.Mesh(
-            new THREE.OctahedronGeometry(0.06, 0),
+            new THREE.OctahedronGeometry(0.08, 0),
             pfWhiteMat
         );
-        pfStar.position.set(0.82, 0.05, 0.02);
+        pfStar.position.set(0.95, 0.05, 0.02);
         this._pakFlagVisual.add(pfStar);
+        this._pakFlagVisual.add(new THREE.PointLight(0x00FF66, 1.0, 12));
         this._pakFlagVisual.position.set(0, 4.85, L * 0.25);
         this._pakFlagVisual.visible = false;
         group.add(this._pakFlagVisual);
@@ -184,24 +185,25 @@ export class Tanker extends Entity {
         this._oilExhaustTime = 0;
         group.add(this._oilExhaust);
 
-        // Ceasefire white flag on bridge
+        // Ceasefire flag on bridge
         this._ceasefireVisual = new THREE.Group();
-        const cfPoleMat = new THREE.MeshPhongMaterial({ color: 0x888888 });
-        const cfPole = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.04, 0.04, 1.5, 6),
-            cfPoleMat
-        );
-        cfPole.position.y = 0.75;
-        this._ceasefireVisual.add(cfPole);
         const cfFlagMat = new THREE.MeshPhongMaterial({
-            color: 0xffffff, emissive: 0x333333, side: THREE.DoubleSide
+            color: 0xFFFFF0, emissive: 0x666633, side: THREE.DoubleSide
         });
         const cfFlag = new THREE.Mesh(
-            new THREE.PlaneGeometry(0.8, 0.5),
+            new THREE.PlaneGeometry(1.1, 0.7),
             cfFlagMat
         );
-        cfFlag.position.set(0.44, 1.2, 0);
+        cfFlag.position.set(0, 0.8, 0);
         this._ceasefireVisual.add(cfFlag);
+        const cfDoveMat = new THREE.MeshPhongMaterial({ color: 0xFFEE88, emissive: 0x886622 });
+        const cfDove = new THREE.Mesh(
+            new THREE.SphereGeometry(0.1, 6, 4),
+            cfDoveMat
+        );
+        cfDove.position.set(0, 0.85, 0.03);
+        this._ceasefireVisual.add(cfDove);
+        this._ceasefireVisual.add(new THREE.PointLight(0xFFDD44, 0.8, 10));
         this._ceasefireVisual.position.set(0, 5.3, -L * 0.32);
         this._ceasefireVisual.visible = false;
         group.add(this._ceasefireVisual);
@@ -240,7 +242,7 @@ export class Tanker extends Entity {
                 this.mesh.visible = true;
             } else if (this.pakFlagActive) {
                 this.mesh.visible = true;
-                this.bodyMat.emissive.setHex(0x01411C);
+                this.bodyMat.emissive.setHex(0x00CC44);
             } else {
                 this.mesh.visible = Math.floor(this.invulnTimer * 10) % 2 === 0;
             }
@@ -311,7 +313,7 @@ export class Tanker extends Entity {
 
         if (!this.pakFlagActive && this.invulnTimer <= 0) {
             if (this.ceasefireActive) {
-                this.bodyMat.emissive.setHex(0x112244);
+                this.bodyMat.emissive.setHex(0x443311);
             } else if (this.oilBoostActive) {
                 this.bodyMat.emissive.setHex(0x442200);
             } else {
@@ -329,8 +331,8 @@ export class Tanker extends Entity {
 
         this.bodyMat.emissive.setHex(0xff0000);
         setTimeout(() => {
-            if (this.pakFlagActive) this.bodyMat.emissive.setHex(0x01411C);
-            else if (this.ceasefireActive) this.bodyMat.emissive.setHex(0x112244);
+            if (this.pakFlagActive) this.bodyMat.emissive.setHex(0x00CC44);
+            else if (this.ceasefireActive) this.bodyMat.emissive.setHex(0x443311);
             else if (this.oilBoostActive) this.bodyMat.emissive.setHex(0x442200);
             else this.bodyMat.emissive.setHex(0x000000);
         }, 200);

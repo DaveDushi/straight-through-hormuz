@@ -186,6 +186,8 @@ export class HUD {
                     slot.textContent = label;
                     slot.className = 'slot filled slot-' + invType;
                     slot.setAttribute('aria-label', 'Power-up slot ' + (i + 1) + ': ' + label);
+                    slot.classList.add('slot-new');
+                    setTimeout(() => slot.classList.remove('slot-new'), 600);
                 } else {
                     slot.innerHTML = '<span class="slot-key">' + (i + 1) + '</span>-';
                     slot.className = 'slot empty';
@@ -217,10 +219,11 @@ export class HUD {
         if (this._seenPickups.has(type)) return;
         this._seenPickups.add(type);
 
+        const activateHint = CONFIG.isMobile ? 'Tap slot' : 'Press 1-3';
         const descriptions = {
-            oil: 'OIL \u2014 Speed & steering boost for 8s',
-            ceasefire: 'CEASEFIRE \u2014 Stops all shooting for 10s',
-            pakFlag: 'PAK FLAG \u2014 Full invincibility for 10s',
+            oil: `OIL \u2014 ${activateHint} to boost speed & steering (8s)`,
+            ceasefire: `CEASEFIRE \u2014 ${activateHint} to stop all shooting (10s)`,
+            pakFlag: `PAK FLAG \u2014 ${activateHint} for invincibility (10s)`,
             repair: 'REPAIR \u2014 Hull +20',
             fuel: 'FUEL \u2014 Boost +50',
             laser: 'LASER \u2014 Iron Beam buffed for 10s',

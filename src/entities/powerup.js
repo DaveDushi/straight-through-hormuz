@@ -41,7 +41,7 @@ export class Powerup extends Entity {
         this._pakFlagMesh.visible = false;
         group.add(this._pakFlagMesh);
 
-        this._light = new THREE.PointLight(0xffffff, 1.2, 28);
+        this._light = new THREE.PointLight(0xffffff, 2.0, 40);
         this._light.position.y = 1;
         group.add(this._light);
 
@@ -95,45 +95,54 @@ export class Powerup extends Entity {
         const group = new THREE.Group();
         const s = CONFIG.POWERUP_SIZE;
 
-        const poleMat = getMaterial('cf-pole', () =>
-            new THREE.MeshPhongMaterial({ color: 0x888888 })
-        );
-        const poleGeo = getGeometry('cf-pole', () =>
-            new THREE.CylinderGeometry(0.06, 0.06, s * 1.0, 6)
-        );
-        const pole = new THREE.Mesh(poleGeo, poleMat);
-        pole.position.x = -s * 0.35;
-        group.add(pole);
-
         const flagGeo = getGeometry('cf-flag', () =>
-            new THREE.PlaneGeometry(s * 0.6, s * 0.4)
+            new THREE.PlaneGeometry(s * 1.2, s * 0.85)
         );
         const flagMat = new THREE.MeshPhongMaterial({
-            color: 0xffffff, emissive: 0x222244, side: THREE.DoubleSide, shininess: 40
+            color: 0xFFFFF0, emissive: 0x666633, side: THREE.DoubleSide, shininess: 60
         });
         const flag = new THREE.Mesh(flagGeo, flagMat);
-        flag.position.set(-s * 0.02, s * 0.15, 0);
         group.add(flag);
 
         const doveMat = getMaterial('cf-dove', () =>
-            new THREE.MeshPhongMaterial({ color: 0xaaccff, emissive: 0x224466 })
+            new THREE.MeshPhongMaterial({ color: 0xFFEE88, emissive: 0x886622 })
         );
         const doveBody = new THREE.Mesh(
-            getGeometry('cf-dove-body', () => new THREE.SphereGeometry(s * 0.1, 8, 6)),
+            getGeometry('cf-dove-body', () => new THREE.SphereGeometry(s * 0.14, 8, 6)),
             doveMat
         );
-        doveBody.position.set(-s * 0.02, s * 0.15, 0.05);
+        doveBody.position.set(0, 0, 0.05);
         group.add(doveBody);
 
         const wingGeo = getGeometry('cf-wing', () =>
-            new THREE.PlaneGeometry(s * 0.2, s * 0.06)
+            new THREE.PlaneGeometry(s * 0.28, s * 0.08)
         );
         for (const side of [-1, 1]) {
             const wing = new THREE.Mesh(wingGeo, doveMat);
-            wing.position.set(-s * 0.02 + side * s * 0.12, s * 0.18, 0.05);
+            wing.position.set(side * s * 0.15, s * 0.04, 0.05);
             wing.rotation.z = side * 0.3;
             group.add(wing);
         }
+
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: 0xFFDD44, transparent: true, opacity: 0.15, side: THREE.BackSide
+        });
+        this._cfGlow = new THREE.Mesh(
+            getGeometry('cf-glow', () => new THREE.SphereGeometry(s * 0.7, 8, 8)),
+            glowMat
+        );
+        group.add(this._cfGlow);
+
+        const ringMat = new THREE.MeshBasicMaterial({
+            color: 0xFFDD44, transparent: true, opacity: 0.22, side: THREE.DoubleSide
+        });
+        this._cfRing = new THREE.Mesh(
+            getGeometry('cf-ring', () => new THREE.RingGeometry(s * 0.5, s * 0.8, 24)),
+            ringMat
+        );
+        this._cfRing.rotation.x = -Math.PI / 2;
+        this._cfRing.position.y = -1.5;
+        group.add(this._cfRing);
 
         return group;
     }
@@ -142,51 +151,60 @@ export class Powerup extends Entity {
         const group = new THREE.Group();
         const s = CONFIG.POWERUP_SIZE;
 
-        const poleMat = getMaterial('pak-pole', () =>
-            new THREE.MeshPhongMaterial({ color: 0x888888 })
-        );
-        const poleGeo = getGeometry('pak-pole', () =>
-            new THREE.CylinderGeometry(0.06, 0.06, s * 1.2, 6)
-        );
-        const pole = new THREE.Mesh(poleGeo, poleMat);
-        pole.position.x = -s * 0.4;
-        group.add(pole);
-
         const flagGeo = getGeometry('pak-flag-body', () =>
-            new THREE.PlaneGeometry(s * 0.7, s * 0.5)
+            new THREE.PlaneGeometry(s * 1.4, s * 1.0)
         );
         this._pakFlagBodyMat = new THREE.MeshPhongMaterial({
-            color: 0x01411C, emissive: 0x003310, side: THREE.DoubleSide, shininess: 40
+            color: 0x00CC44, emissive: 0x009922, side: THREE.DoubleSide, shininess: 60
         });
         const flag = new THREE.Mesh(flagGeo, this._pakFlagBodyMat);
-        flag.position.set(0, s * 0.1, 0);
         group.add(flag);
 
         const whiteMat = getMaterial('pak-white', () =>
-            new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x444444, side: THREE.DoubleSide })
+            new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x888888, side: THREE.DoubleSide })
         );
 
         const stripeGeo = getGeometry('pak-stripe', () =>
-            new THREE.PlaneGeometry(s * 0.12, s * 0.5)
+            new THREE.PlaneGeometry(s * 0.22, s * 1.0)
         );
         const stripe = new THREE.Mesh(stripeGeo, whiteMat);
-        stripe.position.set(-s * 0.29, s * 0.1, 0.01);
+        stripe.position.set(-s * 0.59, 0, 0.01);
         group.add(stripe);
 
         const crescentGeo = getGeometry('pak-crescent', () =>
-            new THREE.TorusGeometry(s * 0.1, 0.04, 8, 16, Math.PI * 1.3)
+            new THREE.TorusGeometry(s * 0.18, 0.06, 8, 16, Math.PI * 1.3)
         );
         const crescent = new THREE.Mesh(crescentGeo, whiteMat);
-        crescent.position.set(s * 0.05, s * 0.12, 0.02);
+        crescent.position.set(s * 0.1, s * 0.04, 0.02);
         crescent.rotation.z = Math.PI * 0.2;
         group.add(crescent);
 
         const starGeo = getGeometry('pak-star', () =>
-            new THREE.OctahedronGeometry(s * 0.05, 0)
+            new THREE.OctahedronGeometry(s * 0.09, 0)
         );
         const star = new THREE.Mesh(starGeo, whiteMat);
-        star.position.set(s * 0.17, s * 0.14, 0.02);
+        star.position.set(s * 0.35, s * 0.06, 0.02);
         group.add(star);
+
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: 0x00FF66, transparent: true, opacity: 0.18, side: THREE.BackSide
+        });
+        this._pakGlow = new THREE.Mesh(
+            getGeometry('pak-glow', () => new THREE.SphereGeometry(s * 0.8, 8, 8)),
+            glowMat
+        );
+        group.add(this._pakGlow);
+
+        const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x00FF66, transparent: true, opacity: 0.25, side: THREE.DoubleSide
+        });
+        this._pakRing = new THREE.Mesh(
+            getGeometry('pak-ring', () => new THREE.RingGeometry(s * 0.6, s * 0.9, 24)),
+            ringMat
+        );
+        this._pakRing.rotation.x = -Math.PI / 2;
+        this._pakRing.position.y = -1.5;
+        group.add(this._pakRing);
 
         return group;
     }
@@ -219,7 +237,17 @@ export class Powerup extends Entity {
         this.time += delta;
         this.mesh.position.y = 2 + Math.sin(this.time * CONFIG.POWERUP_BOB_SPEED) * CONFIG.POWERUP_BOB_AMPLITUDE;
         this.mesh.rotation.y += delta * CONFIG.POWERUP_ROTATE_SPEED;
-        this._light.intensity = 1.0 + Math.sin(this.time * 3) * 0.5;
+        this._light.intensity = 1.5 + Math.sin(this.time * 3) * 0.8;
+
+        if (this._pakGlow && this._pakFlagMesh.visible) {
+            this._pakGlow.material.opacity = 0.14 + Math.sin(this.time * 4) * 0.08;
+            this._pakRing.material.opacity = 0.20 + Math.sin(this.time * 3) * 0.10;
+        }
+        if (this._cfGlow && this._ceasefireMesh.visible) {
+            this._cfGlow.material.opacity = 0.12 + Math.sin(this.time * 4) * 0.07;
+            this._cfRing.material.opacity = 0.18 + Math.sin(this.time * 3) * 0.08;
+        }
+
         this.syncMesh();
     }
 }
