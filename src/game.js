@@ -336,6 +336,7 @@ export class Game {
         this.spawner.spawnRateBoostTimer = 0;
         this.ceasefireShootingDisabled = false;
         this.gameOverReason = null;
+        this.portalSystem.reset();
 
         this.fsm.transition('playing');
 

@@ -17,6 +17,11 @@ export class PortalSystem {
         this.exitPortal = null;
         this.startPortal = null;
         this._initialized = false;
+        this._needsSpawn = true;
+    }
+
+    reset() {
+        this._needsSpawn = true;
     }
 
     init(game) {
@@ -44,8 +49,9 @@ export class PortalSystem {
         if (!ENABLED || !this.params) return;
         if (!game.fsm.is('playing')) return;
 
-        if (!this.exitPortal.active) {
+        if (this._needsSpawn) {
             this._positionPortals(game);
+            this._needsSpawn = false;
         }
 
         const tanker = game.tanker;
