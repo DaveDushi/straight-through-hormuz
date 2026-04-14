@@ -402,13 +402,13 @@ export const CONFIG = {
       costMult: 2.0,
       effect: 0.20,
     },
-    cargoInsurance: {
-      name: "Cargo Insurance",
-      description: "+8% yuan earned per run per level",
+    cargoHold: {
+      name: "Cargo Hold",
+      description: "+1 powerup slot per level",
       maxLevel: 4,
       baseCost: 500,
       costMult: 1.9,
-      effect: 0.08,
+      effect: 1,
     },
   },
 };

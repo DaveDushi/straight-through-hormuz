@@ -11,7 +11,7 @@ const UPGRADE_ICONS = {
   ironBeam: '\u{1F52B}',
   fuelTank: '\u26FD',
   reinforcedBow: '\u2693',
-  cargoInsurance: '\u{1F4E6}',
+  cargoHold: '\u{1F4E6}',
 };
 
 const TILE_NAMES = {
@@ -22,7 +22,7 @@ const TILE_NAMES = {
   ironBeam: 'Beam',
   fuelTank: 'Fuel',
   reinforcedBow: 'Bow',
-  cargoInsurance: 'Cargo',
+  cargoHold: 'Hold',
 };
 
 function getStatText(key, level) {
@@ -57,9 +57,9 @@ function getStatText(key, level) {
       const pct = Math.round(level * cfg.effect * 100);
       return `Wall dmg: ${pct > 0 ? '-' : ''}${pct}%`;
     }
-    case 'cargoInsurance': {
-      const pct = Math.round(level * cfg.effect * 100);
-      return `Earnings: ${pct > 0 ? '+' : ''}${pct}%`;
+    case 'cargoHold': {
+      const slots = 1 + level * cfg.effect;
+      return `Slots: ${slots}`;
     }
     default:
       return '';

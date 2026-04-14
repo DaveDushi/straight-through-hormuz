@@ -16,11 +16,9 @@ export class HUD {
         this.boostBtnLeft = document.getElementById('btn-boost-left');
         this.steerLeft = document.querySelector('.steer-indicator--left');
         this.steerRight = document.querySelector('.steer-indicator--right');
-        this.slots = [
-            document.getElementById('slot-0'),
-            document.getElementById('slot-1'),
-            document.getElementById('slot-2'),
-        ];
+        this.inventoryBar = document.querySelector('.inventory-bar');
+        this.slots = [];
+        this._onSlotClick = onSlotClick;
         this.ceasefireOverlay = document.getElementById('ceasefire-overlay');
 
         // Dirty-flag cache to avoid DOM writes every frame
@@ -32,23 +30,35 @@ export class HUD {
             multiplier: -1,
             phaseName: '',
             boostPct: -1,
-            inv: ['', '', ''],
+            inv: [],
             ceasefire: false,
             pakFlag: false,
         };
 
         this._phaseTimer = 0;
+        this.setSlotCount(1);
+    }
 
-        this.slots.forEach((slot, i) => {
-            if (slot) {
-                slot.addEventListener('pointerdown', (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    onSlotClick(i);
-                    if (navigator.vibrate) navigator.vibrate(15);
-                });
-            }
-        });
+    setSlotCount(count) {
+        this.inventoryBar.innerHTML = '';
+        this.slots = [];
+        this._prev.inv = [];
+        for (let i = 0; i < count; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'slot empty';
+            btn.id = 'slot-' + i;
+            btn.setAttribute('aria-label', 'Power-up slot ' + (i + 1) + ': empty');
+            btn.innerHTML = '<span class="slot-key">' + (i + 1) + '</span>-';
+            btn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this._onSlotClick(i);
+                if (navigator.vibrate) navigator.vibrate(15);
+            });
+            this.inventoryBar.appendChild(btn);
+            this.slots.push(btn);
+            this._prev.inv.push('');
+        }
     }
 
     show() {
@@ -175,7 +185,7 @@ export class HUD {
         }
 
         // Inventory slots (only update when changed)
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < this.slots.length; i++) {
             const slot = this.slots[i];
             if (!slot) continue;
             const invType = data.inventory[i] || '';
@@ -219,7 +229,7 @@ export class HUD {
         if (this._seenPickups.has(type)) return;
         this._seenPickups.add(type);
 
-        const activateHint = CONFIG.isMobile ? 'Tap slot' : 'Press 1-3';
+        const activateHint = CONFIG.isMobile ? 'Tap slot' : 'Press 1-' + this.slots.length;
         const descriptions = {
             oil: `OIL \u2014 ${activateHint} to boost speed & steering (8s)`,
             ceasefire: `CEASEFIRE \u2014 ${activateHint} to stop all shooting (10s)`,

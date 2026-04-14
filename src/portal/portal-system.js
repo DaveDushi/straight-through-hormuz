@@ -43,7 +43,10 @@ export class PortalSystem {
 
     update(delta, game) {
         if (!ENABLED || !this.params) return;
-        if (!game.fsm.is('playing')) return;
+        if (!game.fsm.is('playing')) {
+            this._positioned = false;
+            return;
+        }
 
         if (!this._positioned) {
             this._positionPortals(game);

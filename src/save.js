@@ -25,7 +25,12 @@ export class SaveManager {
                 }
             }
             if (raw) {
-                return { ...DEFAULT_SAVE, ...JSON.parse(raw) };
+                const data = { ...DEFAULT_SAVE, ...JSON.parse(raw) };
+                if (data.upgrades && data.upgrades.cargoInsurance !== undefined) {
+                    data.upgrades.cargoHold = data.upgrades.cargoInsurance;
+                    delete data.upgrades.cargoInsurance;
+                }
+                return data;
             }
         } catch (e) {}
         return { ...DEFAULT_SAVE };

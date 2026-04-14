@@ -26,6 +26,8 @@ export class InputSystem {
             if (e.code === 'Digit1') this.activatePowerup = 0;
             if (e.code === 'Digit2') this.activatePowerup = 1;
             if (e.code === 'Digit3') this.activatePowerup = 2;
+            if (e.code === 'Digit4') this.activatePowerup = 3;
+            if (e.code === 'Digit5') this.activatePowerup = 4;
             if (e.code === 'Space') this.boostTriggered = true;
         });
         window.addEventListener('keyup', (e) => {

@@ -9,7 +9,7 @@ const HIGHLIGHT_ROTATIONS = {
   ironBeam: -1.2,
   fuelTank: -0.5,
   reinforcedBow: -1.6,
-  cargoInsurance: -0.6,
+  cargoHold: -0.6,
 };
 
 export class DockShipView {
@@ -364,7 +364,7 @@ export class DockShipView {
     }
 
     // === CARGO INSURANCE: Cargo crates on deck (4 levels) ===
-    this._upgradeMeshes.cargoInsurance = [];
+    this._upgradeMeshes.cargoHold = [];
     const crateMat = new THREE.MeshPhongMaterial({ color: 0xcc9966, shininess: 40 });
     const crateMatGold = new THREE.MeshPhongMaterial({ color: 0xeecc77, shininess: 70, emissive: 0x332211 });
     for (let i = 0; i < 4; i++) {
@@ -386,7 +386,7 @@ export class DockShipView {
       }
       group.visible = false;
       this.shipGroup.add(group);
-      this._upgradeMeshes.cargoInsurance.push(group);
+      this._upgradeMeshes.cargoHold.push(group);
     }
   }
 
@@ -396,7 +396,7 @@ export class DockShipView {
     // Upgrades that replace (show only latest level)
     const replaceKeys = ['rudder', 'radar', 'ironBeam'];
     // Upgrades that stack (show all up to current level)
-    const stackKeys = ['hull', 'tollDiscount', 'fuelTank', 'reinforcedBow', 'cargoInsurance'];
+    const stackKeys = ['hull', 'tollDiscount', 'fuelTank', 'reinforcedBow', 'cargoHold'];
 
     for (const key of replaceKeys) {
       const meshes = this._upgradeMeshes[key];

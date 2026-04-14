@@ -2,14 +2,14 @@ import { CONFIG } from '../config.js';
 
 export class InventorySystem {
     constructor() {
-        this.slots = [null, null, null];
+        this.slots = [null];
         this.ceasefireTimer = 0;
         this.oilBoostTimer = 0;
         this.pakFlagTimer = 0;
     }
 
-    reset() {
-        this.slots = [null, null, null];
+    reset(slotCount = 1) {
+        this.slots = new Array(slotCount).fill(null);
         this.ceasefireTimer = 0;
         this.oilBoostTimer = 0;
         this.pakFlagTimer = 0;

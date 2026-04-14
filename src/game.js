@@ -185,11 +185,9 @@ export class Game {
                     this.hud.hide();
                     this.audio.stopEngine();
                     this.audio.stopVoice();
-                    const insuranceBonus = 1 + this.save.getUpgradeLevel('cargoInsurance') * CONFIG.UPGRADES.cargoInsurance.effect;
                     const earned = this.save.addRun(
                         this.scoring.getDisplayScore(),
-                        this.scoring.distance,
-                        insuranceBonus
+                        this.scoring.distance
                     );
                     this.gameover.show({
                         distance: this.scoring.distance,
@@ -208,11 +206,9 @@ export class Game {
                     this.hud.hide();
                     this.audio.stopEngine();
                     this.audio.stopVoice();
-                    const insuranceBonus = 1 + this.save.getUpgradeLevel('cargoInsurance') * CONFIG.UPGRADES.cargoInsurance.effect;
                     const earned = this.save.addRun(
                         this.scoring.getDisplayScore(),
-                        this.scoring.distance,
-                        insuranceBonus
+                        this.scoring.distance
                     );
                     this.victory.show({
                         distance: this.scoring.distance,
@@ -324,11 +320,13 @@ export class Game {
         this.tanker.wallDamageReduction = this.save.getUpgradeLevel('reinforcedBow') * CONFIG.UPGRADES.reinforcedBow.effect;
         this.tanker.reset();
 
+        const slotCount = 1 + this.save.getUpgradeLevel('cargoHold') * CONFIG.UPGRADES.cargoHold.effect;
         this.scoring.reset();
         this.hud.resetPickupNotifications();
+        this.hud.setSlotCount(slotCount);
         this.collision.reset();
         this.toll.reset();
-        this.inventory.reset();
+        this.inventory.reset(slotCount);
         this.radio.reset();
         this.difficulty.update(0);
         this.terrain.reset();
@@ -370,7 +368,7 @@ export class Game {
         for (const key in this.pools) {
             this.pools[key].releaseAll();
         }
-        this.inventory.reset();
+        this.inventory.reset(1);
         this.radio.reset();
         this.ironBeam.reset(0, 0);
         this.blockadeSystem.reset();
