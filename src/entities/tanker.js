@@ -257,9 +257,10 @@ export class Tanker extends Entity {
             this.fuel = Math.min(this.fuel + CONFIG.TANKER_FUEL_REGEN_RATE * delta, this.fuelRegenCap);
         }
 
-        if (input.consumeBoostTrigger() && this.fuel >= CONFIG.TANKER_FUEL_PER_BOOST) {
-            this.boostTimer = CONFIG.TANKER_BOOST_DURATION;
-            this.fuel -= CONFIG.TANKER_FUEL_PER_BOOST;
+        if (input.consumeBoostTrigger() && this.fuel > 0) {
+            const fuelUsed = Math.min(this.fuel, CONFIG.TANKER_FUEL_PER_BOOST);
+            this.boostTimer = CONFIG.TANKER_BOOST_DURATION * (fuelUsed / CONFIG.TANKER_FUEL_PER_BOOST);
+            this.fuel -= fuelUsed;
         }
 
         let steerMult = this.boostTimer > 0 ? CONFIG.TANKER_BOOST_MULTIPLIER : 1;
