@@ -680,3 +680,54 @@ body.touch-device .hud-pause-btn {
     }
 }
 
+/* ====== SETTINGS LAYOUT OVERRIDES ====== */
+
+/* Powerup slots: left */
+body.powerup-left .inventory-bar {
+    left: var(--space-4);
+    left: max(var(--space-4), env(safe-area-inset-left));
+    right: auto;
+    transform: none;
+}
+
+/* Powerup slots: right */
+body.powerup-right .inventory-bar {
+    left: auto;
+    right: var(--space-4);
+    right: max(var(--space-4), env(safe-area-inset-right));
+    transform: none;
+}
+
+/* Boost buttons: left only */
+body.touch-device.boost-left-only #btn-boost {
+    display: none !important;
+}
+
+/* Boost buttons: right only */
+body.touch-device.boost-right-only #btn-boost-left {
+    display: none !important;
+}
+
+/* Landscape overrides for left-positioned powerup slots */
+@media (orientation: landscape) and (max-height: 500px) {
+    body.powerup-left .inventory-bar {
+        top: 50%;
+        bottom: auto;
+        left: var(--space-3);
+        left: max(var(--space-3), env(safe-area-inset-left));
+        right: auto;
+        transform: translateY(-50%);
+        flex-direction: column;
+    }
+
+    body.powerup-right .inventory-bar {
+        top: 50%;
+        bottom: auto;
+        left: auto;
+        right: var(--space-3);
+        right: max(var(--space-3), env(safe-area-inset-right));
+        transform: translateY(-50%);
+        flex-direction: column;
+    }
+}
+

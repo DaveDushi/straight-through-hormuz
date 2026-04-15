@@ -36,12 +36,15 @@ import { CameraController } from './utils/camera-controller.js';
 import { Tutorial } from './systems/tutorial.js';
 import { TutorialUI } from './ui/tutorial-ui.js';
 import { PauseScreen } from './ui/pause.js';
+import { SettingsScreen } from './ui/settings.js';
+import { SettingsManager } from './settings.js';
 import { PortalSystem } from './portal/portal-system.js';
 import { track } from './analytics.js';
 
 export class Game {
     constructor() {
         this.save = new SaveManager();
+        this.settings = new SettingsManager();
 
         this._initRenderer();
         this._initScene();
@@ -77,8 +80,10 @@ export class Game {
         );
         this.menu = new MenuScreen(
             () => this._startGame(),
-            () => this.fsm.transition('port-hub')
+            () => this.fsm.transition('port-hub'),
+            () => this._openSettings()
         );
+        this.settingsScreen = new SettingsScreen(this.settings, this.audio, () => this._closeSettings());
         this.portHub = new PortHub(
             () => this._startGame(),
             this.save,
@@ -136,7 +141,9 @@ export class Game {
 
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Escape') {
-                if (this.fsm.is('playing')) {
+                if (this.settingsScreen.el.classList.contains('visible')) {
+                    this._closeSettings();
+                } else if (this.fsm.is('playing')) {
                     this._pauseGame();
                 } else if (this.fsm.is('paused')) {
                     this._resumeGame();
@@ -154,6 +161,7 @@ export class Game {
                     this.tollDialog.hide();
                     this.pause.hide();
                     this.portHub.hide();
+                    this.settingsScreen.hide();
                 },
                 onExit: () => this.menu.hide(),
             },
@@ -381,6 +389,16 @@ export class Game {
 
         track('game_exit_to_home', { distance: Math.round(this.scoring.distance) });
         this.fsm.transition('menu');
+    }
+
+    _openSettings() {
+        this.menu.hide();
+        this.settingsScreen.show();
+    }
+
+    _closeSettings() {
+        this.settingsScreen.hide();
+        this.menu.show();
     }
 
     _endTutorial() {

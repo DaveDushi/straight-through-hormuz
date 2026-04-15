@@ -71,6 +71,100 @@
     margin: 0;
 }
 
+/* ====== SETTINGS SCREEN ====== */
+#settings-screen {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(35, 159, 64, 0.10) 0%, transparent 60%),
+        var(--surface-overlay);
+}
+
+.settings-heading {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-8);
+    animation: fade-in var(--dur-slow) var(--ease-out) 100ms backwards;
+}
+
+.settings-group {
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: var(--space-6);
+}
+
+.settings-label {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
+}
+
+.settings-options {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.settings-opt {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    border: 1px solid var(--text-muted);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    min-height: var(--touch-min);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color var(--dur-fast), background var(--dur-fast), color var(--dur-fast);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.settings-opt:hover {
+    border-color: var(--text-secondary);
+}
+
+.settings-opt:active {
+    transform: scale(0.95);
+}
+
+.settings-opt.active {
+    border-color: var(--tactical-400);
+    background: rgba(35, 159, 64, 0.10);
+    color: var(--tactical-400);
+}
+
+.settings-actions {
+    margin-top: var(--space-5);
+    width: 100%;
+    max-width: 320px;
+}
+
+.settings-actions .btn {
+    width: 100%;
+    margin: 0;
+}
+
+.settings-mobile-only {
+    display: none;
+}
+
+@media (pointer: coarse) {
+    .settings-mobile-only {
+        display: block;
+    }
+}
+
 /* ====== MENU SCREEN ====== */
 #menu-screen {
     background:
@@ -78,8 +172,8 @@
         var(--surface-overlay);
 }
 
-/* -- Sound toggle -- */
-.sound-toggle {
+/* -- Settings gear button -- */
+.settings-btn {
     position: absolute;
     top: max(var(--space-4), env(safe-area-inset-top));
     right: max(var(--space-4), env(safe-area-inset-right));
@@ -100,23 +194,13 @@
     animation: fade-in var(--dur-slow) var(--ease-out) 1200ms backwards;
 }
 
-.sound-toggle:hover {
+.settings-btn:hover {
     border-color: var(--text-secondary);
     color: var(--text-primary);
 }
 
-.sound-toggle:active {
+.settings-btn:active {
     transform: scale(0.92);
-}
-
-.sound-toggle .sound-icon-off { display: none; }
-.sound-toggle .sound-icon-on  { display: block; }
-
-.sound-toggle[aria-pressed="false"] .sound-icon-on  { display: none; }
-.sound-toggle[aria-pressed="false"] .sound-icon-off { display: block; }
-.sound-toggle[aria-pressed="false"] {
-    color: var(--text-muted);
-    border-color: rgba(138, 154, 142, 0.3);
 }
 
 .menu-coords {
@@ -1259,11 +1343,32 @@
         display: none;
     }
 
-    .sound-toggle {
+    .settings-btn {
         top: var(--space-2);
         right: var(--space-3);
         width: 36px;
         height: 36px;
+    }
+
+    #settings-screen {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 0;
+        padding: var(--space-3) var(--space-8);
+        overflow-y: auto;
+    }
+
+    #settings-screen .settings-heading {
+        font-size: var(--text-lg);
+        margin-bottom: var(--space-3);
+    }
+
+    #settings-screen .settings-group {
+        margin-bottom: var(--space-3);
+    }
+
+    #settings-screen .settings-actions {
+        margin-top: var(--space-3);
     }
 
     .title-line-1 {

@@ -147,19 +147,11 @@
 
         <!-- Menu Screen -->
         <div id="menu-screen" class="screen-overlay visible">
-            <button class="sound-toggle" id="btn-sound-toggle"
-                    aria-label="Mute sound" aria-pressed="true">
-                <svg class="sound-icon sound-icon-on" viewBox="0 0 24 24" width="20" height="20"
+            <button class="settings-btn" id="btn-settings" aria-label="Settings">
+                <svg viewBox="0 0 24 24" width="20" height="20"
                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
-                    <path d="M3 9h4l5-5v16l-5-5H3V9z"/>
-                    <path d="M19 5c1.5 1.8 2.3 4.2 2.3 7s-.8 5.2-2.3 7"/>
-                    <path d="M16 8.5c.8 1 1.2 2.2 1.2 3.5s-.4 2.5-1.2 3.5"/>
-                </svg>
-                <svg class="sound-icon sound-icon-off" viewBox="0 0 24 24" width="20" height="20"
-                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
-                    <path d="M3 9h4l5-5v16l-5-5H3V9z"/>
-                    <line x1="23" y1="9" x2="17" y2="15"/>
-                    <line x1="17" y1="9" x2="23" y2="15"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
                 </svg>
             </button>
             <div class="menu-coords" aria-hidden="true">
@@ -221,6 +213,40 @@
             <div class="pause-actions">
                 <button class="btn btn-primary" id="btn-resume">Resume</button>
                 <button class="btn btn-secondary" id="btn-exit-home">Exit to Home</button>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen-overlay">
+            <div class="settings-heading">Settings</div>
+
+            <div class="settings-group">
+                <div class="settings-label">Sound</div>
+                <div class="settings-options">
+                    <button class="settings-opt" id="opt-sound-on">On</button>
+                    <button class="settings-opt" id="opt-sound-off">Off</button>
+                </div>
+            </div>
+
+            <div class="settings-group settings-mobile-only">
+                <div class="settings-label">Powerup Slots</div>
+                <div class="settings-options">
+                    <button class="settings-opt" id="opt-powerup-left">Left</button>
+                    <button class="settings-opt" id="opt-powerup-right">Right</button>
+                </div>
+            </div>
+
+            <div class="settings-group settings-mobile-only">
+                <div class="settings-label">Boost Buttons</div>
+                <div class="settings-options">
+                    <button class="settings-opt" id="opt-boost-left">Left</button>
+                    <button class="settings-opt" id="opt-boost-both">Both</button>
+                    <button class="settings-opt" id="opt-boost-right">Right</button>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button class="btn btn-primary" id="btn-settings-close">Back</button>
             </div>
         </div>
 
