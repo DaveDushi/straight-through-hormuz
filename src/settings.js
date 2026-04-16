@@ -1,15 +1,20 @@
 const SETTINGS_KEY = 'soh_settings';
 const OLD_SOUND_KEY = 'soh_sound';
 
+const SETTINGS_VERSION = 2;
+
 const DEFAULTS = {
     sound: true,
-    powerupPosition: 'left',
+    powerupPosition: 'center',
     boostButtons: 'both',
+    version: SETTINGS_VERSION,
 };
 
 export class SettingsManager {
     constructor() {
-        this.data = this._load();
+        const { data, migrated } = this._load();
+        this.data = data;
+        if (migrated) this._save();
         this.applyLayout();
     }
 
@@ -18,8 +23,17 @@ export class SettingsManager {
             const raw = localStorage.getItem(SETTINGS_KEY);
             if (raw) {
                 const data = { ...DEFAULTS, ...JSON.parse(raw) };
-                if (data.powerupPosition === 'default') data.powerupPosition = 'left';
-                return data;
+                let migrated = false;
+                if (data.powerupPosition === 'default') {
+                    data.powerupPosition = 'center';
+                    migrated = true;
+                }
+                if ((data.version || 1) < 2) {
+                    data.powerupPosition = 'center';
+                    data.version = SETTINGS_VERSION;
+                    migrated = true;
+                }
+                return { data, migrated };
             }
         } catch {}
         const data = { ...DEFAULTS };
@@ -27,7 +41,7 @@ export class SettingsManager {
             const oldSound = localStorage.getItem(OLD_SOUND_KEY);
             if (oldSound === 'off') data.sound = false;
         } catch {}
-        return data;
+        return { data, migrated: false };
     }
 
     _save() {

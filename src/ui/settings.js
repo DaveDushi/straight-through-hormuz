@@ -9,6 +9,7 @@ export class SettingsScreen {
 
         this._soundOn = document.getElementById('opt-sound-on');
         this._soundOff = document.getElementById('opt-sound-off');
+        this._powerupCenter = document.getElementById('opt-powerup-center');
         this._powerupLeft = document.getElementById('opt-powerup-left');
         this._powerupRight = document.getElementById('opt-powerup-right');
         this._boostLeft = document.getElementById('opt-boost-left');
@@ -28,6 +29,10 @@ export class SettingsScreen {
             this._syncUI();
         });
 
+        this._powerupCenter.addEventListener('click', () => {
+            this.settings.powerupPosition = 'center';
+            this._syncUI();
+        });
         this._powerupLeft.addEventListener('click', () => {
             this.settings.powerupPosition = 'left';
             this._syncUI();
@@ -57,6 +62,7 @@ export class SettingsScreen {
         this._setActive(this._soundOn, this.settings.sound);
         this._setActive(this._soundOff, !this.settings.sound);
 
+        this._setActive(this._powerupCenter, this.settings.powerupPosition === 'center');
         this._setActive(this._powerupLeft, this.settings.powerupPosition === 'left');
         this._setActive(this._powerupRight, this.settings.powerupPosition === 'right');
 
