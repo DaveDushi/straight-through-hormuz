@@ -1,5 +1,5 @@
 import { CONFIG } from '../config.js';
-import { lerp } from '../utils/math-utils.js';
+import { lerp, noise2D } from '../utils/math-utils.js';
 import { track } from '../analytics.js';
 
 export class DifficultySystem {
@@ -30,7 +30,6 @@ export class DifficultySystem {
                 powerupRate: lerp(curr.powerupRate, next.powerupRate, t),
                 resourceRate: lerp(curr.resourceRate, next.resourceRate, t),
                 scrollSpeedMult: lerp(curr.scrollSpeedMult, next.scrollSpeedMult, t),
-                straitWidthMult: lerp(curr.straitWidthMult, next.straitWidthMult, t),
             };
         } else {
             this.currentPhase = CONFIG.DIFFICULTY[idx];
@@ -51,7 +50,10 @@ export class DifficultySystem {
         return CONFIG.WORLD_SCROLL_BASE_SPEED * this.currentPhase.scrollSpeedMult;
     }
 
-    getStraitHalfWidth() {
-        return (CONFIG.STRAIT_WIDTH_START / 2) * this.currentPhase.straitWidthMult;
+    getStraitHalfWidth(distance) {
+        const slow = noise2D(distance * 0.0007, 0);
+        const fast = noise2D(distance * 0.0025, 0.5);
+        const blend = slow * 0.65 + fast * 0.35;
+        return lerp(CONFIG.STRAIT_WIDTH_MIN / 2, CONFIG.STRAIT_WIDTH_START / 2, blend);
     }
 }

@@ -315,7 +315,7 @@ export class Tutorial {
     if (step.allowSteering) {
       game.tanker.update(delta, {
         input: game.input,
-        straitHalfWidth: game.difficulty.getStraitHalfWidth(),
+        straitHalfWidth: game.difficulty.getStraitHalfWidth(0),
         scrollSpeed,
       });
     } else if (step.scrolling) {
@@ -398,7 +398,7 @@ export class Tutorial {
     game.terrain.update(
       delta,
       game.tanker.z,
-      game.difficulty.getStraitHalfWidth(),
+      game.difficulty.getStraitHalfWidth(0),
     );
     game.particles.update(delta, scrollSpeed);
     game.cameraController.update(delta, game.tanker.z);

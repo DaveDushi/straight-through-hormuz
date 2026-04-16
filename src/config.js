@@ -133,7 +133,7 @@ export const CONFIG = {
   WIN_DISTANCE: 167000,
 
   // Scoring
-  DISTANCE_MULTIPLIER: 9,
+  DISTANCE_MULTIPLIER: 13,
   SCORE_PER_METER: 1,
   NEAR_MISS_DISTANCE: 3,
   NEAR_MISS_MULTIPLIER: 2,
@@ -150,7 +150,6 @@ export const CONFIG = {
       powerupRate: 0.06,
       resourceRate: 0.1,
       scrollSpeedMult: 1.0,
-      straitWidthMult: 1.0,
     },
     {
       name: "IRGC Awakening",
@@ -160,8 +159,7 @@ export const CONFIG = {
       boatRate: 0.1,
       powerupRate: 0.09,
       resourceRate: 0.08,
-      scrollSpeedMult: 1.0,
-      straitWidthMult: 0.85,
+      scrollSpeedMult: 1.08,
     },
     {
       name: "Escalation Phase",
@@ -171,8 +169,7 @@ export const CONFIG = {
       boatRate: 0.25,
       powerupRate: 0.11,
       resourceRate: 0.06,
-      scrollSpeedMult: 1.0,
-      straitWidthMult: 0.65,
+      scrollSpeedMult: 1.18,
     },
     {
       name: "Total War Zone",
@@ -182,8 +179,7 @@ export const CONFIG = {
       boatRate: 0.4,
       powerupRate: 0.13,
       resourceRate: 0.05,
-      scrollSpeedMult: 1.0,
-      straitWidthMult: 0.5,
+      scrollSpeedMult: 1.30,
     },
     {
       name: "Iron Gauntlet",
@@ -193,8 +189,7 @@ export const CONFIG = {
       boatRate: 0.5,
       powerupRate: 0.15,
       resourceRate: 0.04,
-      scrollSpeedMult: 1.0,
-      straitWidthMult: 0.45,
+      scrollSpeedMult: 1.45,
     },
     {
       name: "No Passage",
@@ -204,8 +199,7 @@ export const CONFIG = {
       boatRate: 0.6,
       powerupRate: 0.15,
       resourceRate: 0.04,
-      scrollSpeedMult: 1.0,
-      straitWidthMult: 0.4,
+      scrollSpeedMult: 1.60,
     },
   ],
 

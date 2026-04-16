@@ -437,7 +437,7 @@ export class Game {
 
         const baseScrollSpeed = this.difficulty.getScrollSpeed();
         const scrollSpeed = this.tanker.oilBoostActive ? baseScrollSpeed * CONFIG.OIL_BOOST_SPEED_MULT : baseScrollSpeed;
-        const straitHalfWidth = this.difficulty.getStraitHalfWidth()
+        const straitHalfWidth = this.difficulty.getStraitHalfWidth(this.scoring.distance)
             + this.portalSystem.getExtraWidth(this.tanker.z);
 
         this.tanker.update(delta, {
@@ -624,7 +624,7 @@ export class Game {
         this.toll.resolve(accepted, this.scoring, this.save);
         if (accepted) {
             this.radio.showCustom('TRUMP', 'Smart move. Sometimes you gotta pay to play.', this.audio, 'smart-move--sometimes-you-gott.wav');
-            this.blockadeSystem.scheduleTollBlockade(this.tanker.z, this.difficulty.getStraitHalfWidth());
+            this.blockadeSystem.scheduleTollBlockade(this.tanker.z, this.difficulty.getStraitHalfWidth(this.scoring.distance));
         } else {
             this.radio.showCustom('BIBI', 'Brave. Israel respects courage.', this.audio, 'brave--israel-respects-courage.wav');
             this.spawner.spawnRateMultiplier = CONFIG.TOLL_REFUSE_SPAWN_MULTIPLIER;
