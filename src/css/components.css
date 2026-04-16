@@ -688,20 +688,26 @@ body.touch-device .hud-pause-btn {
 
 /* ====== SETTINGS LAYOUT OVERRIDES ====== */
 
-/* Powerup slots: left */
+/* Powerup slots: left — vertical stack on left wall */
 body.powerup-left .inventory-bar {
+    top: 50%;
+    bottom: auto;
     left: var(--space-4);
     left: max(var(--space-4), env(safe-area-inset-left));
     right: auto;
-    transform: none;
+    transform: translateY(-50%);
+    flex-direction: column;
 }
 
-/* Powerup slots: right */
+/* Powerup slots: right — vertical stack on right wall */
 body.powerup-right .inventory-bar {
+    top: 50%;
+    bottom: auto;
     left: auto;
     right: var(--space-4);
     right: max(var(--space-4), env(safe-area-inset-right));
-    transform: none;
+    transform: translateY(-50%);
+    flex-direction: column;
 }
 
 /* Boost buttons: left only */
