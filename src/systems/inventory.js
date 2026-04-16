@@ -6,6 +6,8 @@ export class InventorySystem {
         this.ceasefireTimer = 0;
         this.oilBoostTimer = 0;
         this.pakFlagTimer = 0;
+        this.torpedoAmmo = 0;
+        this.torpedoBonusPerPickup = 0;
     }
 
     reset(slotCount = 1) {
@@ -13,9 +15,15 @@ export class InventorySystem {
         this.ceasefireTimer = 0;
         this.oilBoostTimer = 0;
         this.pakFlagTimer = 0;
+        this.torpedoAmmo = 0;
     }
 
     add(type) {
+        if (type === 'torpedo') {
+            this.torpedoAmmo += CONFIG.TORPEDO_AMMO_PER_PICKUP + this.torpedoBonusPerPickup;
+            return true;
+        }
+
         for (let i = 0; i < this.slots.length; i++) {
             if (this.slots[i] === null) {
                 this.slots[i] = type;
@@ -45,6 +53,13 @@ export class InventorySystem {
                 if (context.activatePakFlag) context.activatePakFlag(true);
                 break;
         }
+        return true;
+    }
+
+    fireTorpedo(context) {
+        if (this.torpedoAmmo <= 0) return false;
+        if (context && context.fireTorpedo) context.fireTorpedo();
+        this.torpedoAmmo--;
         return true;
     }
 

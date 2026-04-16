@@ -7,12 +7,14 @@ const POWERUP_COLORS = {
     oil: CONFIG.OIL_BOOST_COLOR,
     ceasefire: CONFIG.CEASEFIRE_COLOR,
     pakFlag: CONFIG.PAK_FLAG_COLOR,
+    torpedo: CONFIG.TORPEDO_COLOR,
 };
 
 const POWERUP_LABELS = {
     oil: 'OIL',
     ceasefire: 'CEASEFIRE',
     pakFlag: 'PAKISTANI FLAG',
+    torpedo: 'TORPEDO',
 };
 
 export class Powerup extends Entity {
@@ -40,6 +42,10 @@ export class Powerup extends Entity {
         this._pakFlagMesh = this._buildPakFlag();
         this._pakFlagMesh.visible = false;
         group.add(this._pakFlagMesh);
+
+        this._torpedoMesh = this._buildTorpedoPickup();
+        this._torpedoMesh.visible = false;
+        group.add(this._torpedoMesh);
 
         this._light = new THREE.PointLight(0xffffff, 2.0, 40);
         this._light.position.y = 1;
@@ -209,6 +215,88 @@ export class Powerup extends Entity {
         return group;
     }
 
+    _buildTorpedoPickup() {
+        const group = new THREE.Group();
+        const s = CONFIG.POWERUP_SIZE;
+
+        const bodyGeo = getGeometry('torpedo-pickup-body', () =>
+            new THREE.CylinderGeometry(s * 0.22, s * 0.22, s * 1.2, 14)
+        );
+        const bodyMat = getMaterial('torpedo-pickup-body-mat', () =>
+            new THREE.MeshPhongMaterial({ color: CONFIG.TORPEDO_COLOR, emissive: 0x1a2128, shininess: 110 })
+        );
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.rotation.z = Math.PI / 2;
+        group.add(body);
+
+        const noseGeo = getGeometry('torpedo-pickup-nose', () =>
+            new THREE.ConeGeometry(s * 0.22, s * 0.32, 14)
+        );
+        const nose = new THREE.Mesh(noseGeo, bodyMat);
+        nose.rotation.z = -Math.PI / 2;
+        nose.position.x = s * 0.76;
+        group.add(nose);
+
+        const tailGeo = getGeometry('torpedo-pickup-tail', () =>
+            new THREE.ConeGeometry(s * 0.22, s * 0.22, 14)
+        );
+        const tail = new THREE.Mesh(tailGeo, bodyMat);
+        tail.rotation.z = Math.PI / 2;
+        tail.position.x = -s * 0.71;
+        group.add(tail);
+
+        const finGeo = getGeometry('torpedo-pickup-fin', () =>
+            new THREE.BoxGeometry(s * 0.2, s * 0.04, s * 0.28)
+        );
+        const finMat = getMaterial('torpedo-pickup-fin-mat', () =>
+            new THREE.MeshPhongMaterial({ color: 0x66707a, emissive: 0x111519 })
+        );
+        for (const side of [-1, 1]) {
+            const finH = new THREE.Mesh(finGeo, finMat);
+            finH.position.set(-s * 0.58, 0, side * s * 0.18);
+            group.add(finH);
+            const finV = new THREE.Mesh(finGeo, finMat);
+            finV.position.set(-s * 0.58, side * s * 0.18, 0);
+            finV.rotation.x = Math.PI / 2;
+            group.add(finV);
+        }
+
+        const stripeGeo = getGeometry('torpedo-pickup-stripe', () =>
+            new THREE.TorusGeometry(s * 0.23, 0.04, 6, 18)
+        );
+        const stripeMat = getMaterial('torpedo-pickup-stripe-mat', () =>
+            new THREE.MeshPhongMaterial({ color: CONFIG.TORPEDO_TRAIL_COLOR, emissive: 0x554400 })
+        );
+        for (const xOff of [-s * 0.15, s * 0.15]) {
+            const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+            stripe.rotation.y = Math.PI / 2;
+            stripe.position.x = xOff;
+            group.add(stripe);
+        }
+
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: CONFIG.TORPEDO_TRAIL_COLOR, transparent: true, opacity: 0.16, side: THREE.BackSide
+        });
+        this._torpedoGlow = new THREE.Mesh(
+            getGeometry('torpedo-pickup-glow', () => new THREE.SphereGeometry(s * 0.8, 8, 8)),
+            glowMat
+        );
+        group.add(this._torpedoGlow);
+
+        const ringMat = new THREE.MeshBasicMaterial({
+            color: CONFIG.TORPEDO_TRAIL_COLOR, transparent: true, opacity: 0.22, side: THREE.DoubleSide
+        });
+        this._torpedoRing = new THREE.Mesh(
+            getGeometry('torpedo-pickup-ring', () => new THREE.RingGeometry(s * 0.55, s * 0.85, 24)),
+            ringMat
+        );
+        this._torpedoRing.rotation.x = -Math.PI / 2;
+        this._torpedoRing.position.y = -1.5;
+        group.add(this._torpedoRing);
+
+        return group;
+    }
+
     init(x, z) {
         super.init(x, z);
         this.time = Math.random() * Math.PI * 2;
@@ -218,6 +306,7 @@ export class Powerup extends Entity {
         this._oilBarrel.visible = (this.powerupType === 'oil');
         this._ceasefireMesh.visible = (this.powerupType === 'ceasefire');
         this._pakFlagMesh.visible = (this.powerupType === 'pakFlag');
+        this._torpedoMesh.visible = (this.powerupType === 'torpedo');
 
         this._light.color.setHex(color);
 
@@ -246,6 +335,10 @@ export class Powerup extends Entity {
         if (this._cfGlow && this._ceasefireMesh.visible) {
             this._cfGlow.material.opacity = 0.12 + Math.sin(this.time * 4) * 0.07;
             this._cfRing.material.opacity = 0.18 + Math.sin(this.time * 3) * 0.08;
+        }
+        if (this._torpedoGlow && this._torpedoMesh.visible) {
+            this._torpedoGlow.material.opacity = 0.12 + Math.sin(this.time * 5) * 0.06;
+            this._torpedoRing.material.opacity = 0.18 + Math.sin(this.time * 3.5) * 0.08;
         }
 
         this.syncMesh();

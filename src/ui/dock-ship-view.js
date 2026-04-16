@@ -5,7 +5,7 @@ const HIGHLIGHT_ROTATIONS = {
   rudder: 0.5,
   hull: -0.8,
   radar: 0.1,
-  tollDiscount: -0.3,
+  torpedoReserve: -0.3,
   ironBeam: -1.2,
   fuelTank: -0.5,
   reinforcedBow: -1.6,
@@ -257,33 +257,59 @@ export class DockShipView {
       this._upgradeMeshes.radar.push(group);
     }
 
-    // === TOLL DISCOUNT: Diplomatic flags / gold trim (5 levels) ===
-    this._upgradeMeshes.tollDiscount = [];
-    const flagColors = [0x2244aa, 0xeecc22, 0xff4444, 0x22aa44, 0xffffff];
+    // === TORPEDO RESERVE: Deck-mounted torpedo racks (5 levels) ===
+    this._upgradeMeshes.torpedoReserve = [];
+    const torpedoBodyMat = new THREE.MeshPhongMaterial({ color: 0xc0cbd4, shininess: 80 });
+    const torpedoNoseMat = new THREE.MeshPhongMaterial({ color: 0x5a6670, shininess: 60 });
+    const rackMat = new THREE.MeshPhongMaterial({ color: 0x3a4652, shininess: 40 });
     for (let i = 0; i < 5; i++) {
       const group = new THREE.Group();
-      const flagMat = new THREE.MeshPhongMaterial({
-        color: flagColors[i], side: THREE.DoubleSide, emissive: 0x111111
-      });
-      const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.5), flagMat);
-      const yOff = 4.0 - i * 0.5;
-      flag.position.set(0.45, yOff, L * 0.25);
-      group.add(flag);
+      const count = i + 1;
+      const torpLen = 1.6;
+      const torpR = 0.14;
 
-      if (i >= 1) {
-        for (let side = -1; side <= 1; side += 2) {
-          const trim = new THREE.Mesh(
-            new THREE.BoxGeometry(0.06, 0.06, L * (0.3 + i * 0.05)),
-            goldMat
+      for (let side = -1; side <= 1; side += 2) {
+        const rack = new THREE.Mesh(
+          new THREE.BoxGeometry(0.14, 0.12, torpLen + 0.2),
+          rackMat
+        );
+        rack.position.set(side * (W * 0.18), 2.55, L * 0.04);
+        group.add(rack);
+
+        for (let c = 0; c < count; c++) {
+          const torp = new THREE.Group();
+          const body = new THREE.Mesh(
+            new THREE.CylinderGeometry(torpR, torpR, torpLen, 10),
+            torpedoBodyMat
           );
-          trim.position.set(side * (W / 2 - 0.1), 2.35, -L * 0.1);
-          group.add(trim);
+          body.rotation.x = Math.PI / 2;
+          torp.add(body);
+
+          const nose = new THREE.Mesh(
+            new THREE.ConeGeometry(torpR, 0.35, 10),
+            torpedoNoseMat
+          );
+          nose.rotation.x = -Math.PI / 2;
+          nose.position.z = -torpLen / 2 - 0.15;
+          torp.add(nose);
+
+          const tail = new THREE.Mesh(
+            new THREE.CylinderGeometry(torpR * 0.7, torpR * 0.5, 0.18, 8),
+            torpedoNoseMat
+          );
+          tail.rotation.x = Math.PI / 2;
+          tail.position.z = torpLen / 2 + 0.08;
+          torp.add(tail);
+
+          const xOffset = side * (W * 0.18) + side * (c * 0.32);
+          torp.position.set(xOffset, 2.75, L * 0.04);
+          group.add(torp);
         }
       }
 
       group.visible = false;
       this.shipGroup.add(group);
-      this._upgradeMeshes.tollDiscount.push(group);
+      this._upgradeMeshes.torpedoReserve.push(group);
     }
 
     // === IRON BEAM: Turret on foredeck (6 levels) ===
@@ -396,7 +422,7 @@ export class DockShipView {
     // Upgrades that replace (show only latest level)
     const replaceKeys = ['rudder', 'radar', 'ironBeam'];
     // Upgrades that stack (show all up to current level)
-    const stackKeys = ['hull', 'tollDiscount', 'fuelTank', 'reinforcedBow', 'cargoHold'];
+    const stackKeys = ['hull', 'torpedoReserve', 'fuelTank', 'reinforcedBow', 'cargoHold'];
 
     for (const key of replaceKeys) {
       const meshes = this._upgradeMeshes[key];

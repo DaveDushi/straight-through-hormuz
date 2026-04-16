@@ -21,13 +21,7 @@ export class TollSystem {
             const km = distance / 1000;
             const baseCost = CONFIG.TOLL_BASE_COST + km * CONFIG.TOLL_COST_PER_KM;
             const variance = 1 + randomRange(-CONFIG.TOLL_COST_VARIANCE, CONFIG.TOLL_COST_VARIANCE);
-            let cost = Math.round(baseCost * variance);
-
-            // Apply toll discount upgrade
-            if (saveManager) {
-                const discountLevel = saveManager.getUpgradeLevel('tollDiscount');
-                cost = Math.ceil(cost * (1 - discountLevel * CONFIG.UPGRADES.tollDiscount.effect));
-            }
+            const cost = Math.round(baseCost * variance);
 
             this.pendingToll = {
                 cost,

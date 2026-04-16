@@ -32,14 +32,14 @@ export class Spawner {
 
         const phase = difficulty.currentPhase;
 
-        this._tickSpawn(delta, 'mine', phase.mineRate * this.spawnRateMultiplier, straitHalfWidth, tankerZ);
-        this._tickSpawn(delta, 'drone', phase.droneRate * this.spawnRateMultiplier, straitHalfWidth, tankerZ);
-        this._tickSpawn(delta, 'boat', phase.boatRate * this.spawnRateMultiplier, straitHalfWidth, tankerZ);
-        this._tickSpawn(delta, 'powerup', phase.powerupRate, straitHalfWidth, tankerZ);
-        this._tickSpawn(delta, 'resource', phase.resourceRate, straitHalfWidth, tankerZ);
+        this._tickSpawn(delta, 'mine', phase.mineRate * this.spawnRateMultiplier, difficulty, tankerZ);
+        this._tickSpawn(delta, 'drone', phase.droneRate * this.spawnRateMultiplier, difficulty, tankerZ);
+        this._tickSpawn(delta, 'boat', phase.boatRate * this.spawnRateMultiplier, difficulty, tankerZ);
+        this._tickSpawn(delta, 'powerup', phase.powerupRate, difficulty, tankerZ);
+        this._tickSpawn(delta, 'resource', phase.resourceRate, difficulty, tankerZ);
     }
 
-    _tickSpawn(delta, type, rate, straitHalfWidth, tankerZ) {
+    _tickSpawn(delta, type, rate, difficulty, tankerZ) {
         if (rate <= 0) return;
 
         this.timers[type] += delta;
@@ -47,22 +47,24 @@ export class Spawner {
 
         if (this.timers[type] >= interval) {
             this.timers[type] -= interval;
-            this._spawn(type, straitHalfWidth, tankerZ);
+            this._spawn(type, difficulty, tankerZ);
         }
     }
 
-    _spawn(type, straitHalfWidth, tankerZ) {
+    _spawn(type, difficulty, tankerZ) {
         const pool = this.pools[type];
         if (!pool) return;
 
         const entity = pool.acquire();
         if (!entity) return;
 
-        const x = randomRange(-straitHalfWidth + 2, straitHalfWidth - 2);
         const z = tankerZ + CONFIG.SPAWN_Z + randomRange(0, 30);
+        // Width at actual spawn z so entities appear inside the shore at their location
+        const straitHalfWidth = difficulty.getStraitHalfWidth(z);
+        const x = randomRange(-straitHalfWidth + 2, straitHalfWidth - 2);
 
         if (type === 'powerup') {
-            const types = ['oil', 'ceasefire', 'pakFlag'];
+            const types = ['oil', 'ceasefire', 'pakFlag', 'torpedo'];
             entity.powerupType = types[Math.floor(Math.random() * types.length)];
         }
 

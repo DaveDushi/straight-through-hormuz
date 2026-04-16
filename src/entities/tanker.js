@@ -234,7 +234,10 @@ export class Tanker extends Entity {
     }
 
     update(delta, context) {
-        const { input, straitHalfWidth, scrollSpeed } = context;
+        const { input, scrollSpeed } = context;
+        // Shore walls can be asymmetric (left shore can jut in differently from right)
+        const shoreLeftX = context.shoreLeftX ?? -context.straitHalfWidth;
+        const shoreRightX = context.shoreRightX ?? context.straitHalfWidth;
 
         if (this.invulnTimer > 0) {
             this.invulnTimer -= delta;
@@ -280,8 +283,8 @@ export class Tanker extends Entity {
         this.wallHitThisFrame = false;
         if (this.wallHitCooldown > 0) this.wallHitCooldown -= delta;
 
-        const minX = -straitHalfWidth + this.halfW;
-        const maxX = straitHalfWidth - this.halfW;
+        const minX = shoreLeftX + this.halfW;
+        const maxX = shoreRightX - this.halfW;
 
         if (this.x < minX || this.x > maxX) {
             const absVel = Math.abs(this.lateralVelocity);

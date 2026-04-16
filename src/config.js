@@ -78,6 +78,7 @@ export const CONFIG = {
   BOAT_WIDTH: 2,
   BOAT_LENGTH: 5,
   BOAT_SPEED: 20,
+  BOAT_APPROACH_SPEED: 22, // world units/sec, negative z (toward tanker)
   BOAT_RAM_DAMAGE: 15,
   BOAT_ROCKET_DAMAGE: 10,
   BOAT_ROCKET_SPEED: 30,
@@ -87,6 +88,14 @@ export const CONFIG = {
   // Projectiles
   PROJECTILE_RADIUS: 0.6,
   PROJECTILE_COLOR: 0xda0000,
+
+  // Torpedoes (player weapon)
+  TORPEDO_AMMO_PER_PICKUP: 3,
+  TORPEDO_SPEED: 110,
+  TORPEDO_DAMAGE: 100,
+  TORPEDO_COLOR: 0xc0cbd4,
+  TORPEDO_TRAIL_COLOR: 0xfff2a8,
+  TORPEDO_MAX_RANGE: 260, // distance ahead of tanker before auto-release
 
   // Power-ups
   POWERUP_SIZE: 3.2,
@@ -364,13 +373,13 @@ export const CONFIG = {
       costMult: 2.0,
       effect: 15,
     },
-    tollDiscount: {
-      name: "Toll Negotiator",
-      description: "-10% toll cost per level",
+    torpedoReserve: {
+      name: "Torpedo Reserve",
+      description: "+1 torpedo per pickup per level",
       maxLevel: 5,
       baseCost: 300,
       costMult: 1.8,
-      effect: 0.10,
+      effect: 1,
     },
     ironBeam: {
       name: "Iron Beam",

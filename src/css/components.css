@@ -255,6 +255,13 @@
     animation: slot-ready-pulse 2s ease-in-out infinite;
 }
 
+.slot.slot-torpedo {
+    border-color: var(--powerup-torpedo);
+    background: var(--powerup-torpedo-bg);
+    --current-slot-glow: var(--powerup-torpedo-glow);
+    animation: slot-ready-pulse 2s ease-in-out infinite;
+}
+
 .slot-key {
     position: absolute;
     top: 2px;
@@ -328,6 +335,91 @@
 body.touch-device #btn-boost,
 body.touch-device #btn-boost-left {
     display: flex;
+}
+
+/* ====== TORPEDO FIRE BUTTON ====== */
+#btn-torpedo {
+    position: fixed;
+    bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    right: calc(max(var(--space-4), env(safe-area-inset-right)) + var(--touch-large) + var(--space-3));
+    width: var(--touch-large);
+    height: var(--touch-large);
+    border-radius: var(--radius-full);
+    border: 2px solid var(--powerup-torpedo);
+    background: var(--powerup-torpedo-bg);
+    color: var(--powerup-torpedo);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    z-index: var(--z-hud);
+    pointer-events: auto;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    box-shadow: 0 0 10px var(--powerup-torpedo-glow);
+    animation: slot-ready-pulse 2s ease-in-out infinite;
+    transition: transform var(--dur-fast) var(--ease-bounce),
+                background var(--dur-fast),
+                box-shadow var(--dur-fast),
+                opacity var(--dur-fast);
+}
+
+#btn-torpedo[hidden] {
+    display: none;
+}
+
+#btn-torpedo:active {
+    transform: scale(0.9);
+    background: rgba(192, 203, 212, 0.28);
+    box-shadow: 0 0 18px var(--powerup-torpedo-glow);
+}
+
+.torpedo-btn-label {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: var(--tracking-wider);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.torpedo-btn-ammo {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: var(--radius-full);
+    min-width: 20px;
+    height: 16px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+#btn-torpedo.torpedo-armed {
+    animation: torpedo-armed-pulse 0.6s var(--ease-out);
+}
+
+@keyframes torpedo-armed-pulse {
+    0%   { transform: scale(1); box-shadow: 0 0 10px var(--powerup-torpedo-glow); }
+    40%  { transform: scale(1.18); box-shadow: 0 0 24px var(--powerup-torpedo-glow), 0 0 12px #fff; }
+    100% { transform: scale(1); box-shadow: 0 0 10px var(--powerup-torpedo-glow); }
+}
+
+/* Landscape phone: move torpedo button up along right edge above boost */
+@media (orientation: landscape) and (max-height: 500px) {
+    #btn-torpedo {
+        bottom: calc(max(var(--space-4), env(safe-area-inset-bottom)) + var(--touch-large) + var(--space-2));
+        right: max(var(--space-4), env(safe-area-inset-right));
+    }
 }
 
 /* ====== HUD PAUSE BUTTON ====== */

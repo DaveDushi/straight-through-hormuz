@@ -7,7 +7,7 @@ const UPGRADE_ICONS = {
   rudder: '\u2699',
   hull: '\u{1F6E1}',
   radar: '\u{1F4E1}',
-  tollDiscount: '\u{1F4B0}',
+  torpedoReserve: '\u{1F4A5}',
   ironBeam: '\u{1F52B}',
   fuelTank: '\u26FD',
   reinforcedBow: '\u2693',
@@ -18,7 +18,7 @@ const TILE_NAMES = {
   rudder: 'Rudder',
   hull: 'Hull',
   radar: 'Radar',
-  tollDiscount: 'Tolls',
+  torpedoReserve: 'Torpedoes',
   ironBeam: 'Beam',
   fuelTank: 'Fuel',
   reinforcedBow: 'Bow',
@@ -40,9 +40,9 @@ function getStatText(key, level) {
       const range = CONFIG.IRON_BEAM_RANGE + level * cfg.effect;
       return `Beam range: ${range}m`;
     }
-    case 'tollDiscount': {
-      const pct = Math.round(level * cfg.effect * 100);
-      return `Tolls: ${pct > 0 ? '-' : ''}${pct}%`;
+    case 'torpedoReserve': {
+      const total = CONFIG.TORPEDO_AMMO_PER_PICKUP + level * cfg.effect;
+      return `Per pickup: ${total}`;
     }
     case 'ironBeam': {
       const rate = Math.round((CONFIG.IRON_BEAM_BASE_HIT_RATE + level * CONFIG.IRON_BEAM_UPGRADE_BONUS) * 100);

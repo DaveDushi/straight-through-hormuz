@@ -81,7 +81,7 @@ export class PortalSystem {
 
     _positionPortals(game) {
         const tankerZ = game.tanker.z;
-        const halfW = game.difficulty.getStraitHalfWidth(game.scoring.distance);
+        const halfW = game.difficulty.getStraitHalfWidth(game.tanker.z);
 
         // Push portal into the cliff so the tunnel mouth sits at the terrain edge
         this.exitPortal.init(halfW + 4, tankerZ + EXIT_Z_OFFSET, -Math.PI / 2);

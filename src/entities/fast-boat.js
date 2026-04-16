@@ -56,8 +56,7 @@ export class FastBoat extends Entity {
 
     update(delta, context) {
         if (this.frozen) {
-            // Frozen boats drift slowly — tanker sails past them
-            this.z += context.scrollSpeed * 0.3 * delta;
+            // Frozen boats are dead in the water — tanker sails past them
             this.syncMesh();
             return;
         }
@@ -67,8 +66,7 @@ export class FastBoat extends Entity {
             const ddx = this.targetX - this.x;
             this.x += clamp(ddx, -CONFIG.BOAT_SPEED * delta * slowFactor, CONFIG.BOAT_SPEED * delta * slowFactor);
             this.x += (Math.random() - 0.5) * 12 * delta;
-            // Oil-slicked boats can barely keep up
-            this.z += context.scrollSpeed * 0.5 * delta;
+            // Oil-slicked boats wallow in place — no forward drive
             this.mesh.rotation.y = Math.atan2(this.targetX - this.x, 1) * 0.5;
             this.mesh.rotation.z = (Math.random() - 0.5) * 0.15;
             this.syncMesh();
@@ -78,7 +76,7 @@ export class FastBoat extends Entity {
 
         if (this.retreating) {
             this.x += this.approachSide * CONFIG.BOAT_SPEED * delta;
-            // Retreating boats don't keep up — tanker leaves them behind
+            // Retreating boats flee sideways off-screen
             this.syncMesh();
             return;
         }
@@ -89,8 +87,8 @@ export class FastBoat extends Entity {
         const zigzag = Math.sin(Date.now() * 0.003 + this.x) * 3 * delta;
         this.x += zigzag;
 
-        // Attack boats try to keep pace but the tanker is faster
-        this.z += context.scrollSpeed * 0.7 * delta;
+        // Attack boats close on the tanker head-on
+        this.z -= CONFIG.BOAT_APPROACH_SPEED * delta;
 
         this.fireTimer -= delta;
         if (this.fireTimer <= 0 && !context.ceasefireShootingDisabled && this.z > context.tankerZ) {

@@ -6,6 +6,7 @@ export class InputSystem {
         this.steer = 0;
         this.boosting = false;
         this.boostTriggered = false;
+        this.torpedoTriggered = false;
         this.activatePowerup = -1;
 
         this._pointerDown = false;
@@ -29,6 +30,7 @@ export class InputSystem {
             if (e.code === 'Digit4') this.activatePowerup = 3;
             if (e.code === 'Digit5') this.activatePowerup = 4;
             if (e.code === 'Space') this.boostTriggered = true;
+            if (e.code === 'KeyF') this.torpedoTriggered = true;
         });
         window.addEventListener('keyup', (e) => {
             this._keys[e.code] = false;
@@ -96,6 +98,12 @@ export class InputSystem {
     consumeBoostTrigger() {
         const v = this.boostTriggered;
         this.boostTriggered = false;
+        return v;
+    }
+
+    consumeTorpedoTrigger() {
+        const v = this.torpedoTriggered;
+        this.torpedoTriggered = false;
         return v;
     }
 }

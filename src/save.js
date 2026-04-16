@@ -30,6 +30,10 @@ export class SaveManager {
                     data.upgrades.cargoHold = data.upgrades.cargoInsurance;
                     delete data.upgrades.cargoInsurance;
                 }
+                if (data.upgrades && data.upgrades.tollDiscount !== undefined) {
+                    data.upgrades.torpedoReserve = data.upgrades.tollDiscount;
+                    delete data.upgrades.tollDiscount;
+                }
                 return data;
             }
         } catch (e) {}

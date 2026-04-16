@@ -56,6 +56,9 @@
     --powerup-ceasefire-bg: rgba(58, 143, 212, 0.10);
     --powerup-pakflag: #01411C;
     --powerup-pakflag-bg: rgba(1, 65, 28, 0.12);
+    --powerup-torpedo: #c0cbd4;
+    --powerup-torpedo-bg: rgba(192, 203, 212, 0.12);
+    --powerup-torpedo-glow: rgba(255, 220, 120, 0.35);
 
     /* -- Typography -- */
     --font-display: 'Share Tech Mono', 'Courier New', monospace;

@@ -60,7 +60,7 @@ export class Game {
         this.audio = new AudioManager();
 
         this.water = new Water(this.scene);
-        this.terrain = new Terrain(this.scene);
+        this.terrain = new Terrain(this.scene, this.difficulty);
 
         this.tanker = new Tanker();
         this.scene.add(this.tanker.mesh);
@@ -116,6 +116,16 @@ export class Game {
         };
         if (this._boostBtn) this._boostBtn.addEventListener('pointerdown', boostHandler);
         if (this._boostBtnLeft) this._boostBtnLeft.addEventListener('pointerdown', boostHandler);
+
+        this._torpedoBtn = document.getElementById('btn-torpedo');
+        if (this._torpedoBtn) {
+            this._torpedoBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.input.torpedoTriggered = true;
+                if (navigator.vibrate) navigator.vibrate(15);
+            });
+        }
         if (this.input.isTouchDevice) {
             document.body.classList.add('touch-device');
             CONFIG.isMobile = true;
@@ -334,6 +344,7 @@ export class Game {
         this.hud.setSlotCount(slotCount);
         this.collision.reset();
         this.toll.reset();
+        this.inventory.torpedoBonusPerPickup = this.save.getUpgradeLevel('torpedoReserve') * CONFIG.UPGRADES.torpedoReserve.effect;
         this.inventory.reset(slotCount);
         this.radio.reset();
         this.difficulty.update(0);
@@ -437,30 +448,19 @@ export class Game {
 
         const baseScrollSpeed = this.difficulty.getScrollSpeed();
         const scrollSpeed = this.tanker.oilBoostActive ? baseScrollSpeed * CONFIG.OIL_BOOST_SPEED_MULT : baseScrollSpeed;
-        const straitHalfWidth = this.difficulty.getStraitHalfWidth(this.scoring.distance)
-            + this.portalSystem.getExtraWidth(this.tanker.z);
+        const portalExtra = this.portalSystem.getExtraWidth(this.tanker.z);
+        const shoreLeftDist = this.difficulty.getShoreDistance(this.tanker.z, -1) + portalExtra;
+        const shoreRightDist = this.difficulty.getShoreDistance(this.tanker.z, 1) + portalExtra;
+        // Narrowest-side value for callers that want a single symmetric number
+        const straitHalfWidth = Math.min(shoreLeftDist, shoreRightDist);
 
         this.tanker.update(delta, {
             input: this.input,
-            straitHalfWidth,
+            shoreLeftX: -shoreLeftDist,
+            shoreRightX: shoreRightDist,
             scrollSpeed,
         });
 
-        const ctx = {
-            scrollSpeed,
-            tankerX: this.tanker.x,
-            tankerZ: this.tanker.z,
-            spawnProjectile: (x, z, vx, vz, dmg) => this._spawnProjectile(x, z, vx, vz, dmg),
-            ceasefireShootingDisabled: this.ceasefireShootingDisabled,
-        };
-
-        for (const key in this.pools) {
-            this.pools[key].forEach((entity) => {
-                entity.update(delta, ctx);
-            });
-        }
-
-        // Iron beam evaluates drones before collision
         const releaseEntity = (e) => {
             for (const key in this.pools) {
                 this.pools[key].forEach((item) => {
@@ -468,6 +468,21 @@ export class Game {
                 });
             }
         };
+
+        const ctx = {
+            scrollSpeed,
+            tankerX: this.tanker.x,
+            tankerZ: this.tanker.z,
+            spawnProjectile: (x, z, vx, vz, dmg) => this._spawnProjectile(x, z, vx, vz, dmg),
+            ceasefireShootingDisabled: this.ceasefireShootingDisabled,
+            releaseEntity,
+        };
+
+        for (const key in this.pools) {
+            this.pools[key].forEach((entity) => {
+                entity.update(delta, ctx);
+            });
+        }
         this.ironBeam.update(delta, this.pools.drone, this.tanker, this.particles, this.audio, releaseEntity);
         this.portalSystem.update(delta, this);
 
@@ -482,6 +497,9 @@ export class Game {
             releaseEntity,
             addScore: (pts) => this.scoring.addScore(pts),
             notifyPickup: (type) => this.hud.showPickupNotification(type),
+            projectilePool: this.pools.projectile,
+            boatPool: this.pools.boat,
+            minePool: this.pools.mine,
         });
 
         if (this.tanker.wallHitThisFrame) {
@@ -506,6 +524,7 @@ export class Game {
             activateOilBoost: (active) => this._activateOilBoost(active),
             activateCeasefire: (active) => this._activateCeasefire(active),
             activatePakFlag: (active) => this._activatePakFlag(active),
+            fireTorpedo: () => this._fireTorpedo(),
         };
         const powerupSlot = this.input.consumePowerupActivation();
         if (powerupSlot >= 0) {
@@ -518,6 +537,14 @@ export class Game {
             }
             this.inventory.activate(powerupSlot, powerupCtx);
         }
+        if (this.input.consumeTorpedoTrigger()) {
+            if (this.inventory.fireTorpedo(powerupCtx)) {
+                track('powerup_used', {
+                    powerup: 'torpedo',
+                    distance: Math.round(this.scoring.distance),
+                });
+            }
+        }
         this.inventory.update(delta, powerupCtx);
 
         const tollOffer = this.toll.update(this.scoring.distance, this.save);
@@ -526,7 +553,7 @@ export class Game {
         }
 
         this.water.update(delta, this.scoring.distance, this.tanker.z);
-        this.terrain.update(delta, this.tanker.z, straitHalfWidth);
+        this.terrain.update(delta, this.tanker.z);
         this.particles.update(delta, scrollSpeed);
 
         // Blockade system
@@ -552,6 +579,7 @@ export class Game {
             fuel: this.tanker.fuel,
             maxFuel: this.tanker.maxFuel,
             inventory: this.inventory.slots,
+            torpedoAmmo: this.inventory.torpedoAmmo,
             ceasefireActive: this.inventory.isCeasefireActive(),
             pakFlagActive: this.inventory.isPakFlagActive(),
             oilBoostActive: this.inventory.isOilBoostActive(),
@@ -578,8 +606,17 @@ export class Game {
     _spawnProjectile(x, z, vx, vz, damage) {
         const p = this.pools.projectile.acquire();
         if (!p) return;
-        p.init(x, z, vx, vz, damage);
+        p.init(x, z, vx, vz, damage, 'enemy');
         if (!p.mesh.parent) this.scene.add(p.mesh);
+    }
+
+    _fireTorpedo() {
+        const p = this.pools.projectile.acquire();
+        if (!p) return;
+        const spawnZ = this.tanker.z + CONFIG.TANKER_LENGTH * 0.6;
+        p.init(this.tanker.x, spawnZ, 0, CONFIG.TORPEDO_SPEED, CONFIG.TORPEDO_DAMAGE, 'player');
+        if (!p.mesh.parent) this.scene.add(p.mesh);
+        this.audio.playSFX('boost');
     }
 
     _activateOilBoost(active) {
@@ -624,7 +661,7 @@ export class Game {
         this.toll.resolve(accepted, this.scoring, this.save);
         if (accepted) {
             this.radio.showCustom('TRUMP', 'Smart move. Sometimes you gotta pay to play.', this.audio, 'smart-move--sometimes-you-gott.wav');
-            this.blockadeSystem.scheduleTollBlockade(this.tanker.z, this.difficulty.getStraitHalfWidth(this.scoring.distance));
+            this.blockadeSystem.scheduleTollBlockade(this.tanker.z, this.difficulty.getStraitHalfWidth(this.tanker.z));
         } else {
             this.radio.showCustom('BIBI', 'Brave. Israel respects courage.', this.audio, 'brave--israel-respects-courage.wav');
             this.spawner.spawnRateMultiplier = CONFIG.TOLL_REFUSE_SPAWN_MULTIPLIER;

@@ -17,6 +17,7 @@ export class CollisionSystem {
         for (const pool of entityPools) {
             pool.forEach((entity) => {
                 if (!entity.active) return;
+                if (entity.type === 'projectile' && entity.owner === 'player') return;
 
                 if (aabbOverlap(
                     tanker.x, tanker.z, tanker.halfW, tanker.halfH,
@@ -39,6 +40,56 @@ export class CollisionSystem {
                 }
             });
         }
+
+        this._checkPlayerTorpedoes(entityPools, context);
+    }
+
+    _checkPlayerTorpedoes(entityPools, context) {
+        const projectilePool = context.projectilePool;
+        const boatPool = context.boatPool;
+        const minePool = context.minePool;
+        if (!projectilePool) return;
+
+        projectilePool.forEach((proj) => {
+            if (!proj.active || proj.owner !== 'player') return;
+
+            const hit = (target) => {
+                if (context.particles) context.particles.spawnExplosion(target.x, 1, target.z);
+                if (context.audio) context.audio.playSFX('explosion');
+                context.releaseEntity(target);
+                context.releaseEntity(proj);
+            };
+
+            if (boatPool) {
+                let consumed = false;
+                boatPool.forEach((boat) => {
+                    if (consumed || !boat.active) return;
+                    if (aabbOverlap(
+                        proj.x, proj.z, proj.halfW, proj.halfH,
+                        boat.x, boat.z, boat.halfW, boat.halfH
+                    )) {
+                        hit(boat);
+                        if (context.addScore) context.addScore(100);
+                        consumed = true;
+                    }
+                });
+                if (consumed) return;
+            }
+
+            if (minePool) {
+                let consumed = false;
+                minePool.forEach((mine) => {
+                    if (consumed || !mine.active) return;
+                    if (aabbOverlap(
+                        proj.x, proj.z, proj.halfW, proj.halfH,
+                        mine.x, mine.z, mine.halfW, mine.halfH
+                    )) {
+                        hit(mine);
+                        consumed = true;
+                    }
+                });
+            }
+        });
     }
 
     _resolveCollision(tanker, entity, context) {

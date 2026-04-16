@@ -20,6 +20,8 @@ export class HUD {
         this.slots = [];
         this._onSlotClick = onSlotClick;
         this.ceasefireOverlay = document.getElementById('ceasefire-overlay');
+        this.torpedoBtn = document.getElementById('btn-torpedo');
+        this.torpedoAmmoEl = document.getElementById('torpedo-ammo');
 
         // Dirty-flag cache to avoid DOM writes every frame
         this._prev = {
@@ -33,6 +35,7 @@ export class HUD {
             inv: [],
             ceasefire: false,
             pakFlag: false,
+            torpedoAmmo: -1,
         };
 
         this._phaseTimer = 0;
@@ -206,6 +209,30 @@ export class HUD {
             }
         }
 
+        // Torpedo button + ammo badge
+        const ammo = data.torpedoAmmo || 0;
+        if (ammo !== this._prev.torpedoAmmo) {
+            const gained = ammo > this._prev.torpedoAmmo;
+            this._prev.torpedoAmmo = ammo;
+            if (this.torpedoBtn) {
+                if (ammo > 0) {
+                    this.torpedoBtn.hidden = false;
+                    this.torpedoBtn.classList.remove('depleted');
+                    if (gained) {
+                        this.torpedoBtn.classList.add('torpedo-armed');
+                        setTimeout(() => this.torpedoBtn.classList.remove('torpedo-armed'), 600);
+                    }
+                } else {
+                    this.torpedoBtn.hidden = true;
+                    this.torpedoBtn.classList.remove('torpedo-armed');
+                }
+                this.torpedoBtn.setAttribute('aria-label', 'Fire Torpedo (' + ammo + ' left)');
+            }
+            if (this.torpedoAmmoEl) {
+                this.torpedoAmmoEl.textContent = ammo;
+            }
+        }
+
         // Ceasefire
         if (data.ceasefireActive !== this._prev.ceasefire) {
             this._prev.ceasefire = data.ceasefireActive;
@@ -230,10 +257,12 @@ export class HUD {
         this._seenPickups.add(type);
 
         const activateHint = CONFIG.isMobile ? 'Tap slot' : 'Press 1-' + this.slots.length;
+        const torpedoHint = CONFIG.isMobile ? 'Tap FIRE button' : 'Press F';
         const descriptions = {
             oil: `OIL \u2014 ${activateHint} to boost speed & steering (8s)`,
             ceasefire: `CEASEFIRE \u2014 ${activateHint} to stop all shooting (10s)`,
             pakFlag: `PAKISTANI FLAG \u2014 ${activateHint} for invincibility (10s)`,
+            torpedo: `TORPEDO \u2014 ${torpedoHint} (${CONFIG.TORPEDO_AMMO_PER_PICKUP} shots added)`,
             repair: 'REPAIR \u2014 Hull +20',
             fuel: 'FUEL \u2014 Boost +50',
             laser: 'LASER \u2014 Iron Beam buffed for 10s',
@@ -257,6 +286,7 @@ export class HUD {
             case 'oil': return 'OIL';
             case 'ceasefire': return 'PEACE';
             case 'pakFlag': return 'PAK';
+            case 'torpedo': return 'TP';
             default: return '?';
         }
     }

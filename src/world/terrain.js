@@ -84,8 +84,9 @@ function sampleHeight(wx, wz, octaves, intensity) {
 }
 
 export class Terrain {
-    constructor(scene) {
+    constructor(scene, difficulty) {
         this.scene = scene;
+        this.difficulty = difficulty;
         this.chunks = [];
         this.chunkLength = CONFIG.TERRAIN_CHUNK_LENGTH;
         this.chunkWidth = CONFIG.TERRAIN_CHUNK_WIDTH;
@@ -140,62 +141,54 @@ export class Terrain {
 
         this.chunks.push(pair);
 
-        this._updateChunkHeights(pair, CONFIG.STRAIT_WIDTH_START / 2);
-        this._positionChunk(pair, CONFIG.STRAIT_WIDTH_START / 2);
+        this._positionChunk(pair);
+        this._updateChunkHeights(pair);
         return pair;
     }
 
-    _updateChunkHeights(chunk, straitHalfWidth) {
-        this._applyHeightmap(chunk.left, chunk.worldZ, -1, straitHalfWidth);
-        this._applyHeightmap(chunk.right, chunk.worldZ, 1, straitHalfWidth);
+    _updateChunkHeights(chunk) {
+        this._applyHeightmap(chunk.left, chunk.worldZ, -1);
+        this._applyHeightmap(chunk.right, chunk.worldZ, 1);
     }
 
-    _applyHeightmap(mesh, worldZ, side, straitHalfWidth) {
+    _applyHeightmap(mesh, worldZ, side) {
         const pos = mesh.geometry.attributes.position;
         const col = mesh.geometry.attributes.color;
         const baseH = CONFIG.TERRAIN_BASE_HEIGHT;
         const coastW = CONFIG.TERRAIN_COAST_FADE;
-        const overlap = this.overlap;
-        const halfW = this.chunkWidth / 2;
-        const intensity = terrainIntensity(worldZ);
+        const meshX = mesh.position.x;
 
         for (let i = 0; i < pos.count; i++) {
             const localX = pos.getX(i);
             const localZ = pos.getZ(i);
 
-            // World coordinates for deterministic noise
-            const chunkCenterX = side > 0
-                ? straitHalfWidth - overlap + halfW
-                : -straitHalfWidth + overlap - halfW;
-            const wx = chunkCenterX + localX;
+            const wx = meshX + localX;
             const wz = worldZ + localZ;
 
-            // Irregular coastline: noise shifts the effective edge ±4 units
-            const coastNoise = (noise2D(wz * 0.02, side * 137) * 2 - 1) * 4;
-            const rawDist = side * localX + halfW - overlap;
-            const distFromEdge = rawDist + coastNoise;
+            // Shore position per side from fBm noise — all coastline detail
+            // (regional narrowing + side-specific bays/peninsulas) comes from here,
+            // so the visible land exactly matches the tanker's collision walls.
+            const shoreDist = this.difficulty.getShoreDistance(wz, side);
+            const distFromEdge = side * wx - shoreDist;
 
-            // Sample terrain noise
+            const intensity = terrainIntensity(wz);
             const noiseH = sampleHeight(wx, wz, this.octaves, intensity);
 
             let h;
             if (distFromEdge < 0) {
-                // Overlap / water zone: slope below water
-                h = distFromEdge * 2.0;
+                // Submerged seabed — gentle slope below water plane
+                h = Math.max(-3, distFromEdge * 0.6);
             } else if (distFromEdge < coastW) {
-                // Coastal cliff: steep quadratic rise
                 const t = distFromEdge / coastW;
                 const cliff = t * t;
                 h = baseH * cliff + Math.max(0, noiseH) * t * 0.3;
             } else {
-                // Full terrain inland
                 const inlandT = Math.min(1, (distFromEdge - coastW) / 15);
                 h = baseH + Math.max(0, noiseH) * (0.3 + 0.7 * inlandT);
             }
 
             pos.setY(i, h);
 
-            // Color with per-vertex noise for rocky texture variety
             const c = heightColor(Math.max(0, h), baseH, distFromEdge);
             const colorVar = (noise2D(wx * 0.05 + 500, wz * 0.05 + 500) - 0.5) * 0.08;
             col.setXYZ(i,
@@ -210,33 +203,36 @@ export class Terrain {
         mesh.geometry.computeVertexNormals();
     }
 
-    _positionChunk(chunk, straitHalfWidth) {
+    // Chunks sit at a fixed lateral position — inner edge at the narrowest possible
+    // shore so that shoreline variation (wide→narrow) is expressed entirely through
+    // the heightmap, not by sliding chunks. The land itself bends; the camera flies
+    // past stationary geography.
+    _positionChunk(chunk) {
         const ov = this.overlap;
         const hw = this.chunkWidth / 2;
-        chunk.left.position.set(-straitHalfWidth + ov - hw, 0, chunk.worldZ);
-        chunk.right.position.set(straitHalfWidth - ov + hw, 0, chunk.worldZ);
+        const innerEdge = CONFIG.STRAIT_WIDTH_MIN / 2 - ov;
+        chunk.left.position.set(-(innerEdge + hw), 0, chunk.worldZ);
+        chunk.right.position.set(innerEdge + hw, 0, chunk.worldZ);
     }
 
     reset() {
         for (let i = 0; i < this.chunks.length; i++) {
             this.chunks[i].worldZ = i * this.chunkLength;
-            this._updateChunkHeights(this.chunks[i], CONFIG.STRAIT_WIDTH_START / 2);
-            this._positionChunk(this.chunks[i], CONFIG.STRAIT_WIDTH_START / 2);
+            this._positionChunk(this.chunks[i]);
+            this._updateChunkHeights(this.chunks[i]);
         }
     }
 
-    update(delta, tankerZ, straitHalfWidth) {
-        for (const chunk of this.chunks) {
-            this._positionChunk(chunk, straitHalfWidth);
-        }
-
-        // Recycle chunks that fell behind the camera
+    update(delta, tankerZ) {
+        // Recycle chunks that fell behind the camera — reposition only along Z,
+        // lateral position stays fixed so shores don't slide.
         for (const chunk of this.chunks) {
             if (chunk.worldZ < tankerZ - this.chunkLength) {
                 const maxWorldZ = Math.max(...this.chunks.map(c => c.worldZ));
                 chunk.worldZ = maxWorldZ + this.chunkLength;
-                this._updateChunkHeights(chunk, straitHalfWidth);
-                this._positionChunk(chunk, straitHalfWidth);
+                chunk.left.position.z = chunk.worldZ;
+                chunk.right.position.z = chunk.worldZ;
+                this._updateChunkHeights(chunk);
             }
         }
     }
