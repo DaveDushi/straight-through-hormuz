@@ -81,13 +81,16 @@ export class PortalSystem {
 
     _positionPortals(game) {
         const tankerZ = game.tanker.z;
-        const halfW = game.difficulty.getStraitHalfWidth(game.tanker.z);
 
-        // Push portal into the cliff so the tunnel mouth sits at the terrain edge
-        this.exitPortal.init(halfW + 4, tankerZ + EXIT_Z_OFFSET, -Math.PI / 2);
+        // Each portal sits in its own side's cliff — shores are asymmetric now
+        const exitZ = tankerZ + EXIT_Z_OFFSET;
+        const exitShore = game.difficulty.getShoreDistance(exitZ, 1);
+        this.exitPortal.init(exitShore + 4, exitZ, -Math.PI / 2);
 
         if (this.startPortal) {
-            this.startPortal.init(-(halfW + 4), tankerZ + START_Z_OFFSET, Math.PI / 2);
+            const startZ = tankerZ + START_Z_OFFSET;
+            const startShore = game.difficulty.getShoreDistance(startZ, -1);
+            this.startPortal.init(-(startShore + 4), startZ, Math.PI / 2);
         }
     }
 

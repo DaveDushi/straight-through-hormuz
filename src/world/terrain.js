@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CONFIG } from '../config.js';
-import { noise2D } from '../utils/math-utils.js';
+import { noise2D, lerp } from '../utils/math-utils.js';
 import { quality } from '../utils/quality-manager.js';
 
 // Arid Iranian/Omani mountain palette (pre-darkened for bright scene lighting)
@@ -48,36 +48,43 @@ function ridgedNoise(x, z) {
     return 1 - Math.abs(n * 2 - 1);
 }
 
-// Terrain intensity ramps up as the player progresses through the strait
+// Terrain intensity ramps up as the player progresses through the strait.
+// Kept high even at the start — the strait is in a mountainous region; there
+// should always be visible peaks and crags flanking the water.
 function terrainIntensity(worldZ) {
-    if (worldZ < 0) return 0.45;
-    if (worldZ < 3000) return 0.45 + 0.15 * (worldZ / 3000);
-    if (worldZ < 15000) return 0.60 + 0.20 * ((worldZ - 3000) / 12000);
-    if (worldZ < 40000) return 0.80 + 0.12 * ((worldZ - 15000) / 25000);
-    return Math.min(1.0, 0.92 + 0.08 * ((worldZ - 40000) / 60000));
+    if (worldZ < 0) return 0.75;
+    if (worldZ < 3000) return 0.75 + 0.10 * (worldZ / 3000);
+    if (worldZ < 15000) return 0.85 + 0.10 * ((worldZ - 3000) / 12000);
+    if (worldZ < 40000) return 0.95 + 0.05 * ((worldZ - 15000) / 25000);
+    return 1.0;
 }
 
 function sampleHeight(wx, wz, octaves, intensity) {
     let h = 0;
 
-    // Major mountain ridges — ridged noise creates sharp spine-like peaks
-    h += ridgedNoise(wx * 0.008, wz * 0.006) * CONFIG.TERRAIN_HEIGHT_SCALE * intensity;
+    // Mid-scale mountain ridges — ~65-unit wavelength so multiple peaks fit
+    // inside the camera's ~100-unit visible window. Peaks capped well below
+    // camera height (y=78) so mountains read as rolling hills the camera looks
+    // DOWN at, not walls that block the view.
+    h += ridgedNoise(wx * 0.015, wz * 0.012) * CONFIG.TERRAIN_HEIGHT_SCALE * intensity;
 
-    // Broad elevation undulation — regular centered noise
-    h += (noise2D(wx * 0.003 + 50, wz * 0.004 + 50) * 2 - 1) * 12 * intensity;
+    // Long rolling undulation (~300-unit wavelength) — regional height trends
+    h += ridgedNoise(wx * 0.0035 + 50, wz * 0.003 + 50) * 8 * intensity;
+
+    // Secondary ridges (~35-unit wavelength) — near-field peaks and saddles
+    h += ridgedNoise(wx * 0.028 + 100, wz * 0.024 + 100) * 7 * intensity;
+
+    // Broad signed undulation — adds occasional valleys
+    h += (noise2D(wx * 0.008 + 150, wz * 0.01 + 150) * 2 - 1) * 5 * intensity;
 
     if (octaves >= 2) {
-        // Secondary ridges
-        h += ridgedNoise(wx * 0.025 + 100, wz * 0.02 + 100) * 18 * intensity;
-        // Hill variation
-        h += (noise2D(wx * 0.04 + 200, wz * 0.035 + 200) * 2 - 1) * 8;
+        h += (noise2D(wx * 0.04 + 200, wz * 0.035 + 200) * 2 - 1) * 3;
+        h += ridgedNoise(wx * 0.07 + 400, wz * 0.06 + 400) * 2.5;
     }
 
     if (octaves >= 3) {
-        // Fine rocky texture
-        h += (noise2D(wx * 0.10 + 300, wz * 0.10 + 300) * 2 - 1) * 4;
-        // Small ridges
-        h += ridgedNoise(wx * 0.07 + 400, wz * 0.06 + 400) * 5;
+        h += (noise2D(wx * 0.10 + 300, wz * 0.10 + 300) * 2 - 1) * 1.5;
+        h += (noise2D(wx * 0.22 + 600, wz * 0.22 + 600) * 2 - 1) * 0.8;
     }
 
     return h;
@@ -174,17 +181,35 @@ export class Terrain {
             const intensity = terrainIntensity(wz);
             const noiseH = sampleHeight(wx, wz, this.octaves, intensity);
 
+            // Jagged rock variation along the cliff face — breaks the smooth-painted
+            // look and gives the shore visible crags.
+            const cliffNoise = (noise2D(wx * 0.06 + 800, wz * 0.06 + 800) - 0.5) * 2;
+
             let h;
-            if (distFromEdge < 0) {
+            if (distFromEdge < -3) {
                 // Submerged seabed — gentle slope below water plane
-                h = Math.max(-3, distFromEdge * 0.6);
+                h = Math.max(-4, -3 + (distFromEdge + 3) * 0.4);
+            } else if (distFromEdge < 0) {
+                // Shallow shelf rising from seabed to the waterline — continuous
+                // with both the deep-water slope and the cliff rise, so there's
+                // no visible crease in the shoreline geometry.
+                const t = (distFromEdge + 3) / 3;
+                h = lerp(-3, 0, t);
             } else if (distFromEdge < coastW) {
+                // Shore slope — gentle rocky rise from waterline (h=0) to low
+                // foothills (baseH=8) over 22 lateral units, so the shore reads
+                // as a beach/crag slope the camera looks DOWN at, not a wall.
+                // Noise adds visible bumps from the waterline up.
                 const t = distFromEdge / coastW;
-                const cliff = t * t;
-                h = baseH * cliff + Math.max(0, noiseH) * t * 0.3;
+                const rise = Math.sqrt(t);
+                const crag = cliffNoise * 3 * t;
+                h = baseH * rise + crag + Math.max(0, noiseH) * t * 0.7;
             } else {
-                const inlandT = Math.min(1, (distFromEdge - coastW) / 15);
-                h = baseH + Math.max(0, noiseH) * (0.3 + 0.7 * inlandT);
+                // Inland mountains — taller than the shore foothills but capped
+                // around y=40 so the camera at y=78 clearly sees over them.
+                const inlandT = Math.min(1, (distFromEdge - coastW) / 20);
+                h = baseH + Math.max(0, noiseH) * (0.7 + 0.2 * inlandT) + cliffNoise * 2;
+                h = Math.min(h, 42); // hard cap below camera level
             }
 
             pos.setY(i, h);

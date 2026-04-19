@@ -294,13 +294,13 @@ export class Game {
         this.cameraController = new CameraController(this.camera, CONFIG.CAMERA_POSITION, CONFIG.CAMERA_LOOKAT);
         this._adjustCameraForAspect();
 
-        const ambient = new THREE.AmbientLight(0xddeedd, 1.2);
+        const ambient = new THREE.AmbientLight(0xddeedd, 0.6);
         this.scene.add(ambient);
 
-        const sun = new THREE.DirectionalLight(0xffffff, 1.8);
+        const sun = new THREE.DirectionalLight(0xffffff, 2.2);
         sun.position.set(20, 60, 30);
 
-        const fill = new THREE.DirectionalLight(0x88bbdd, 0.6);
+        const fill = new THREE.DirectionalLight(0x88bbdd, 0.5);
         fill.position.set(-15, 30, -10);
         this.scene.add(fill);
         this.scene.add(sun);
@@ -449,8 +449,29 @@ export class Game {
         const baseScrollSpeed = this.difficulty.getScrollSpeed();
         const scrollSpeed = this.tanker.oilBoostActive ? baseScrollSpeed * CONFIG.OIL_BOOST_SPEED_MULT : baseScrollSpeed;
         const portalExtra = this.portalSystem.getExtraWidth(this.tanker.z);
-        const shoreLeftDist = this.difficulty.getShoreDistance(this.tanker.z, -1) + portalExtra;
-        const shoreRightDist = this.difficulty.getShoreDistance(this.tanker.z, 1) + portalExtra;
+        // The tanker hull spans from stern to bow (~7 units forward of center
+        // thanks to the pointed bow). Collision must consider the narrowest
+        // shore along the entire hull length, otherwise the visible bow pokes
+        // into cliffs at narrowing sections while center-point collision thinks
+        // it's fine.
+        const bowZ = this.tanker.z + CONFIG.TANKER_LENGTH / 2 + 2;
+        const sternZ = this.tanker.z - CONFIG.TANKER_LENGTH / 2;
+        // Forward lookahead: shore can narrow between frames. Sampling a few
+        // units ahead of the bow means a narrowing cliff stops the tanker
+        // BEFORE the bow visibly enters it, not one frame after.
+        const aheadZ = bowZ + 4;
+        const shoreLeftDist = Math.min(
+            this.difficulty.getShoreDistance(sternZ, -1),
+            this.difficulty.getShoreDistance(this.tanker.z, -1),
+            this.difficulty.getShoreDistance(bowZ, -1),
+            this.difficulty.getShoreDistance(aheadZ, -1),
+        ) + portalExtra;
+        const shoreRightDist = Math.min(
+            this.difficulty.getShoreDistance(sternZ, 1),
+            this.difficulty.getShoreDistance(this.tanker.z, 1),
+            this.difficulty.getShoreDistance(bowZ, 1),
+            this.difficulty.getShoreDistance(aheadZ, 1),
+        ) + portalExtra;
         // Narrowest-side value for callers that want a single symmetric number
         const straitHalfWidth = Math.min(shoreLeftDist, shoreRightDist);
 

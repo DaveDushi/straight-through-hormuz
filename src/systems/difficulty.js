@@ -51,39 +51,47 @@ export class DifficultySystem {
     }
 
     // Distance from centerline (X=0) to the shore on the given side at worldZ.
-    // Multi-octave fBm for a natural coastline with regional width trends,
-    // medium-scale bays, and fine-grain irregularity. Both shores share the
-    // large-scale width trend (so the strait as a whole narrows and widens)
-    // but each side also has its own peninsulas/bays for asymmetric character.
+    // One dominant low-frequency noise drives the primary width, stretched so
+    // it actually reaches both extremes (averaging multiple noises flattens
+    // toward the midpoint via CLT — we deliberately avoid that here). A choke
+    // modulator pinches the strait sporadically, and per-side bays/peninsulas
+    // add natural coastal irregularity without cancelling the main pulse.
     getShoreDistance(worldZ, side) {
-        // Symmetric regional width trend (both shores move together)
-        const big1 = noise2D(worldZ * 0.00045, 0);              // ~2200 wavelength
-        const big2 = noise2D(worldZ * 0.0013,  0.31);           // ~770 wavelength
-        const big3 = noise2D(worldZ * 0.0038,  0.73);           // ~260 wavelength
-        let baseBlend = big1 * 0.55 + big2 * 0.3 + big3 * 0.15;
+        // Primary width pulse — single octave, ~500-unit wavelength. At base
+        // scroll speed that's a ~25s cycle, so the player reads the wide↔narrow
+        // sweep as distinct "acts" during the run.
+        const primary = noise2D(worldZ * 0.002, 0);                  // 0..1
+        // Stretch toward extremes: map to a contrasted curve so the primary
+        // actually hits ~0 and ~1 instead of lingering near 0.5.
+        const stretched = Math.max(0, Math.min(1, (primary - 0.5) * 1.8 + 0.5));
+
+        // Sporadic choke — occasional dramatic pinches on top of the main pulse.
+        const choke = noise2D(worldZ * 0.006, 17.5);                 // 0..1
+        const chokeBias = choke < 0.35 ? (choke - 0.35) * 1.2 : 0;   // negative pulses only
+
+        let blend = Math.max(0, Math.min(1, stretched + chokeBias));
 
         // Guaranteed open opener so the run never starts in a pinch
-        const startRamp = 600;
+        const startRamp = 400;
         if (worldZ < startRamp) {
             const t = Math.max(0, worldZ) / startRamp;
-            baseBlend = lerp(0.85, baseBlend, t * t);
+            blend = lerp(0.9, blend, t * t);
         }
 
         const baseHalfW = lerp(
             CONFIG.STRAIT_WIDTH_MIN / 2,
             CONFIG.STRAIT_WIDTH_START / 2,
-            baseBlend,
+            blend,
         );
 
-        // Side-specific coast shape (peninsulas and bays, uncorrelated between sides)
-        const bay1 = (noise2D(worldZ * 0.0028, side * 51.7)  - 0.5) * 2; // ~360 wavelength
-        const bay2 = (noise2D(worldZ * 0.0085, side * 77.3)  - 0.5) * 2; // ~120 wavelength
-        const bay3 = (noise2D(worldZ * 0.022,  side * 137.1) - 0.5) * 2; // ~45 wavelength
-        const asym = bay1 * 2.2 + bay2 * 1.3 + bay3 * 0.7;               // up to ~±4.2
+        // Side-specific peninsulas and bays for organic coast shape. These add
+        // ±~8 units of per-side wiggle but don't average away the main pulse.
+        const bay1 = (noise2D(worldZ * 0.004,  side * 51.7)  - 0.5) * 2; // ~250 wavelength
+        const bay2 = (noise2D(worldZ * 0.014,  side * 77.3)  - 0.5) * 2; // ~70 wavelength
+        const bay3 = (noise2D(worldZ * 0.035,  side * 137.1) - 0.5) * 2; // ~28 wavelength
+        const asym = bay1 * 4.5 + bay2 * 2.5 + bay3 * 1.2;              // up to ~±8.2
 
-        // Floor: shore cannot recede inside the terrain chunk's inner edge, or the
-        // chunk would leave a visible gap between the rendered land and the water.
-        const floor = (CONFIG.STRAIT_WIDTH_MIN / 2) - CONFIG.TERRAIN_OVERLAP + 1;
+        const floor = CONFIG.STRAIT_WIDTH_MIN / 2;
         return Math.max(floor, baseHalfW + asym);
     }
 
