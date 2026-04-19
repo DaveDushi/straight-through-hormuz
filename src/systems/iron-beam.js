@@ -34,7 +34,7 @@ export class IronBeamSystem {
     }
 
     activateBuff() {
-        this.buffTimer = CONFIG.LASER_BUFF_DURATION;
+        this.buffTimer = this.buffDuration ?? CONFIG.LASER_BUFF_DURATION;
         this.hitRate = 1.0;
     }
 

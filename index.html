@@ -393,7 +393,12 @@
                 <div class="dock-ship-viewport" id="dock-ship-viewport"></div>
                 <div class="port-content">
                     <div class="port-section-label">Ship Upgrades</div>
-                    <div id="upgrades-list"></div>
+                    <div class="upgrades-pager">
+                        <button id="upgrades-prev" class="pager-arrow pager-prev" type="button" aria-label="Previous upgrades">&lsaquo;</button>
+                        <div id="upgrades-list"></div>
+                        <button id="upgrades-next" class="pager-arrow pager-next" type="button" aria-label="More upgrades">&rsaquo;</button>
+                    </div>
+                    <div id="upgrades-pager-dots" class="pager-dots"></div>
                     <div class="port-actions">
                         <button
                             class="btn btn-primary btn-hero"

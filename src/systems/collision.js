@@ -136,9 +136,9 @@ export class CollisionSystem {
 
             case 'resource':
                 if (entity.resourceType === 'repair') {
-                    tanker.repair(CONFIG.REPAIR_AMOUNT);
+                    tanker.repair(tanker.repairAmount ?? CONFIG.REPAIR_AMOUNT);
                 } else if (entity.resourceType === 'fuel') {
-                    tanker.fuel = Math.min(tanker.fuel + CONFIG.FUEL_PICKUP_AMOUNT, tanker.maxFuel);
+                    tanker.fuel = Math.min(tanker.fuel + (tanker.fuelPickupAmount ?? CONFIG.FUEL_PICKUP_AMOUNT), tanker.maxFuel);
                 } else if (entity.resourceType === 'laser') {
                     if (context.ironBeam) context.ironBeam.activateBuff();
                 }

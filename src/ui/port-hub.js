@@ -12,6 +12,12 @@ const UPGRADE_ICONS = {
   fuelTank: '\u26FD',
   reinforcedBow: '\u2693',
   cargoHold: '\u{1F4E6}',
+  oilReserves: '\u{1F6E2}',
+  diplomacy: '\u{1F54A}',
+  flagEtiquette: '\u{1F3F3}',
+  medicalKit: '\u{1F489}',
+  fuelSiphon: '\u{1FAA3}',
+  laserCapacitor: '\u26A1',
 };
 
 const TILE_NAMES = {
@@ -23,6 +29,12 @@ const TILE_NAMES = {
   fuelTank: 'Fuel',
   reinforcedBow: 'Bow',
   cargoHold: 'Hold',
+  oilReserves: 'Oil',
+  diplomacy: 'Ceasefire',
+  flagEtiquette: 'Flag',
+  medicalKit: 'Repair',
+  fuelSiphon: 'Siphon',
+  laserCapacitor: 'Laser',
 };
 
 function getStatText(key, level) {
@@ -61,6 +73,31 @@ function getStatText(key, level) {
       const slots = 1 + level * cfg.effect;
       return `Slots: ${slots}`;
     }
+    case 'oilReserves': {
+      const dur = CONFIG.OIL_BOOST_DURATION + level * cfg.effect.duration;
+      const mult = (CONFIG.OIL_BOOST_SPEED_MULT + level * cfg.effect.mult).toFixed(2);
+      return `Oil: ${dur}s / ${mult}x`;
+    }
+    case 'diplomacy': {
+      const dur = CONFIG.CEASEFIRE_DURATION + level * cfg.effect;
+      return `Ceasefire: ${dur}s`;
+    }
+    case 'flagEtiquette': {
+      const dur = CONFIG.PAK_FLAG_DURATION + level * cfg.effect;
+      return `Flag: ${dur}s`;
+    }
+    case 'medicalKit': {
+      const hp = CONFIG.REPAIR_AMOUNT + level * cfg.effect;
+      return `Repair: +${hp} HP`;
+    }
+    case 'fuelSiphon': {
+      const amt = CONFIG.FUEL_PICKUP_AMOUNT + level * cfg.effect;
+      return `Fuel pickup: +${amt}`;
+    }
+    case 'laserCapacitor': {
+      const dur = CONFIG.LASER_BUFF_DURATION + level * cfg.effect;
+      return `Laser buff: ${dur}s`;
+    }
     default:
       return '';
   }
@@ -86,6 +123,9 @@ export class PortHub {
     });
 
     this.upgradeContainer = document.getElementById('upgrades-list');
+    this.pagerDotsEl = document.getElementById('upgrades-pager-dots');
+    this.pagerPrevBtn = document.getElementById('upgrades-prev');
+    this.pagerNextBtn = document.getElementById('upgrades-next');
     this.creditsEl = document.getElementById('credits-value');
     this.farthestEl = document.getElementById('farthest-value');
     this.promoSlot = document.getElementById('port-promo-slot');
@@ -93,12 +133,19 @@ export class PortHub {
     const viewport = document.getElementById('dock-ship-viewport');
     this.shipView = new DockShipView(viewport);
 
+    this._pageCount = 0;
+    this._pageDots = [];
+
     this.upgradeContainer.addEventListener('click', (e) => {
       const tile = e.target.closest('.upgrade-tile');
       if (!tile) return;
       const key = tile.dataset.upgrade;
       if (key) this._selectUpgrade(key);
     });
+
+    this.upgradeContainer.addEventListener('scroll', () => this._onPagerScroll(), { passive: true });
+    if (this.pagerPrevBtn) this.pagerPrevBtn.addEventListener('click', () => this._scrollPage(-1));
+    if (this.pagerNextBtn) this.pagerNextBtn.addEventListener('click', () => this._scrollPage(1));
   }
 
   show() {
@@ -120,30 +167,67 @@ export class PortHub {
 
   _buildTiles() {
     this.upgradeContainer.innerHTML = '';
+    if (this.pagerDotsEl) this.pagerDotsEl.innerHTML = '';
 
-    for (const [key, cfg] of Object.entries(CONFIG.UPGRADES)) {
-      const tile = document.createElement('div');
-      tile.className = 'upgrade-tile';
-      tile.dataset.upgrade = key;
+    const entries = Object.entries(CONFIG.UPGRADES);
+    const PAGE_SIZE = 8;
+    this._pageCount = Math.ceil(entries.length / PAGE_SIZE);
+    this._keyToPage = {};
 
-      const icon = UPGRADE_ICONS[key] || '\u2022';
-      let pipsHtml = '';
-      for (let i = 0; i < cfg.maxLevel; i++) {
-        pipsHtml += '<span class="pip"></span>';
+    for (let p = 0; p < this._pageCount; p++) {
+      const page = document.createElement('div');
+      page.className = 'upgrade-page';
+      const start = p * PAGE_SIZE;
+      const slice = entries.slice(start, start + PAGE_SIZE);
+
+      for (const [key, cfg] of slice) {
+        const tile = document.createElement('div');
+        tile.className = 'upgrade-tile';
+        tile.dataset.upgrade = key;
+
+        const icon = UPGRADE_ICONS[key] || '\u2022';
+        let pipsHtml = '';
+        for (let i = 0; i < cfg.maxLevel; i++) {
+          pipsHtml += '<span class="pip"></span>';
+        }
+
+        tile.innerHTML = `
+          <div class="tile-icon">${icon}</div>
+          <div class="tile-name">${TILE_NAMES[key] || cfg.name}</div>
+          <div class="tile-pips">${pipsHtml}</div>
+        `;
+
+        this._tileRefs[key] = {
+          tile,
+          pips: Array.from(tile.querySelectorAll('.pip')),
+        };
+        this._keyToPage[key] = p;
+        page.appendChild(tile);
       }
 
-      tile.innerHTML = `
-        <div class="tile-icon">${icon}</div>
-        <div class="tile-name">${TILE_NAMES[key] || cfg.name}</div>
-        <div class="tile-pips">${pipsHtml}</div>
-      `;
-
-      this._tileRefs[key] = {
-        tile,
-        pips: Array.from(tile.querySelectorAll('.pip')),
-      };
-      this.upgradeContainer.appendChild(tile);
+      this.upgradeContainer.appendChild(page);
     }
+
+    this._pageDots = [];
+    if (this.pagerDotsEl) {
+      if (this._pageCount > 1) {
+        for (let p = 0; p < this._pageCount; p++) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'pager-dot';
+          dot.setAttribute('aria-label', `Page ${p + 1} of ${this._pageCount}`);
+          dot.addEventListener('click', () => this._goToPage(p));
+          this.pagerDotsEl.appendChild(dot);
+          this._pageDots.push(dot);
+        }
+        this.pagerDotsEl.style.display = '';
+      } else {
+        this.pagerDotsEl.style.display = 'none';
+      }
+    }
+
+    if (this.pagerPrevBtn) this.pagerPrevBtn.style.display = this._pageCount > 1 ? '' : 'none';
+    if (this.pagerNextBtn) this.pagerNextBtn.style.display = this._pageCount > 1 ? '' : 'none';
 
     this._detailEl = document.createElement('div');
     this._detailEl.id = 'upgrade-detail';
@@ -164,7 +248,10 @@ export class PortHub {
         <button class="upgrade-btn detail-buy"></button>
       </div>
     `;
-    this.upgradeContainer.after(this._detailEl);
+    const detailAnchor = this.pagerDotsEl || this.upgradeContainer;
+    detailAnchor.after(this._detailEl);
+
+    this._updatePagerState();
 
     this._detailRefs = {
       icon: this._detailEl.querySelector('.detail-icon'),
@@ -193,6 +280,41 @@ export class PortHub {
     }
     this.shipView.highlightUpgrade(key);
     this._updateDetail();
+  }
+
+  _currentPage() {
+    const w = this.upgradeContainer.clientWidth || 1;
+    return Math.round(this.upgradeContainer.scrollLeft / w);
+  }
+
+  _goToPage(p) {
+    if (!this.upgradeContainer) return;
+    const w = this.upgradeContainer.clientWidth;
+    this.upgradeContainer.scrollTo({ left: p * w, behavior: 'smooth' });
+  }
+
+  _scrollPage(dir) {
+    const target = Math.max(0, Math.min(this._pageCount - 1, this._currentPage() + dir));
+    this._goToPage(target);
+  }
+
+  _onPagerScroll() {
+    this._updatePagerState();
+  }
+
+  _updatePagerState() {
+    const current = this._currentPage();
+    for (let i = 0; i < this._pageDots.length; i++) {
+      this._pageDots[i].classList.toggle('active', i === current);
+    }
+    if (this.pagerPrevBtn) this.pagerPrevBtn.disabled = current <= 0;
+    if (this.pagerNextBtn) this.pagerNextBtn.disabled = current >= this._pageCount - 1;
+
+    const pager = this.upgradeContainer.parentElement;
+    if (pager) {
+      pager.classList.toggle('has-prev', this._pageCount > 1 && current > 0);
+      pager.classList.toggle('has-next', this._pageCount > 1 && current < this._pageCount - 1);
+    }
   }
 
   _updateAll() {

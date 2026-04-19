@@ -336,6 +336,12 @@ export class Game {
         this.tanker.fuelRegenCap = CONFIG.TANKER_FUEL_REGEN_CAP + fuelLevel * 3;
 
         this.tanker.wallDamageReduction = this.save.getUpgradeLevel('reinforcedBow') * CONFIG.UPGRADES.reinforcedBow.effect;
+
+        const oilLvl = this.save.getUpgradeLevel('oilReserves');
+        this.tanker.oilSpeedMult = CONFIG.OIL_BOOST_SPEED_MULT + oilLvl * CONFIG.UPGRADES.oilReserves.effect.mult;
+        this.tanker.repairAmount = CONFIG.REPAIR_AMOUNT + this.save.getUpgradeLevel('medicalKit') * CONFIG.UPGRADES.medicalKit.effect;
+        this.tanker.fuelPickupAmount = CONFIG.FUEL_PICKUP_AMOUNT + this.save.getUpgradeLevel('fuelSiphon') * CONFIG.UPGRADES.fuelSiphon.effect;
+
         this.tanker.reset();
 
         const slotCount = 1 + this.save.getUpgradeLevel('cargoHold') * CONFIG.UPGRADES.cargoHold.effect;
@@ -345,10 +351,14 @@ export class Game {
         this.collision.reset();
         this.toll.reset();
         this.inventory.torpedoBonusPerPickup = this.save.getUpgradeLevel('torpedoReserve') * CONFIG.UPGRADES.torpedoReserve.effect;
+        this.inventory.oilDuration = CONFIG.OIL_BOOST_DURATION + oilLvl * CONFIG.UPGRADES.oilReserves.effect.duration;
+        this.inventory.ceasefireDuration = CONFIG.CEASEFIRE_DURATION + this.save.getUpgradeLevel('diplomacy') * CONFIG.UPGRADES.diplomacy.effect;
+        this.inventory.pakFlagDuration = CONFIG.PAK_FLAG_DURATION + this.save.getUpgradeLevel('flagEtiquette') * CONFIG.UPGRADES.flagEtiquette.effect;
         this.inventory.reset(slotCount);
         this.radio.reset();
         this.difficulty.update(0);
         this.terrain.reset();
+        this.ironBeam.buffDuration = CONFIG.LASER_BUFF_DURATION + this.save.getUpgradeLevel('laserCapacitor') * CONFIG.UPGRADES.laserCapacitor.effect;
         this.ironBeam.reset(this.save.getUpgradeLevel('ironBeam'), this.save.getUpgradeLevel('radar'));
         this.blockadeSystem.reset();
         this.spawner.spawnRateMultiplier = 1;

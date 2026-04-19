@@ -41,15 +41,15 @@ export class InventorySystem {
 
         switch (type) {
             case 'oil':
-                this.oilBoostTimer = CONFIG.OIL_BOOST_DURATION;
+                this.oilBoostTimer = this.oilDuration ?? CONFIG.OIL_BOOST_DURATION;
                 if (context.activateOilBoost) context.activateOilBoost(true);
                 break;
             case 'ceasefire':
-                this.ceasefireTimer = CONFIG.CEASEFIRE_DURATION;
+                this.ceasefireTimer = this.ceasefireDuration ?? CONFIG.CEASEFIRE_DURATION;
                 if (context.activateCeasefire) context.activateCeasefire(true);
                 break;
             case 'pakFlag':
-                this.pakFlagTimer = CONFIG.PAK_FLAG_DURATION;
+                this.pakFlagTimer = this.pakFlagDuration ?? CONFIG.PAK_FLAG_DURATION;
                 if (context.activatePakFlag) context.activatePakFlag(true);
                 break;
         }
