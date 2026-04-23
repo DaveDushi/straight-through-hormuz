@@ -92,7 +92,7 @@ export class FastBoat extends Entity {
 
         this.fireTimer -= delta;
         if (this.fireTimer <= 0 && !context.ceasefireShootingDisabled && this.z > context.tankerZ) {
-            this.fireTimer = CONFIG.BOAT_FIRE_INTERVAL;
+            this.fireTimer = CONFIG.BOAT_FIRE_INTERVAL * (context.boatFireIntervalMult ?? 1);
             if (context.spawnProjectile) {
                 const dirZ = context.tankerZ - this.z;
                 const dirX = context.tankerX - this.x;

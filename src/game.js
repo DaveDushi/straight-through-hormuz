@@ -506,6 +506,7 @@ export class Game {
             tankerZ: this.tanker.z,
             spawnProjectile: (x, z, vx, vz, dmg) => this._spawnProjectile(x, z, vx, vz, dmg),
             ceasefireShootingDisabled: this.ceasefireShootingDisabled,
+            boatFireIntervalMult: this.difficulty.currentPhase.boatFireIntervalMult ?? 1,
             releaseEntity,
         };
 

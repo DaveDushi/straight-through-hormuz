@@ -78,11 +78,11 @@ export const CONFIG = {
   BOAT_WIDTH: 2,
   BOAT_LENGTH: 5,
   BOAT_SPEED: 20,
-  BOAT_APPROACH_SPEED: 22, // world units/sec, negative z (toward tanker)
+  BOAT_APPROACH_SPEED: 14, // world units/sec, negative z (toward tanker)
   BOAT_RAM_DAMAGE: 15,
   BOAT_ROCKET_DAMAGE: 10,
   BOAT_ROCKET_SPEED: 30,
-  BOAT_FIRE_INTERVAL: 2.5,
+  BOAT_FIRE_INTERVAL: 1.8,
   BOAT_COLOR: 0x557755,
 
   // Projectiles
@@ -159,6 +159,7 @@ export const CONFIG = {
       powerupRate: 0.06,
       resourceRate: 0.1,
       scrollSpeedMult: 1.0,
+      boatFireIntervalMult: 1.0,
     },
     {
       name: "IRGC Awakening",
@@ -169,6 +170,7 @@ export const CONFIG = {
       powerupRate: 0.09,
       resourceRate: 0.08,
       scrollSpeedMult: 1.08,
+      boatFireIntervalMult: 1.0,
     },
     {
       name: "Escalation Phase",
@@ -179,6 +181,7 @@ export const CONFIG = {
       powerupRate: 0.11,
       resourceRate: 0.06,
       scrollSpeedMult: 1.18,
+      boatFireIntervalMult: 1.2,
     },
     {
       name: "Total War Zone",
@@ -189,6 +192,7 @@ export const CONFIG = {
       powerupRate: 0.13,
       resourceRate: 0.05,
       scrollSpeedMult: 1.30,
+      boatFireIntervalMult: 1.45,
     },
     {
       name: "Iron Gauntlet",
@@ -199,6 +203,7 @@ export const CONFIG = {
       powerupRate: 0.15,
       resourceRate: 0.04,
       scrollSpeedMult: 1.45,
+      boatFireIntervalMult: 1.7,
     },
     {
       name: "No Passage",
@@ -209,6 +214,7 @@ export const CONFIG = {
       powerupRate: 0.15,
       resourceRate: 0.04,
       scrollSpeedMult: 1.60,
+      boatFireIntervalMult: 2.0,
     },
   ],
 
