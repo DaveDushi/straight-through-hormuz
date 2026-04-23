@@ -422,6 +422,14 @@ body.touch-device #btn-boost-left {
     }
 }
 
+/* Narrow portrait phone: stack torpedo button above right boost to avoid slot overlap */
+@media (orientation: portrait) and (max-width: 520px) {
+    #btn-torpedo {
+        bottom: calc(max(var(--space-4), env(safe-area-inset-bottom)) + var(--touch-large) + var(--space-2));
+        right: max(var(--space-4), env(safe-area-inset-right));
+    }
+}
+
 /* ====== HUD PAUSE BUTTON ====== */
 .hud-pause-btn {
     position: fixed;
